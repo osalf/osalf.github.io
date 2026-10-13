@@ -34,6 +34,7 @@
                                          // optional — in desc, **bold** makes text bold, [[FFmpeg]] becomes a blue
                                          // link (matching label) that opens the Wikipedia pop-up; \n = new line;
                                          // images: 2 shows the first two pictures of the Wikipedia page
+       license:    "GPL Licensed",     // optional — small badge next to the title
        availableOn: ["debian", "redhat", "arch", "suse", "void"],
                                          // optional — "Available on:" row of Linux logos under the description
                                          // (choose from debian, redhat, arch, suse, void)
@@ -80,6 +81,7 @@ var PROJECTS = [
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
+    license: "GPL Licensed",
     desc: "Linux video compressor program, built around [[FFmpeg]], it has a simple/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it automatically.**",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
     descTags: [
@@ -111,7 +113,9 @@ var PROJECTS = [
     icon: "pluk.webp",
     banner: "",
     years: "2021 – 2022",
+    license: "GPL Licensed",
     desc: "Linux tray program that copies text from anywhere on your screen, the default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.",
+    availableOn: ["debian", "redhat", "arch", "suse", "void"],
     command: "curl -fsSL https://osaif.pages.dev/pluk",
     buttons: [
       { label: "Distros", url: "" }
@@ -842,7 +846,17 @@ var PROJECTS = [
     var text = el('div', 'card__text');
     var title = el('h3', 'card__title');
     title.textContent = item.title;
-    text.appendChild(title);
+    if (item.license) {
+      // small licence badge right next to the title (information only, not a button)
+      var row = el('div', 'card__titlerow');
+      row.appendChild(title);
+      var lic = el('span', 'card__license');
+      lic.textContent = item.license;
+      row.appendChild(lic);
+      text.appendChild(row);
+    } else {
+      text.appendChild(title);
+    }
     if (item.tags && item.tags.length) text.appendChild(buildTags(item.tags));
     if (item.years) {
       var years = el('p', 'card__years');
