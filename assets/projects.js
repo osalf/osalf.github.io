@@ -77,7 +77,7 @@ var PROJECTS = [
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
-    desc: "Linux video compressor program, built around [[FFmpeg]], it has a simple/advanced modes with codec, quality and audio settings.\n**If [[FFmpeg]] is missing or outdated, Klem downloads it automatically.**",
+    desc: "Linux video compressor program, built around [[FFmpeg]], it has a simple/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it automatically.**",
     descTags: [
       {
         label: "FFmpeg",
@@ -147,7 +147,7 @@ var PROJECTS = [
     return n;
   }
 
-  function buildButton(label, svg, url, variant) {
+  function buildButton(label, svg, url, variant, soon) {
     var btn = el(url ? 'a' : 'span', 'btn btn--' + variant);
     if (url) {
       btn.href = url;
@@ -155,7 +155,8 @@ var PROJECTS = [
       btn.rel = 'noopener';
     } else {
       btn.setAttribute('aria-disabled', 'true');
-      btn.classList.add('btn--disabled');
+      // soon = looks exactly like an active button (no page yet), but does nothing
+      btn.classList.add(soon ? 'btn--soon' : 'btn--disabled');
     }
     btn.innerHTML = svg;
     btn.appendChild(document.createTextNode(label));
@@ -474,15 +475,18 @@ var PROJECTS = [
     banner.setAttribute('aria-label', 'Play video');
     banner.setAttribute('aria-haspopup', 'dialog');
 
+    // icon + label sit together as one group, centred in the banner
+    var group = el('span', 'card__play-group');
     var play = el('span', 'card__play');
     play.innerHTML = SVG_PLAY;
-    banner.appendChild(play);
+    group.appendChild(play);
 
     if (label) {
       var tag = el('span', 'card__play-label');
       tag.textContent = label;
-      banner.appendChild(tag);
+      group.appendChild(tag);
     }
+    banner.appendChild(group);
 
     banner.addEventListener('click', function () { openVideo(src, banner); });
     banner.addEventListener('keydown', function (e) {
@@ -841,12 +845,10 @@ var PROJECTS = [
           }, dl);
         });
         actions.appendChild(dl);
-        // with three buttons, Download sits alone on top on small screens
-        if (extra.length > 1) actions.appendChild(el('span', 'card__break'));
       }
 
       extra.forEach(function (b) {
-        actions.appendChild(buildButton(b.label, '', b.url, 'primary'));
+        actions.appendChild(buildButton(b.label, '', b.url, 'primary', true));
       });
     } else {
       actions.appendChild(buildButton('Blueprints', SVG_BLUEPRINT, item.blueprints, 'ghost'));
