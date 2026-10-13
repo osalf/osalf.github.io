@@ -14,6 +14,7 @@
                                          // (or delete the line) and no space is reserved.
        video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that opens in a pop-up when the banner
                                          // is clicked (time + seek bar + full screen, no download / save options)
+       videoLabel: "Prototype",          // optional — small text under the play icon of the banner
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
        subtitle:   "Secondary title",    // optional — one black line under the years, a bit bigger than desc
@@ -59,6 +60,7 @@ var PROJECTS = [
     ],
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
+    videoLabel: "Prototype",
     years: "2022 – Mid 2026",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
@@ -165,7 +167,7 @@ var PROJECTS = [
   }
 
   // build the banner from images that are already loaded
-  function buildBanner(imgs, videoSrc) {
+  function buildBanner(imgs, videoSrc, videoLabel) {
     var banner = el('div', 'card__banner');
     imgs.forEach(function (im, i) {
       if (!i) im.className = 'is-active';
@@ -225,7 +227,7 @@ var PROJECTS = [
         go(e.deltaX > 0 ? 1 : -1);
       }, { passive: false });
     }
-    if (videoSrc) attachVideo(banner, videoSrc);
+    if (videoSrc) attachVideo(banner, videoSrc, videoLabel);
     return banner;
   }
 
@@ -453,7 +455,7 @@ var PROJECTS = [
     if (p && p.catch) p.catch(function () {});
   }
 
-  function attachVideo(banner, src) {
+  function attachVideo(banner, src, label) {
     banner.classList.add('card__banner--video');
     banner.setAttribute('role', 'button');
     banner.setAttribute('tabindex', '0');
@@ -463,6 +465,12 @@ var PROJECTS = [
     var play = el('span', 'card__play');
     play.innerHTML = SVG_PLAY;
     banner.appendChild(play);
+
+    if (label) {
+      var tag = el('span', 'card__play-label');
+      tag.textContent = label;
+      banner.appendChild(tag);
+    }
 
     banner.addEventListener('click', function () { openVideo(src, banner); });
     banner.addEventListener('keydown', function (e) {
@@ -486,19 +494,75 @@ var PROJECTS = [
       '<h3 class="wiki-title" id="wiki-title"></h3>' +
       '<img class="wiki-img" alt="" hidden>' +
       '<div class="wiki-text"></div>' +
-      '<pre class="wiki-code" hidden><code></code></pre>' +
+      '<pre class="wiki-code" hidden tabindex="0" role="button" aria-label="Copy command"><code></code></pre>' +
+      '<div class="wiki-copied" aria-live="polite" hidden></div>' +
       '<a class="wiki-link" target="_blank" rel="noopener">Read full article \u2192</a>' +
       '<div class="wiki-powered">Powered by <svg class="wiki-powered__logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455" fill="#000000" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M0,0v455h455V0H0z M385,118.141c0,1.918-1.558,3.47-3.477,3.47h-9.736 c-3.546,0-6.744,2.15-8.081,5.439l-88.815,217.909L230.16,244.55L182.3,344.958L90.709,126.964 c-1.364-3.239-4.535-5.345-8.049-5.345h-9.181c-1.918,0-3.479-1.56-3.479-3.479v-8.099h79.147l-0.223,8.193 c-0.05,1.886-1.593,3.385-3.477,3.385h-13.249c-4.926,0-8.302,4.971-6.495,9.548l64.305,162.675l32.522-70.485l-41.099-96.434 c-1.373-3.215-4.526-5.312-8.031-5.312h-6.392c-1.918,0-3.479-1.552-3.479-3.47v-8.099h59.436v8.099c0,1.918-1.56,3.47-3.477,3.47 c-5.013,0-8.398,5.133-6.421,9.745l24.288,56.572l24.799-56.52c2.021-4.614-1.355-9.788-6.401-9.788h-9.284 c-1.927,0-3.479-1.56-3.479-3.479v-8.099h62.242v8.099c0,1.918-1.552,3.479-3.479,3.479h-10.358c-3.385,0-6.471,1.962-7.903,5.03 l-38.312,81.925l35.772,84.058l62.589-161.542c1.739-4.57-1.637-9.472-6.53-9.472H321.54c-1.918,0-3.479-1.56-3.479-3.479v-8.099 H385V118.141z"/></svg></div>';
     document.body.appendChild(overlay);
     document.body.appendChild(popup);
     popup.querySelector('.wiki-close').addEventListener('click', closePopup);
     overlay.addEventListener('click', closePopup);
+
+    // the install command: one click / tap copies it straight to the clipboard
+    var codeBox = popup.querySelector('.wiki-code');
+    var copiedEl = popup.querySelector('.wiki-copied');
+    var copiedTimer = 0;
+    function say(msg, done) {
+      copiedEl.textContent = msg;
+      copiedEl.classList.toggle('is-done', !!done);
+      clearTimeout(copiedTimer);
+      if (done) copiedTimer = setTimeout(function () { say('Click to copy', false); }, 1800);
+    }
+    function copyCommand() {
+      var text = codeBox.firstChild.textContent;
+      if (!text) return;
+      copyText(text).then(function () { say('Copied to clipboard', true); },
+                          function () { say('Could not copy', true); })
+        .then(function () {
+          var sel = window.getSelection && window.getSelection();
+          if (sel && sel.removeAllRanges) sel.removeAllRanges();   // nothing stays highlighted
+          try { codeBox.focus({ preventScroll: true }); } catch (err) {}
+        });
+    }
+    codeBox.addEventListener('click', copyCommand);
+    codeBox.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyCommand(); }
+    });
+    popup.copiedReset = function (show) {
+      copiedEl.hidden = !show;
+      say('Click to copy', false);
+    };
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();
     });
     window.addEventListener('resize', function () {
       if (popup.classList.contains('is-open')) fitCode();
     });
+  }
+
+  // copy text to the user's clipboard (modern API first, old method as a fallback)
+  function copyText(text) {
+    function legacy() {
+      return new Promise(function (resolve, reject) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.setAttribute('aria-hidden', 'true');
+        ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px;';
+        document.body.appendChild(ta);
+        ta.focus({ preventScroll: true });
+        ta.select();
+        ta.setSelectionRange(0, text.length);
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (err) {}
+        document.body.removeChild(ta);
+        ok ? resolve() : reject();
+      });
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(legacy);
+    }
+    return legacy();
   }
 
   // the install command always stays on ONE line: the text shrinks to fit the pop-up's width
@@ -544,6 +608,7 @@ var PROJECTS = [
     imgEl.removeAttribute('src');
     codeEl.hidden = !tag.code;
     codeEl.firstChild.textContent = tag.code || '';
+    popup.copiedReset(!!tag.code);
 
     // custom description; the term is bold, "\n" starts a new paragraph
     textEl.textContent = '';
@@ -614,7 +679,7 @@ var PROJECTS = [
       Promise.all(shots.map(loadImage)).then(function (loaded) {
         var imgs = loaded.filter(Boolean);
         if (!imgs.length) return;
-        card.insertBefore(buildBanner(imgs, item.video), card.firstChild);
+        card.insertBefore(buildBanner(imgs, item.video, item.videoLabel), card.firstChild);
       });
     }
 
