@@ -12,6 +12,8 @@
                                          // ["b/a.webp", "b/b.webp"]; a plain string works
                                          // for one image. No banner? use  banner: ""
                                          // (or delete the line) and no space is reserved.
+       video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that plays inside the banner when it is
+                                         // clicked (only a seek bar, no download / save options)
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
        subtitle:   "Secondary title",    // optional — one black line under the years, a bit bigger than desc
@@ -56,6 +58,7 @@ var PROJECTS = [
       }
     ],
     banner: ["b/i.webp"],
+    video: "b/20230325_103823.mp4",
     years: "2022 – Mid 2026",
     note: "ownership transferred",
     subtitle: "MASL Real Time Translator",
@@ -168,7 +171,7 @@ var PROJECTS = [
   }
 
   // build the banner from images that are already loaded
-  function buildBanner(imgs) {
+  function buildBanner(imgs, videoSrc) {
     var banner = el('div', 'card__banner');
     imgs.forEach(function (im, i) {
       if (!i) im.className = 'is-active';
@@ -202,7 +205,7 @@ var PROJECTS = [
       banner.addEventListener('pointerdown', function (e) {
         if (e.pointerType === 'mouse' && e.button !== 0) return;
         fingers++;
-        if (fingers > 1) { tracking = false; return; }
+        if (fingers > 1 || isZoomed()) { tracking = false; return; }
         tracking = true; sx = e.clientX; sy = e.clientY;
       });
       banner.addEventListener('pointerup', function (e) {
@@ -228,7 +231,159 @@ var PROJECTS = [
         go(e.deltaX > 0 ? 1 : -1);
       }, { passive: false });
     }
+    if (videoSrc) attachVideo(banner, videoSrc);
     return banner;
+  }
+
+  // pinched-in on a phone? (then a finger on the banner must pan the page, not swipe it)
+  function isZoomed() {
+    return !!(window.visualViewport && window.visualViewport.scale > 1.01);
+  }
+
+  // ---- video inside the banner: tap to play / pause, only a seek bar, nothing to save ----
+  var SVG_PLAY = '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="31" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/><path d="M26 20.5v23L45 32z" fill="#fff"/></svg>';
+
+  function attachVideo(banner, src) {
+    banner.classList.add('card__banner--video');
+    banner.setAttribute('role', 'button');
+    banner.setAttribute('tabindex', '0');
+    banner.setAttribute('aria-label', 'Play video');
+
+    var play = el('span', 'card__play');
+    play.innerHTML = SVG_PLAY;
+    banner.appendChild(play);
+
+    var bar = el('div', 'card__seek');
+    bar.setAttribute('role', 'slider');
+    bar.setAttribute('tabindex', '0');
+    bar.setAttribute('aria-label', 'Seek');
+    bar.setAttribute('aria-valuemin', '0');
+    bar.setAttribute('aria-valuemax', '100');
+    bar.setAttribute('aria-valuenow', '0');
+    var track = el('span', 'card__seek-track');
+    var fill = el('span', 'card__seek-fill');
+    var thumb = el('span', 'card__seek-thumb');
+    track.appendChild(fill);
+    track.appendChild(thumb);
+    bar.appendChild(track);
+    banner.appendChild(bar);
+
+    var video = null, raf = 0, dragging = false;
+
+    function setProgress(r) {
+      r = Math.min(1, Math.max(0, r || 0));
+      fill.style.width = (r * 100) + '%';
+      thumb.style.left = (r * 100) + '%';
+      bar.setAttribute('aria-valuenow', String(Math.round(r * 100)));
+    }
+
+    function tick() {
+      if (video && video.duration && !dragging) setProgress(video.currentTime / video.duration);
+      raf = (video && !video.paused && !video.ended) ? requestAnimationFrame(tick) : 0;
+    }
+
+    function makeVideo() {
+      video = document.createElement('video');
+      video.className = 'card__video';
+      video.preload = 'auto';
+      video.controls = false;
+      video.draggable = false;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('disablepictureinpicture', '');
+      video.setAttribute('disableremoteplayback', '');
+      video.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
+      video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+      video.addEventListener('play', function () { banner.classList.add('is-playing'); });
+      video.addEventListener('playing', function () {
+        banner.classList.add('is-started', 'is-playing');
+        banner.setAttribute('aria-label', 'Pause video');
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+      video.addEventListener('pause', function () {
+        if (video.ended) return;
+        banner.classList.remove('is-playing');
+        banner.setAttribute('aria-label', 'Play video');
+      });
+      video.addEventListener('timeupdate', function () {
+        if (video.duration && !dragging) setProgress(video.currentTime / video.duration);
+      });
+      video.addEventListener('ended', function () {
+        banner.classList.remove('is-playing', 'is-started');
+        banner.setAttribute('aria-label', 'Play video');
+        video.currentTime = 0;
+        setProgress(0);
+      });
+      video.addEventListener('error', function () {
+        banner.classList.remove('is-playing', 'is-started');
+        video.remove();
+        video = null;
+      });
+
+      video.src = ICON_DIR + src;
+      banner.insertBefore(video, play);
+    }
+
+    function toggle() {
+      if (!video) makeVideo();
+      if (video.paused || video.ended) {
+        banner.classList.add('is-playing');
+        var p = video.play();
+        if (p && p.catch) p.catch(function () { banner.classList.remove('is-playing'); });
+      } else {
+        video.pause();
+      }
+    }
+
+    banner.addEventListener('click', function (e) {
+      if (bar.contains(e.target)) return;
+      toggle();
+    });
+    banner.addEventListener('keydown', function (e) {
+      if (e.target !== banner) return;
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+
+    // seek bar: tap or drag anywhere along it to jump to that part
+    function seekFrom(e) {
+      var rect = track.getBoundingClientRect();
+      if (!rect.width) return;
+      var r = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      setProgress(r);
+      if (video && video.duration) video.currentTime = Math.min(r * video.duration, video.duration - 0.1);
+    }
+    bar.addEventListener('pointerdown', function (e) {
+      e.stopPropagation();
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true;
+      bar.classList.add('is-drag');
+      try { bar.setPointerCapture(e.pointerId); } catch (err) {}
+      seekFrom(e);
+    });
+    bar.addEventListener('pointermove', function (e) {
+      if (dragging) seekFrom(e);
+    });
+    function endDrag(e) {
+      e.stopPropagation();
+      if (!dragging) return;
+      dragging = false;
+      bar.classList.remove('is-drag');
+      if (video && video.duration) setProgress(video.currentTime / video.duration);
+    }
+    bar.addEventListener('pointerup', endDrag);
+    bar.addEventListener('pointercancel', endDrag);
+    bar.addEventListener('click', function (e) { e.stopPropagation(); });
+    bar.addEventListener('keydown', function (e) {
+      if (!video || !video.duration) return;
+      var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+      if (!d) return;
+      e.preventDefault();
+      e.stopPropagation();
+      video.currentTime = Math.min(Math.max(0, video.currentTime + d), video.duration - 0.1);
+      setProgress(video.currentTime / video.duration);
+    });
   }
 
   // ---- Wikipedia pop-up (one shared dialog) ----
@@ -256,6 +411,21 @@ var PROJECTS = [
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();
     });
+    window.addEventListener('resize', function () {
+      if (popup.classList.contains('is-open')) fitCode();
+    });
+  }
+
+  // the install command always stays on ONE line: the text shrinks to fit the pop-up's width
+  function fitCode() {
+    if (!popup) return;
+    var pre = popup.querySelector('.wiki-code');
+    if (pre.hidden) return;
+    var code = pre.firstChild;
+    code.style.fontSize = '';
+    var base = parseFloat(getComputedStyle(code).fontSize);
+    var avail = code.clientWidth, need = code.scrollWidth;
+    if (avail && need > avail) code.style.fontSize = (Math.floor(base * avail / need * 10) / 10) + 'px';
   }
 
   function closePopup() {
@@ -309,6 +479,7 @@ var PROJECTS = [
     popup.classList.add('is-open');
     overlay.classList.add('is-open');
     popup.querySelector('.wiki-close').focus();
+    if (tag.code) fitCode();
 
     // article title + picture come from Wikipedia; the text stays custom
     // (no wiki link = nothing to fetch)
@@ -358,7 +529,7 @@ var PROJECTS = [
       Promise.all(shots.map(loadImage)).then(function (loaded) {
         var imgs = loaded.filter(Boolean);
         if (!imgs.length) return;
-        card.insertBefore(buildBanner(imgs), card.firstChild);
+        card.insertBefore(buildBanner(imgs, item.video), card.firstChild);
       });
     }
 
@@ -496,6 +667,15 @@ var PROJECTS = [
   document.addEventListener('dragstart', function (e) {
     if (e.target.tagName === 'IMG') e.preventDefault();
   });
+
+  // while the page is pinched-in, banners stop capturing sideways touches so you can pan freely
+  (function () {
+    var vv = window.visualViewport;
+    if (!vv) return;
+    function update() { document.documentElement.classList.toggle('is-zoomed', vv.scale > 1.01); }
+    vv.addEventListener('resize', update);
+    update();
+  })();
 
   render('panel-projects', PROJECTS);
 })();
