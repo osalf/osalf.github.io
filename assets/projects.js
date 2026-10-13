@@ -12,8 +12,8 @@
                                          // ["b/a.webp", "b/b.webp"]; a plain string works
                                          // for one image. No banner? use  banner: ""
                                          // (or delete the line) and no space is reserved.
-       video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that plays inside the banner when it is
-                                         // clicked (only a seek bar, no download / save options)
+       video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that opens in a pop-up when the banner
+                                         // is clicked (time + seek bar + full screen, no download / save options)
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
        subtitle:   "Secondary title",    // optional — one black line under the years, a bit bigger than desc
@@ -61,12 +61,6 @@ var PROJECTS = [
     video: "b/20230325_103823.mp4",
     years: "2022 – Mid 2026",
     note: "ownership transferred",
-    subtitle: "MASL Real Time Translator",
-    subtitleTag: {
-      label: "MASL",
-      title: "MASL",
-      text: "Moroccan Sign Language (MSL)\nAmerican Sign Language (ASL)"
-    },
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
     blueprints: ""
@@ -240,149 +234,240 @@ var PROJECTS = [
     return !!(window.visualViewport && window.visualViewport.scale > 1.01);
   }
 
-  // ---- video inside the banner: tap to play / pause, only a seek bar, nothing to save ----
+  // ---- video: clicking the banner opens it in a pop-up (page dims 30%), no download / save options ----
   var SVG_PLAY = '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="31" fill="rgba(0,0,0,0.55)" stroke="rgba(255,255,255,0.85)" stroke-width="1.5"/><path d="M26 20.5v23L45 32z" fill="#fff"/></svg>';
+  var SVG_P = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  var SVG_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+  var SVG_FS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5v2H6v3zM15 4h5v5h-2V6h-3zM4 15h2v3h3v2H4zM18 15h2v5h-5v-2h3z"/></svg>';
+  var SVG_FS_EXIT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4V7h3V4zM15 4h2v3h3v2h-5zM4 15h5v5H7v-3H4zM15 15h5v2h-3v3h-2z"/></svg>';
+
+  var vOverlay = null, vModal = null, vStage = null, vEl = null, vLast = null;
+  var vUI = {};
+
+  function fmtTime(t) {
+    if (!isFinite(t) || t < 0) t = 0;
+    var s = Math.floor(t), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = s % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (ss < 10 ? '0' : '') + ss;
+  }
+
+  function fsElement() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
+
+  function unlockOrientation() {
+    try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (err) {}
+  }
+
+  function lockLandscape() {
+    try {
+      if (screen.orientation && screen.orientation.lock) {
+        var p = screen.orientation.lock('landscape');
+        if (p && p.catch) p.catch(function () {});
+      }
+    } catch (err) {}
+  }
+
+  function toggleFullscreen() {
+    if (fsElement()) {
+      (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      return;
+    }
+    var req = vStage.requestFullscreen || vStage.webkitRequestFullscreen;
+    if (req) {
+      var p = req.call(vStage);
+      if (p && p.then) p.then(lockLandscape, function () {});
+      else lockLandscape();
+    } else if (vEl.webkitEnterFullscreen) {
+      vEl.webkitEnterFullscreen();   // iPhone: only the video itself can go full screen
+    }
+  }
+
+  function ensureVideoModal() {
+    if (vModal) return;
+    vOverlay = el('div', 'vid-overlay');
+    vModal = el('div', 'vid-modal');
+    vModal.setAttribute('role', 'dialog');
+    vModal.setAttribute('aria-modal', 'true');
+    vModal.setAttribute('aria-label', 'Video');
+    vModal.innerHTML =
+      '<div class="vid-stage">' +
+        '<button type="button" class="vid-close" aria-label="Close">\u2715</button>' +
+        '<video class="vid-video"></video>' +
+        '<span class="vid-bigplay">' + SVG_PLAY + '</span>' +
+        '<div class="vid-bar">' +
+          '<button type="button" class="vid-btn vid-pp" aria-label="Play">' + SVG_P + '</button>' +
+          '<span class="vid-time vid-cur">0:00</span>' +
+          '<div class="vid-seek" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
+            '<span class="vid-track"><span class="vid-fill"></span><span class="vid-thumb"></span></span>' +
+          '</div>' +
+          '<span class="vid-time vid-dur">0:00</span>' +
+          '<button type="button" class="vid-btn vid-fs" aria-label="Full screen">' + SVG_FS + '</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(vOverlay);
+    document.body.appendChild(vModal);
+
+    vStage = vModal.querySelector('.vid-stage');
+    vEl = vModal.querySelector('.vid-video');
+    vUI.pp = vModal.querySelector('.vid-pp');
+    vUI.cur = vModal.querySelector('.vid-cur');
+    vUI.dur = vModal.querySelector('.vid-dur');
+    vUI.seek = vModal.querySelector('.vid-seek');
+    vUI.track = vModal.querySelector('.vid-track');
+    vUI.fill = vModal.querySelector('.vid-fill');
+    vUI.thumb = vModal.querySelector('.vid-thumb');
+    vUI.fs = vModal.querySelector('.vid-fs');
+
+    vEl.controls = false;
+    vEl.preload = 'metadata';
+    vEl.draggable = false;
+    vEl.playsInline = true;
+    vEl.setAttribute('playsinline', '');
+    vEl.setAttribute('webkit-playsinline', '');
+    vEl.setAttribute('disablepictureinpicture', '');
+    vEl.setAttribute('disableremoteplayback', '');
+    vEl.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback nofullscreen');
+    vEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+    var dragging = false;
+
+    function setProgress(r) {
+      r = Math.min(1, Math.max(0, r || 0));
+      vUI.fill.style.width = (r * 100) + '%';
+      vUI.thumb.style.left = (r * 100) + '%';
+      vUI.seek.setAttribute('aria-valuenow', String(Math.round(r * 100)));
+    }
+    function sync() {
+      vUI.cur.textContent = fmtTime(vEl.currentTime);
+      vUI.dur.textContent = fmtTime(vEl.duration);
+      if (!dragging) setProgress(vEl.duration ? vEl.currentTime / vEl.duration : 0);
+    }
+    function setPlaying(on) {
+      vStage.classList.toggle('is-playing', on);
+      vUI.pp.innerHTML = on ? SVG_PAUSE : SVG_P;
+      vUI.pp.setAttribute('aria-label', on ? 'Pause' : 'Play');
+    }
+    function toggle() {
+      if (vEl.paused || vEl.ended) {
+        var p = vEl.play();
+        if (p && p.catch) p.catch(function () { setPlaying(false); });
+      } else {
+        vEl.pause();
+      }
+    }
+
+    vEl.addEventListener('loadedmetadata', sync);
+    vEl.addEventListener('durationchange', sync);
+    vEl.addEventListener('timeupdate', sync);
+    vEl.addEventListener('play', function () { setPlaying(true); });
+    vEl.addEventListener('playing', function () { setPlaying(true); });
+    vEl.addEventListener('pause', function () { if (!vEl.ended) setPlaying(false); });
+    vEl.addEventListener('ended', function () {
+      setPlaying(false);
+      vEl.currentTime = 0;
+      sync();
+    });
+
+    vEl.addEventListener('click', toggle);
+    vUI.pp.addEventListener('click', toggle);
+    vUI.fs.addEventListener('click', toggleFullscreen);
+    vModal.querySelector('.vid-close').addEventListener('click', closeVideo);
+    vOverlay.addEventListener('click', closeVideo);
+
+    // seek bar: tap or drag anywhere along it
+    function seekFrom(e) {
+      var rect = vUI.track.getBoundingClientRect();
+      if (!rect.width) return;
+      var r = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      setProgress(r);
+      if (vEl.duration) {
+        vEl.currentTime = Math.min(r * vEl.duration, vEl.duration - 0.1);
+        vUI.cur.textContent = fmtTime(vEl.currentTime);
+      }
+    }
+    vUI.seek.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      dragging = true;
+      vUI.seek.classList.add('is-drag');
+      try { vUI.seek.setPointerCapture(e.pointerId); } catch (err) {}
+      seekFrom(e);
+    });
+    vUI.seek.addEventListener('pointermove', function (e) { if (dragging) seekFrom(e); });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      vUI.seek.classList.remove('is-drag');
+      sync();
+    }
+    vUI.seek.addEventListener('pointerup', endDrag);
+    vUI.seek.addEventListener('pointercancel', endDrag);
+    vUI.seek.addEventListener('keydown', function (e) {
+      if (!vEl.duration) return;
+      var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
+      if (!d) return;
+      e.preventDefault();
+      e.stopPropagation();
+      vEl.currentTime = Math.min(Math.max(0, vEl.currentTime + d), vEl.duration - 0.1);
+      sync();
+    });
+
+    function onFsChange() {
+      var on = fsElement() === vStage;
+      vUI.fs.innerHTML = on ? SVG_FS_EXIT : SVG_FS;
+      vUI.fs.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen');
+      if (!on) unlockOrientation();
+    }
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange);
+
+    document.addEventListener('keydown', function (e) {
+      if (!vModal.classList.contains('is-open')) return;
+      if (e.key === 'Escape' && !fsElement()) { closeVideo(); return; }
+      if ((e.key === ' ' || e.key === 'k') && e.target.tagName !== 'BUTTON') { e.preventDefault(); toggle(); }
+    });
+  }
+
+  function closeVideo() {
+    if (!vModal || !vModal.classList.contains('is-open')) return;
+    if (fsElement()) { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (err) {} }
+    unlockOrientation();
+    vEl.pause();
+    vEl.removeAttribute('src');
+    vEl.load();
+    vStage.classList.remove('is-playing');
+    vUI.pp.innerHTML = SVG_P;
+    vUI.cur.textContent = '0:00';
+    vUI.dur.textContent = '0:00';
+    vUI.fill.style.width = '0%';
+    vUI.thumb.style.left = '0%';
+    vModal.classList.remove('is-open');
+    vOverlay.classList.remove('is-open');
+    if (vLast && vLast.focus) vLast.focus();
+  }
+
+  function openVideo(src, opener) {
+    ensureVideoModal();
+    vLast = opener;
+    vEl.src = ICON_DIR + src;
+    vModal.classList.add('is-open');
+    vOverlay.classList.add('is-open');
+    var p = vEl.play();
+    if (p && p.catch) p.catch(function () {});
+  }
 
   function attachVideo(banner, src) {
     banner.classList.add('card__banner--video');
     banner.setAttribute('role', 'button');
     banner.setAttribute('tabindex', '0');
     banner.setAttribute('aria-label', 'Play video');
+    banner.setAttribute('aria-haspopup', 'dialog');
 
     var play = el('span', 'card__play');
     play.innerHTML = SVG_PLAY;
     banner.appendChild(play);
 
-    var bar = el('div', 'card__seek');
-    bar.setAttribute('role', 'slider');
-    bar.setAttribute('tabindex', '0');
-    bar.setAttribute('aria-label', 'Seek');
-    bar.setAttribute('aria-valuemin', '0');
-    bar.setAttribute('aria-valuemax', '100');
-    bar.setAttribute('aria-valuenow', '0');
-    var track = el('span', 'card__seek-track');
-    var fill = el('span', 'card__seek-fill');
-    var thumb = el('span', 'card__seek-thumb');
-    track.appendChild(fill);
-    track.appendChild(thumb);
-    bar.appendChild(track);
-    banner.appendChild(bar);
-
-    var video = null, raf = 0, dragging = false;
-
-    function setProgress(r) {
-      r = Math.min(1, Math.max(0, r || 0));
-      fill.style.width = (r * 100) + '%';
-      thumb.style.left = (r * 100) + '%';
-      bar.setAttribute('aria-valuenow', String(Math.round(r * 100)));
-    }
-
-    function tick() {
-      if (video && video.duration && !dragging) setProgress(video.currentTime / video.duration);
-      raf = (video && !video.paused && !video.ended) ? requestAnimationFrame(tick) : 0;
-    }
-
-    function makeVideo() {
-      video = document.createElement('video');
-      video.className = 'card__video';
-      video.preload = 'auto';
-      video.controls = false;
-      video.draggable = false;
-      video.playsInline = true;
-      video.setAttribute('playsinline', '');
-      video.setAttribute('webkit-playsinline', '');
-      video.setAttribute('disablepictureinpicture', '');
-      video.setAttribute('disableremoteplayback', '');
-      video.setAttribute('controlslist', 'nodownload noplaybackrate noremoteplayback');
-      video.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-
-      video.addEventListener('play', function () { banner.classList.add('is-playing'); });
-      video.addEventListener('playing', function () {
-        banner.classList.add('is-started', 'is-playing');
-        banner.setAttribute('aria-label', 'Pause video');
-        if (!raf) raf = requestAnimationFrame(tick);
-      });
-      video.addEventListener('pause', function () {
-        if (video.ended) return;
-        banner.classList.remove('is-playing');
-        banner.setAttribute('aria-label', 'Play video');
-      });
-      video.addEventListener('timeupdate', function () {
-        if (video.duration && !dragging) setProgress(video.currentTime / video.duration);
-      });
-      video.addEventListener('ended', function () {
-        banner.classList.remove('is-playing', 'is-started');
-        banner.setAttribute('aria-label', 'Play video');
-        video.currentTime = 0;
-        setProgress(0);
-      });
-      video.addEventListener('error', function () {
-        banner.classList.remove('is-playing', 'is-started');
-        video.remove();
-        video = null;
-      });
-
-      video.src = ICON_DIR + src;
-      banner.insertBefore(video, play);
-    }
-
-    function toggle() {
-      if (!video) makeVideo();
-      if (video.paused || video.ended) {
-        banner.classList.add('is-playing');
-        var p = video.play();
-        if (p && p.catch) p.catch(function () { banner.classList.remove('is-playing'); });
-      } else {
-        video.pause();
-      }
-    }
-
-    banner.addEventListener('click', function (e) {
-      if (bar.contains(e.target)) return;
-      toggle();
-    });
+    banner.addEventListener('click', function () { openVideo(src, banner); });
     banner.addEventListener('keydown', function (e) {
       if (e.target !== banner) return;
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-    });
-
-    // seek bar: tap or drag anywhere along it to jump to that part
-    function seekFrom(e) {
-      var rect = track.getBoundingClientRect();
-      if (!rect.width) return;
-      var r = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-      setProgress(r);
-      if (video && video.duration) video.currentTime = Math.min(r * video.duration, video.duration - 0.1);
-    }
-    bar.addEventListener('pointerdown', function (e) {
-      e.stopPropagation();
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      dragging = true;
-      bar.classList.add('is-drag');
-      try { bar.setPointerCapture(e.pointerId); } catch (err) {}
-      seekFrom(e);
-    });
-    bar.addEventListener('pointermove', function (e) {
-      if (dragging) seekFrom(e);
-    });
-    function endDrag(e) {
-      e.stopPropagation();
-      if (!dragging) return;
-      dragging = false;
-      bar.classList.remove('is-drag');
-      if (video && video.duration) setProgress(video.currentTime / video.duration);
-    }
-    bar.addEventListener('pointerup', endDrag);
-    bar.addEventListener('pointercancel', endDrag);
-    bar.addEventListener('click', function (e) { e.stopPropagation(); });
-    bar.addEventListener('keydown', function (e) {
-      if (!video || !video.duration) return;
-      var d = e.key === 'ArrowRight' ? 5 : e.key === 'ArrowLeft' ? -5 : 0;
-      if (!d) return;
-      e.preventDefault();
-      e.stopPropagation();
-      video.currentTime = Math.min(Math.max(0, video.currentTime + d), video.duration - 0.1);
-      setProgress(video.currentTime / video.duration);
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openVideo(src, banner); }
     });
   }
 
@@ -556,22 +641,12 @@ var PROJECTS = [
     title.textContent = item.title;
     text.appendChild(title);
     if (item.tags && item.tags.length) text.appendChild(buildTags(item.tags));
-    if (noIcon && (item.years || item.note)) {
-      // one line: "2022 – Mid 2026 (ownership transferred)"
-      var line = el('p', 'card__years card__years--line');
-      line.appendChild(document.createTextNode(item.years || ''));
-      if (item.note) {
-        var inline = el('span', 'card__note-inline');
-        inline.textContent = (item.years ? ' ' : '') + '(' + item.note + ')';
-        line.appendChild(inline);
-      }
-      text.appendChild(line);
-    } else if (item.years) {
+    if (item.years) {
       var years = el('p', 'card__years');
       years.textContent = item.years;
       text.appendChild(years);
     }
-    if (item.note && !noIcon) {
+    if (item.note) {
       var note = el('p', 'card__note');
       note.textContent = '(' + item.note + ')';
       text.appendChild(note);
@@ -623,7 +698,7 @@ var PROJECTS = [
         dl.appendChild(document.createTextNode('Download'));
         dl.addEventListener('click', function () {
           openWiki({
-            title: 'Download ' + item.title + (item.version ? ' ' + item.version : ''),
+            title: item.title + (item.version ? ' ' + item.version : ''),
             text: '',
             code: item.command
           }, dl);
