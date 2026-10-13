@@ -474,6 +474,8 @@ button {
   font-weight: 450;
 }
 
+.card__desc strong { font-weight: 700; }
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -814,7 +816,7 @@ button {
 .card__note {
   font-family: var(--sans);
   font-weight: 500;
-  color: var(--text-dim);
+  color: #000;
   font-size: 1.05rem;
   line-height: 1.3;
   margin: 0.2rem 0 0;
@@ -1217,6 +1219,8 @@ button {
 
 .wiki-img[hidden] { display: none; }
 
+.wiki-imgs[hidden] { display: none; }
+
 .wiki-link[hidden] { display: none; }
 
 .wiki-powered[hidden] { display: none; }
@@ -1243,19 +1247,6 @@ button {
 }
 
 .wiki-code::selection, .wiki-code *::selection { background: transparent; }
-
-.wiki-copied {
-  height: 1.2em;
-  margin-top: 0.45rem;
-  font-size: 0.8rem;
-  line-height: 1.2;
-  text-align: right;
-  color: var(--text-faint);
-}
-
-.wiki-copied.is-done { color: var(--text); font-weight: 600; }
-
-.wiki-copied[hidden] { display: none; }
 
 .wiki-code code {
   display: block;
