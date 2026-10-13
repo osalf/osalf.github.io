@@ -809,31 +809,6 @@ button {
   margin: 0;
 }
 
-.card__titlerow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.8rem;
-}
-
-/* small, quiet licence badge next to the title */
-.card__license {
-  flex: none;
-  padding: 0.22rem 0.65rem;
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  color: #2b3340;
-  background: rgba(27, 36, 48, 0.06);
-  border: 1px solid rgba(27, 36, 48, 0.28);
-  border-radius: 999px;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
 .card__years {
   font-family: var(--sans);
   font-weight: 600;
