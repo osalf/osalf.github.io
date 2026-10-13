@@ -501,7 +501,7 @@ button {
   border-radius: 18px;
   border: 1px solid var(--line);
   overflow: hidden;
-  touch-action: pan-y pinch-zoom;
+  touch-action: pan-y pinch-zoom;   /* switched to free panning while the page is pinched-in (.is-zoomed) */
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -523,6 +523,104 @@ button {
   opacity: 1;
   visibility: visible;
 }
+
+/* pinched-in: let a finger on the banner pan the page in any direction */
+.is-zoomed .card__banner {
+  touch-action: auto;
+}
+
+/* ---- banner video: play icon in the centre + a seek bar, nothing else ---- */
+.card__banner--video { cursor: pointer; }
+
+.card__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.card__banner.is-started .card__video {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  pointer-events: none;
+}
+
+.card__play svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card__banner.is-playing .card__play { display: none; }
+
+.card__seek {
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30px;
+  padding: 0 14px;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card__banner.is-started .card__seek { display: block; }
+
+.card__seek-track {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 11px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.card__seek-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.card__seek-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.card__seek.is-drag .card__seek-thumb { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
 
 /* images can't be long-pressed, right-clicked or dragged out */
 .card__banner img,
@@ -627,7 +725,7 @@ button {
 }
 
 .card__main--center .card__years--line {
-  font-size: clamp(0.78rem, 3.6vw, 1.25rem);
+  font-size: clamp(0.84rem, 3.9vw, 1.4rem);
   margin-top: 0.4rem;
 }
 
@@ -908,9 +1006,7 @@ button {
   font-weight: 700;
   color: #2d4f9c;
   cursor: pointer;
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 3px;
+  text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -1010,8 +1106,7 @@ button {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
   font-size: 0.92rem;
   line-height: 1.55;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
   user-select: all;
   -webkit-user-select: all;
 }
