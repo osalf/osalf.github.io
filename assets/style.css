@@ -809,6 +809,31 @@ button {
   margin: 0;
 }
 
+.card__titlerow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.8rem;
+}
+
+/* small, quiet licence badge next to the title */
+.card__license {
+  flex: none;
+  padding: 0.22rem 0.65rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: #2b3340;
+  background: rgba(27, 36, 48, 0.06);
+  border: 1px solid rgba(27, 36, 48, 0.28);
+  border-radius: 999px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .card__years {
   font-family: var(--sans);
   font-weight: 600;
@@ -864,6 +889,7 @@ button {
   grid-column: 1 / -1;
   grid-row: 3;
   margin-top: 1rem;
+  text-align: center;
 }
 
 .card__avail-label {
@@ -880,6 +906,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem 0;
   margin-top: 0.6rem;
 }
@@ -1235,7 +1262,7 @@ button {
   left: 50%;
   transform: translate(-50%, -50%);
   width: calc(100% - 2rem);
-  max-width: 420px;
+  max-width: 540px;
   max-height: calc(100vh - 2rem);
   max-height: calc(100dvh - 2rem);
   overflow-y: auto;
@@ -1319,10 +1346,11 @@ button {
 }
 
 
+/* smaller text + wider pop-up = more words per line */
 .wiki-text p {
   margin: 0 0 0.75rem;
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: 0.93rem;
+  line-height: 1.5;
 }
 
 .wiki-link {
