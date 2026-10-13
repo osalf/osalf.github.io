@@ -30,8 +30,12 @@
                      bold:  "Isolated sign language recognition (ISLR)", // optional — bold part of text
                      text:  "Custom description shown in the pop-up."
                    }],
+       descTags:   [{ label: "FFmpeg", wiki: "https://en.wikipedia.org/wiki/FFmpeg", images: 2, text: "..." }],
+                                         // optional — in desc, **bold** makes text bold, [[FFmpeg]] becomes a blue
+                                         // link (matching label) that opens the Wikipedia pop-up; \n = new line;
+                                         // images: 2 shows the first two pictures of the Wikipedia page
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
-       buttons:    [{ label: "Supported Distros", url: "https://..." }], // optional — extra centered buttons;
+       buttons:    [{ label: "Distros", url: "https://..." }], // optional — extra centered buttons;
                                          // with command/buttons, Download / Blueprints are replaced
        download:   "https://...",        // Download button link
        blueprints: "https://..."         // Blueprints button link
@@ -61,7 +65,7 @@ var PROJECTS = [
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
     videoLabel: "Prototype",
-    years: "2022 – Mid 2026",
+    years: "2022 – Mid 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
@@ -73,11 +77,19 @@ var PROJECTS = [
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
-    desc: "A color-picker and palette tool that adapts to whatever is on your screen.",
+    desc: "Linux video compressor program, built around [[FFmpeg]], it has a simple/advanced modes with codec, quality and audio settings.\n**If [[FFmpeg]] is missing or outdated, Klem downloads it automatically.**",
+    descTags: [
+      {
+        label: "FFmpeg",
+        wiki: "https://en.wikipedia.org/wiki/FFmpeg",
+        images: 2,
+        text: "FFmpeg is a free and open-source software project consisting of a suite of libraries and programs for handling video, audio, and other multimedia files and streams."
+      }
+    ],
     command: "curl -fsSL https://osaif.pages.dev/klem",
     buttons: [
-      { label: "Supported Distros", url: "" },
-      { label: "Supported Formats", url: "" }
+      { label: "Distros", url: "" },
+      { label: "Formats", url: "" }
     ]
   },
   {
@@ -95,10 +107,10 @@ var PROJECTS = [
     icon: "pluk.webp",
     banner: "",
     years: "2021 – 2022",
-    desc: "A small video streaming experiment with a clean, fast player.",
+    desc: "Linux tray program that copies text from anywhere on your screen, the default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.",
     command: "curl -fsSL https://osaif.pages.dev/pluk",
     buttons: [
-      { label: "Supported Distros", url: "" }
+      { label: "Distros", url: "" }
     ]
   },
   {
@@ -106,7 +118,7 @@ var PROJECTS = [
     icon: "steno.webp",
     banner: ["b/steno.webp"],
     years: "2023",
-    desc: "A shorthand-style notes app built for typing as fast as you think.",
+    desc: "Browser based IMG/PDF compressor.\nFiles are processed locally and never uploaded.",
     download: "",
     blueprints: ""
   },
@@ -492,10 +504,9 @@ var PROJECTS = [
     popup.innerHTML =
       '<button type="button" class="wiki-close" aria-label="Close">\u2715</button>' +
       '<h3 class="wiki-title" id="wiki-title"></h3>' +
-      '<img class="wiki-img" alt="" hidden>' +
+      '<div class="wiki-imgs" hidden></div>' +
       '<div class="wiki-text"></div>' +
       '<pre class="wiki-code" hidden tabindex="0" role="button" aria-label="Copy command"><code></code></pre>' +
-      '<div class="wiki-copied" aria-live="polite" hidden></div>' +
       '<a class="wiki-link" target="_blank" rel="noopener">Read full article \u2192</a>' +
       '<div class="wiki-powered">Powered by <svg class="wiki-powered__logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455" fill="#000000" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M0,0v455h455V0H0z M385,118.141c0,1.918-1.558,3.47-3.477,3.47h-9.736 c-3.546,0-6.744,2.15-8.081,5.439l-88.815,217.909L230.16,244.55L182.3,344.958L90.709,126.964 c-1.364-3.239-4.535-5.345-8.049-5.345h-9.181c-1.918,0-3.479-1.56-3.479-3.479v-8.099h79.147l-0.223,8.193 c-0.05,1.886-1.593,3.385-3.477,3.385h-13.249c-4.926,0-8.302,4.971-6.495,9.548l64.305,162.675l32.522-70.485l-41.099-96.434 c-1.373-3.215-4.526-5.312-8.031-5.312h-6.392c-1.918,0-3.479-1.552-3.479-3.47v-8.099h59.436v8.099c0,1.918-1.56,3.47-3.477,3.47 c-5.013,0-8.398,5.133-6.421,9.745l24.288,56.572l24.799-56.52c2.021-4.614-1.355-9.788-6.401-9.788h-9.284 c-1.927,0-3.479-1.56-3.479-3.479v-8.099h62.242v8.099c0,1.918-1.552,3.479-3.479,3.479h-10.358c-3.385,0-6.471,1.962-7.903,5.03 l-38.312,81.925l35.772,84.058l62.589-161.542c1.739-4.57-1.637-9.472-6.53-9.472H321.54c-1.918,0-3.479-1.56-3.479-3.479v-8.099 H385V118.141z"/></svg></div>';
     document.body.appendChild(overlay);
@@ -503,35 +514,21 @@ var PROJECTS = [
     popup.querySelector('.wiki-close').addEventListener('click', closePopup);
     overlay.addEventListener('click', closePopup);
 
-    // the install command: one click / tap copies it straight to the clipboard
+    // the install command: one click / tap copies it straight to the clipboard (silently)
     var codeBox = popup.querySelector('.wiki-code');
-    var copiedEl = popup.querySelector('.wiki-copied');
-    var copiedTimer = 0;
-    function say(msg, done) {
-      copiedEl.textContent = msg;
-      copiedEl.classList.toggle('is-done', !!done);
-      clearTimeout(copiedTimer);
-      if (done) copiedTimer = setTimeout(function () { say('Click to copy', false); }, 1800);
-    }
     function copyCommand() {
       var text = codeBox.firstChild.textContent;
       if (!text) return;
-      copyText(text).then(function () { say('Copied to clipboard', true); },
-                          function () { say('Could not copy', true); })
-        .then(function () {
-          var sel = window.getSelection && window.getSelection();
-          if (sel && sel.removeAllRanges) sel.removeAllRanges();   // nothing stays highlighted
-          try { codeBox.focus({ preventScroll: true }); } catch (err) {}
-        });
+      copyText(text).catch(function () {}).then(function () {
+        var sel = window.getSelection && window.getSelection();
+        if (sel && sel.removeAllRanges) sel.removeAllRanges();   // nothing stays highlighted
+        try { codeBox.focus({ preventScroll: true }); } catch (err) {}
+      });
     }
     codeBox.addEventListener('click', copyCommand);
     codeBox.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyCommand(); }
     });
-    popup.copiedReset = function (show) {
-      copiedEl.hidden = !show;
-      say('Click to copy', false);
-    };
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();
     });
@@ -595,7 +592,7 @@ var PROJECTS = [
     var fallbackTitle = tag.title || decodeURIComponent(slug).replace(/_/g, ' ') || tag.label || '';
 
     var titleEl = popup.querySelector('.wiki-title');
-    var imgEl = popup.querySelector('.wiki-img');
+    var imgsEl = popup.querySelector('.wiki-imgs');
     var textEl = popup.querySelector('.wiki-text');
     var linkEl = popup.querySelector('.wiki-link');
     var codeEl = popup.querySelector('.wiki-code');
@@ -604,11 +601,10 @@ var PROJECTS = [
     popup.querySelector('.wiki-powered').hidden = !url;   // "Powered by" only for Wikipedia pop-ups
     if (url) { linkEl.href = url; linkEl.hidden = false; }
     else { linkEl.removeAttribute('href'); linkEl.hidden = true; }
-    imgEl.hidden = true;
-    imgEl.removeAttribute('src');
+    imgsEl.hidden = true;
+    imgsEl.textContent = '';
     codeEl.hidden = !tag.code;
     codeEl.firstChild.textContent = tag.code || '';
-    popup.copiedReset(!!tag.code);
 
     // custom description; the term is bold, "\n" starts a new paragraph
     textEl.textContent = '';
@@ -631,21 +627,58 @@ var PROJECTS = [
     popup.querySelector('.wiki-close').focus();
     if (tag.code) fitCode();
 
-    // article title + picture come from Wikipedia; the text stays custom
+    // article title + pictures come from Wikipedia; the text stays custom
     // (no wiki link = nothing to fetch)
     if (!slug) return;
-    fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + slug)
-      .then(function (res) { if (!res.ok) throw new Error(res.status); return res.json(); })
-      .then(function (data) {
-        if (my !== reqId) return;
-        if (data.title) titleEl.textContent = data.title;
-        if (data.content_urls && data.content_urls.desktop) linkEl.href = data.content_urls.desktop.page;
-        if (data.thumbnail && data.thumbnail.source) {
-          imgEl.src = data.thumbnail.source;
-          imgEl.hidden = false;
-        }
-      })
-      .catch(function () { /* offline: keep the fallback title and custom text */ });
+
+    function addImg(src) {
+      var im = document.createElement('img');
+      im.className = 'wiki-img';
+      im.alt = '';
+      im.draggable = false;
+      im.src = src;
+      imgsEl.appendChild(im);
+      imgsEl.hidden = false;
+    }
+
+    var wantMany = (tag.images || 1) > 1;
+
+    var summaryP = fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + slug)
+      .then(function (res) { if (!res.ok) throw new Error(res.status); return res.json(); });
+
+    summaryP.then(function (data) {
+      if (my !== reqId) return;
+      if (data.title) titleEl.textContent = data.title;
+      if (data.content_urls && data.content_urls.desktop) linkEl.href = data.content_urls.desktop.page;
+      if (!wantMany && data.thumbnail && data.thumbnail.source) addImg(data.thumbnail.source);
+    }).catch(function () { /* offline: keep the fallback title and custom text */ });
+
+    // several pictures: the first ones of the article, in page order (e.g. logo, then screenshot)
+    if (wantMany) {
+      fetch('https://en.wikipedia.org/api/rest_v1/page/media-list/' + slug)
+        .then(function (res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+        .then(function (data) {
+          if (my !== reqId) return;
+          var skip = /icon|question|ambox|edit-clear|padlock|commons-logo|wikiquote|wiktionary|symbol|nuvola|folder/i;
+          var found = [];
+          (data.items || []).forEach(function (it) {
+            if (found.length >= tag.images || it.type !== 'image' || skip.test(it.title || '')) return;
+            var set = it.srcset || [];
+            var src = set.length ? set[0].src : (it.original && it.original.source);
+            if (!src) return;
+            found.push(src.indexOf('//') === 0 ? 'https:' + src : src);
+          });
+          if (!found.length) throw new Error('no pictures');
+          found.forEach(addImg);
+        })
+        .catch(function () {
+          // fall back to the single lead picture
+          summaryP.then(function (data) {
+            if (my !== reqId || imgsEl.childNodes.length) return;
+            if (data.thumbnail && data.thumbnail.source) addImg(data.thumbnail.source);
+          }).catch(function () {});
+        });
+    }
   }
 
   function buildTags(tags) {
@@ -665,6 +698,45 @@ var PROJECTS = [
       row.appendChild(b);
     });
     return row;
+  }
+
+  // description text: "\n" = new line, **bold**, [[Label]] = blue pop-up link taken from item.descTags
+  function fillDesc(p, item) {
+    var tags = item.descTags || [];
+    var parts = String(item.desc).split(/(\*\*|\[\[[^\]]+\]\])/);
+    var bold = false;
+    var strong = null;   // the <strong> currently open (bold text, may contain a link)
+
+    function target() {
+      if (!bold) return p;
+      if (!strong) { strong = document.createElement('strong'); p.appendChild(strong); }
+      return strong;
+    }
+
+    parts.forEach(function (part) {
+      if (!part) return;
+      if (part === '**') { bold = !bold; strong = null; return; }
+      var m = part.match(/^\[\[([^\]]+)\]\]$/);
+      if (m) {
+        var tag = null;
+        tags.forEach(function (t) { if (t.label === m[1]) tag = t; });
+        if (tag) {
+          var b = el('button', 'card__tag');
+          b.type = 'button';
+          b.textContent = tag.label;
+          b.setAttribute('aria-haspopup', 'dialog');
+          b.addEventListener('click', function () { openWiki(tag, b); });
+          target().appendChild(b);
+        } else {
+          target().appendChild(document.createTextNode(m[1]));
+        }
+        return;
+      }
+      part.split('\n').forEach(function (line, i) {
+        if (i) { p.appendChild(document.createElement('br')); strong = null; }
+        if (line) target().appendChild(document.createTextNode(line));
+      });
+    });
   }
 
   function buildCard(item) {
@@ -736,7 +808,7 @@ var PROJECTS = [
 
     if (item.desc) {
       var desc = el('p', 'card__desc');
-      desc.textContent = item.desc;
+      fillDesc(desc, item);
       main.appendChild(desc);
     }
 
@@ -774,7 +846,7 @@ var PROJECTS = [
       }
 
       extra.forEach(function (b) {
-        actions.appendChild(buildButton(b.label, '', b.url, 'ghost'));
+        actions.appendChild(buildButton(b.label, '', b.url, 'primary'));
       });
     } else {
       actions.appendChild(buildButton('Blueprints', SVG_BLUEPRINT, item.blueprints, 'ghost'));
