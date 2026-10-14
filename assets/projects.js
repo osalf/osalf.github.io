@@ -750,7 +750,7 @@ var PROJECTS = [
   function buildAvailable(keys) {
     var box = el('div', 'card__avail');
     var label = el('p', 'card__avail-label');
-    label.textContent = 'Available on:';
+    label.textContent = 'available on:';
     box.appendChild(label);
 
     var list = el('div', 'card__avail-list');
