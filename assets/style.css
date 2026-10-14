@@ -1222,6 +1222,15 @@ button {
   margin: 0 0.35em;
 }
 
+/* links inside a project's description use plum instead of the ink blue */
+.card__desc .card__tag { color: #8a3b52; }
+
+.card__desc .card__tag:focus-visible { outline-color: #8a3b52; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card__desc .card__tag:hover { background: rgba(138, 59, 82, 0.12); }
+}
+
 .wiki-overlay {
   display: none;
   position: fixed;
