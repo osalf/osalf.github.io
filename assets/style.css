@@ -844,6 +844,25 @@ button {
   font-size: clamp(1.75rem, 8vw, 2.4rem);
 }
 
+/* small text beside a title (e.g. 1980 – ∞) */
+.card__title-note {
+  font-size: 0.45em;
+  font-weight: 600;
+  letter-spacing: 0;
+  margin-left: 0.5em;
+}
+
+/* centred card that has an icon: icon on top, centred */
+.card__main--center .card__icon {
+  margin: 0 auto 0.9rem;
+}
+
+/* small space between the paragraphs of a description */
+.card__gap {
+  display: block;
+  height: 0.6rem;
+}
+
 .card__note-inline {
   font-weight: 500;
   color: var(--text-dim);
