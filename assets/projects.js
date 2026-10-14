@@ -16,7 +16,6 @@
                                          // is clicked (time + seek bar + full screen, no download / save options)
        videoLabel: "Prototype",          // optional — small text under the play icon of the banner
        center:     true,                 // optional — centres the icon, title, tags and years (like a card with no icon)
-       titleNote:  "1980 – ∞",           // optional — small text right beside the title
        tagsSuffix: "project",            // optional — plain text after the tags, e.g. "ETL pipeline project"
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
@@ -37,6 +36,7 @@
                                          // optional — in desc, **bold** makes text bold, [[FFmpeg]] becomes a blue
                                          // link (matching label) that opens the Wikipedia pop-up; \n = new line;
                                          // images: 2 shows the first two pictures of the Wikipedia page
+                                         // blue: true makes that link ink blue instead of plum
        availableOn: ["debian", "redhat", "arch", "suse", "void"],
                                          // optional — "Available on:" row of Linux logos under the description
                                          // (choose from debian, redhat, arch, suse, void)
@@ -103,7 +103,6 @@ var PROJECTS = [
     title: "Hidden Ball",
     icon: "hiddenball.webp",
     center: true,
-    titleNote: "1980 – ∞",
     tags: [
       {
         label: "ETL pipeline",
@@ -115,7 +114,16 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "Mid 2021 – 2022",
-    desc: "An MLB archive from the 80's with the current season kept up to date automatically.\nIt runs every 100s to keep things up to date.\nHidden Ball is a fan project that was primarily made to test an ETL workflow/practicing purposes.",
+    desc: "**An [[MLB]] archive from the 80's with the current season kept up to date automatically.**\nIt runs every 100s to keep things up to date.\n**Hidden Ball** is a fan project that was primarily made to test an ETL workflow.",
+    descTags: [
+      {
+        label: "MLB",
+        wiki: "https://en.wikipedia.org/wiki/Major_League_Baseball",
+        blue: true,
+        bold: "Major League Baseball (MLB)",
+        text: "Major League Baseball (MLB) is the top level of professional baseball in the United States and Canada, made up of 30 teams split between the American League and the National League."
+      }
+    ],
     download: "",
     blueprints: ""
   },
@@ -809,7 +817,7 @@ var PROJECTS = [
         var tag = null;
         tags.forEach(function (t) { if (t.label === m[1]) tag = t; });
         if (tag) {
-          var b = el('button', 'card__tag');
+          var b = el('button', tag.blue ? 'card__tag card__tag--ink' : 'card__tag');
           b.type = 'button';
           b.textContent = tag.label;
           b.setAttribute('aria-haspopup', 'dialog');
@@ -864,11 +872,6 @@ var PROJECTS = [
     var text = el('div', 'card__text');
     var title = el('h3', 'card__title');
     title.textContent = item.title;
-    if (item.titleNote) {
-      var tn = el('span', 'card__title-note');
-      tn.textContent = item.titleNote;
-      title.appendChild(tn);
-    }
     text.appendChild(title);
     if (item.tags && item.tags.length) {
       var tagRow = buildTags(item.tags);
