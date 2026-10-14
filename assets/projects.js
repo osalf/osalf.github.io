@@ -15,6 +15,9 @@
        video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that opens in a pop-up when the banner
                                          // is clicked (time + seek bar + full screen, no download / save options)
        videoLabel: "Prototype",          // optional — small text under the play icon of the banner
+       center:     true,                 // optional — centres the icon, title, tags and years (like a card with no icon)
+       titleNote:  "1980 – ∞",           // optional — small text right beside the title
+       tagsSuffix: "project",            // optional — plain text after the tags, e.g. "ETL pipeline project"
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
        subtitle:   "Secondary title",    // optional — one black line under the years, a bit bigger than desc
@@ -97,11 +100,22 @@ var PROJECTS = [
     ]
   },
   {
-    title: "Hiddenball",
+    title: "Hidden Ball",
     icon: "hiddenball.webp",
+    center: true,
+    titleNote: "1980 – ∞",
+    tags: [
+      {
+        label: "ETL pipeline",
+        wiki: "https://en.wikipedia.org/wiki/Extract,_transform,_load",
+        bold: "Extract, transform, load (ETL)",
+        text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed and loaded into an output data container."
+      }
+    ],
+    tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
-    years: "2024",
-    desc: "A baseball archive with live game views, scores and player transactions.",
+    years: "Mid 2021 – 2022",
+    desc: "An MLB archive from the 80's with the current season kept up to date automatically.\nIt runs every 100s to keep things up to date.\nHidden Ball is a fan project that was primarily made to test an ETL workflow/practicing purposes.",
     download: "",
     blueprints: ""
   },
@@ -807,7 +821,7 @@ var PROJECTS = [
         return;
       }
       part.split('\n').forEach(function (line, i) {
-        if (i) { p.appendChild(document.createElement('br')); strong = null; }
+        if (i) { p.appendChild(el('span', 'card__gap')); strong = null; }
         if (line) target().appendChild(document.createTextNode(line));
       });
     });
@@ -832,7 +846,7 @@ var PROJECTS = [
     var main = el('div', 'card__main');
     // no icon: the title goes in the centre with years + note on one line under it
     var noIcon = !item.icon;
-    if (noIcon) main.classList.add('card__main--center');
+    if (noIcon || item.center) main.classList.add('card__main--center');
 
     // icon slot — stays as an empty placeholder until an image is provided
     var badge = el('span', 'card__icon');
@@ -850,8 +864,17 @@ var PROJECTS = [
     var text = el('div', 'card__text');
     var title = el('h3', 'card__title');
     title.textContent = item.title;
+    if (item.titleNote) {
+      var tn = el('span', 'card__title-note');
+      tn.textContent = item.titleNote;
+      title.appendChild(tn);
+    }
     text.appendChild(title);
-    if (item.tags && item.tags.length) text.appendChild(buildTags(item.tags));
+    if (item.tags && item.tags.length) {
+      var tagRow = buildTags(item.tags);
+      if (item.tagsSuffix) tagRow.appendChild(document.createTextNode(' ' + item.tagsSuffix));
+      text.appendChild(tagRow);
+    }
     if (item.years) {
       var years = el('p', 'card__years');
       years.textContent = item.years;
