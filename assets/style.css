@@ -877,26 +877,32 @@ button {
 }
 
 .card__avail-list {
-  --h: 1.5rem;
+  /* logo height grows with the screen; the row never wraps — if it ever gets too wide
+     for the card, all the logos shrink together (same ratio) until it fits */
+  --h: clamp(1.5rem, calc(1.2rem + 0.45vw), 2rem);
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem 0;
+  min-width: 0;
   margin-top: 0.6rem;
 }
 
 .card__distro {
+  position: relative;
   display: block;
-  flex: none;
-  height: var(--h);
+  flex: 0 1 auto;
+  min-width: 0;
   width: calc(var(--h) * var(--r));
+  aspect-ratio: var(--r);
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
 }
 
 .card__distro svg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -906,14 +912,9 @@ button {
   flex: none;
   align-self: center;
   width: 0;
-  height: 1.1rem;
-  margin: 0 0.7rem;
+  height: calc(var(--h) * 0.75);
+  margin: 0 clamp(0.45rem, 2.2vw, 0.9rem);
   border-left: 1.5px solid rgba(27, 36, 48, 0.28);
-}
-
-@media (max-width: 360px) {
-  .card__avail-list { --h: 1.35rem; }
-  .card__avail-sep { margin: 0 0.55rem; }
 }
 
 .card__main--center .card__desc {
@@ -963,13 +964,36 @@ button {
   50% { opacity: 0.35; }
 }
 
-/* buttons: side by side, pushed to the right */
+/* buttons: side by side, pushed to the right.
+   They always stay on ONE line: the text size follows the screen (up to a maximum) and is
+   also capped by the card width divided by how many "em" the buttons need (--cap),
+   so the row can never grow wider than the card. */
 .card__actions {
+  --cap: 11;
+  container-type: inline-size;
   display: flex;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  gap: 0.6rem;
   margin-top: 1.25rem;
+}
+
+.card__actions:has(> :nth-child(2)) { --cap: 20.5; }
+.card__actions:has(> :nth-child(3)) { --cap: 25; }
+.card__actions:has(> :nth-child(4)) { --cap: 30; }
+
+.card__actions .btn {
+  flex: none;
+  font-size: min(clamp(0.92rem, calc(0.82rem + 0.3vw), 1.05rem), calc(100cqw / var(--cap)));
+  padding: 0.54em 1.2em;
+  gap: 0.5em;
+}
+
+.card__actions .btn + .btn { margin-left: 0.6em; }
+
+.card__actions .btn svg {
+  flex: none;
+  width: 1.02em;
+  height: 1.02em;
 }
 
 .card__actions--center {
@@ -1035,15 +1059,6 @@ button {
   .card__years { font-size: 1.05rem; }
   .card__note { font-size: 0.8rem; }
   .card__main { column-gap: 0.9rem; }
-}
-
-@media (max-width: 400px) {
-  .btn { padding: 0.5rem 0.85rem; font-size: 0.88rem; gap: 0.35rem; }
-}
-
-@media (max-width: 360px) {
-  .card__actions { gap: 0.4rem; }
-  .btn { padding: 0.45rem 0.65rem; font-size: 0.82rem; gap: 0.3rem; }
 }
 
 @media (hover: hover) and (pointer: fine) {
