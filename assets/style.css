@@ -844,16 +844,10 @@ button {
   font-size: clamp(1.75rem, 8vw, 2.4rem);
 }
 
-/* small text beside a title (e.g. 1980 – ∞) */
-.card__title-note {
-  font-size: 0.45em;
-  font-weight: 600;
-  letter-spacing: 0;
-  margin-left: 0.5em;
-}
-
 /* centred card that has an icon: icon on top, centred */
 .card__main--center .card__icon {
+  width: calc(var(--icon) * 1.15);
+  height: calc(var(--icon) * 1.15);
   margin: 0 auto 0.9rem;
 }
 
@@ -939,6 +933,7 @@ button {
 .card__main--center .card__desc {
   margin-left: auto;
   margin-right: auto;
+  text-align: left;   /* title stays centred, description text is left-aligned */
 }
 
 .card__desc {
@@ -1263,6 +1258,15 @@ button {
 
 @media (hover: hover) and (pointer: fine) {
   .card__desc .card__tag:hover { background: rgba(138, 59, 82, 0.12); }
+}
+
+/* a description link set to ink blue (blue: true) */
+.card__desc .card__tag--ink { color: #2d4f9c; }
+
+.card__desc .card__tag--ink:focus-visible { outline-color: #2d4f9c; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card__desc .card__tag--ink:hover { background: rgba(45, 79, 156, 0.12); }
 }
 
 .wiki-overlay {
