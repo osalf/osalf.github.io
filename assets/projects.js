@@ -114,7 +114,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "Mid 2021 – 2022",
-    desc: "**An [[MLB]] archive from the 80's with the current season kept up to date automatically.**\nIt runs every 100s to keep things up to date.\n**Hidden Ball** is a fan project that was primarily made to test an ETL workflow.",
+    desc: "**An [[MLB]] archive from the 80's with the current season kept up to date automatically.**\nIt runs every 100s to keep things up to date.\n**[[Hidden Ball]]** is a fan project that was primarily made to test an ETL workflow.",
     descTags: [
       {
         label: "MLB",
@@ -122,6 +122,12 @@ var PROJECTS = [
         blue: true,
         bold: "Major League Baseball (MLB)",
         text: "Major League Baseball (MLB) is the top level of professional baseball in the United States and Canada, made up of 30 teams split between the American League and the National League."
+      },
+      {
+        label: "Hidden Ball",
+        wiki: "https://en.wikipedia.org/wiki/Hidden_ball_trick",
+        bold: "The hidden ball trick",
+        text: "The hidden ball trick is a deceptive defensive play in baseball where a fielder keeps the ball out of sight, tricks a baserunner into thinking the play is over or the ball has been thrown back to the pitcher, and tags the runner out when they step off the base."
       }
     ],
     download: "",
