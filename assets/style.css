@@ -237,7 +237,7 @@ button {
   padding: 1.5rem var(--gutter) 5rem;
   /* soft slate panel (tinted from the header colour #3e4351) so white-background
      images stand out — used on both the Links and Projects pages */
-  background-color: #c3c8d2;
+  background-color: #d2d6dd;
   --line: rgba(27, 36, 48, 0.24);
   border-radius: 32px;
 }
