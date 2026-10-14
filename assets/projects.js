@@ -117,6 +117,7 @@ var PROJECTS = [
       {
         label: "SQLite",
         wiki: "https://en.wikipedia.org/wiki/SQLite",
+        images: 2,
         text: "SQLite is a free and open-source relational database engine written in C. Instead of running as a separate server, it is embedded directly into the application that uses it."
       }
     ],
