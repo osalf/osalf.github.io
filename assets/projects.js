@@ -80,7 +80,7 @@ var PROJECTS = [
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
-    desc: "Linux video compressor program, built around [[FFmpeg]], it has a simple/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it automatically.**",
+    desc: "Linux vid compressor software built around [[FFmpeg]], it has a basic/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it for you automatically.**",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
     descTags: [
       {
@@ -111,8 +111,15 @@ var PROJECTS = [
     icon: "pluk.webp",
     banner: "",
     years: "2021 – 2022",
-    desc: "Linux tray program that copies text from anywhere on your screen, the default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.",
+    desc: "Linux tray app that copies text from anywhere on your screen. every text is saved to a local [[SQLite]] history, sorted by date and time for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
+    descTags: [
+      {
+        label: "SQLite",
+        wiki: "https://en.wikipedia.org/wiki/SQLite",
+        text: "SQLite is a free and open-source relational database engine written in C. Instead of running as a separate server, it is embedded directly into the application that uses it."
+      }
+    ],
     command: "curl -fsSL https://osaif.pages.dev/pluk",
     buttons: [
       { label: "Distros", url: "" }
