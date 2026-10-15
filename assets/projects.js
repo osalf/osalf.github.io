@@ -114,7 +114,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "Mid 2021 – 2022",
-    desc: "**An [[MLB]] archive from the 80's with the current season kept up to date automatically.**\nIt runs every 100s to keep things up to date.\n**[[Hidden Ball]]** is a fan project that was primarily made to test an ETL workflow.",
+    desc: "**[[Hidden Ball]] is a [[MLB]] archive from the 80's.**\nWas primarily built as a fan project/testing an ETL workflow.",
     descTags: [
       {
         label: "MLB",
@@ -139,7 +139,7 @@ var PROJECTS = [
     icon: "pluk.webp",
     banner: "",
     years: "2021 – 2022",
-    desc: "**Linux tray app that copies text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by date and time for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
+    desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by date and time for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
     descTags: [
       {
@@ -159,16 +159,16 @@ var PROJECTS = [
     icon: "steno.webp",
     banner: ["b/steno.webp"],
     years: "2023",
-    desc: "Browser based IMG/PDF compressor.\nFiles are processed locally and never uploaded.",
+    desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
     download: "",
     blueprints: ""
   },
   {
-    title: "SVGXL",
+    title: "SVGxl",
     icon: "svgxl.webp",
     banner: "",
     years: "2024 – 2025",
-    desc: "An SVG editor and optimizer for crisp, lightweight vector graphics.",
+    desc: "SVG editor.",
     download: "",
     blueprints: ""
   }
