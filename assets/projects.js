@@ -80,7 +80,7 @@ var PROJECTS = [
   },
   {
     title: "Klem",
-    version: "5.4.0",
+    version: "5.3.0",
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
@@ -94,7 +94,7 @@ var PROJECTS = [
         text: "FFmpeg is a free and open-source software project consisting of a suite of libraries and programs for handling video, audio, and other multimedia files and streams."
       }
     ],
-    command: "curl -fsSL https://osaif.pages.dev/klem",
+    command: "curl -fsSL https://osaif.pages.dev/klem | bash",
     buttons: [
       { label: "Distros", url: "" },
       { label: "Formats", url: "" }
@@ -114,7 +114,7 @@ var PROJECTS = [
     ],
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
-    years: "Mid 2021 – 2022",
+    years: "2021 – Late 2022",
     desc: "**[[Hidden Ball]] is a [[MLB]] archive from the 80's.**\nWas primarily built as a fan project/testing an ETL workflow.",
     descTags: [
       {
@@ -140,8 +140,8 @@ var PROJECTS = [
     icon: "pluk.webp",
     banner: "",
     video: "b/2021-11-13 19-12-00.mkv",
-    years: "2021 – 2022",
-    desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by date and time for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
+    years: "Late 2021",
+    desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
     descTags: [
       {
@@ -151,7 +151,7 @@ var PROJECTS = [
         text: "SQLite is a free and open-source relational database engine written in C. Instead of running as a separate server, it is embedded directly into the application that uses it."
       }
     ],
-    command: "curl -fsSL https://osaif.pages.dev/pluk",
+    command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
     buttons: [
       { label: "Distros", url: "" }
     ]
