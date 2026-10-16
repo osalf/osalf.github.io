@@ -109,15 +109,8 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "2021 – Late 2022",
-    desc: "**[[Hidden Ball]] is a [[MLB]] archive from the 80's.**\nWas primarily built as a fan project/testing an ETL workflow.",
+    desc: "**[[Hidden Ball]] is a MLB archive from the 80's.**\nWas primarily built as a fan project/testing an ETL workflow.",
     descTags: [
-      {
-        label: "MLB",
-        wiki: "https://en.wikipedia.org/wiki/Major_League_Baseball",
-        blue: true,
-        bold: "Major League Baseball (MLB)",
-        text: "Major League Baseball (MLB) is the top level of professional baseball in the United States and Canada, made up of 30 teams split between the American League and the National League."
-      },
       {
         label: "Hidden Ball",
         wiki: "https://en.wikipedia.org/wiki/Hidden_ball_trick",
@@ -1001,7 +994,7 @@ var PROJECTS = [
         actions.appendChild(buildButton(b.label, '', b.url, 'primary', true));
       });
     } else {
-      actions.appendChild(buildButton('Blueprints', SVG_BLUEPRINT, item.blueprints, 'ghost'));
+      actions.appendChild(buildButton('Blueprints', SVG_BLUEPRINT, item.blueprints, 'blue'));
       actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
     }
     card.appendChild(actions);
