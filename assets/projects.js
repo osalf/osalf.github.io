@@ -44,6 +44,7 @@
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        buttons:    [{ label: "Distros", url: "https://..." }], // optional — extra centered buttons;
                                          // with command/buttons, Download / Blueprints are replaced
+       visit:      "https://...",        // optional — Visit button (opens the website) shown first in the row
        download:   "https://...",        // Download button link
        blueprints: "https://..."         // Blueprints button link
      },
@@ -118,6 +119,7 @@ var PROJECTS = [
         text: "The hidden ball trick is a deceptive defensive play in baseball where a fielder keeps the ball out of sight, tricks a baserunner into thinking the play is over or the ball has been thrown back to the pitcher, and tags the runner out when they step off the base."
       }
     ],
+    visit: "https://hiddenball.github.io/",
     download: "",
     blueprints: ""
   },
@@ -149,8 +151,10 @@ var PROJECTS = [
     banner: ["b/steno.webp"],
     years: "2023",
     desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
-    download: "",
-    blueprints: ""
+    visit: "https://steuo.github.io/",
+    buttons: [
+      { label: "Formats", url: "" }
+    ]
   },
   {
     title: "SVGxl",
@@ -169,6 +173,7 @@ var PROJECTS = [
   var ICON_DIR = '../assets/';
 
   var SVG_DOWNLOAD = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>';
+  var SVG_VISIT = '<svg viewBox="0 0 362.667 362.667" fill="currentColor" aria-hidden="true"><path d="M128,63.999444 L128,106.666444 L42.6666667,106.666667 L42.6666667,320 L256,320 L256,234.666444 L298.666,234.666444 L298.666667,362.666667 L0,362.666667 L0,64 L128,63.999444 Z M362.666667,0 L362.666667,170.666667 L320,170.666667 L320,72.835 L143.084945,249.751611 L112.915055,219.581722 L289.83,42.666 L192,42.6666667 L192,0 L362.666667,0 Z"/></svg>';
   var SVG_BLUEPRINT = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4 2 8l3.5 4M10.5 4 14 8l-3.5 4"/></svg>';
 
   function el(tag, cls) {
@@ -969,6 +974,10 @@ var PROJECTS = [
     }
 
     var actions = el('div', 'card__actions');
+    if (item.visit) {
+      actions.classList.add('card__actions--visit');
+      actions.appendChild(buildButton('Visit', SVG_VISIT, item.visit, 'primary'));
+    }
     if (item.command || (item.buttons && item.buttons.length)) {
       actions.classList.add('card__actions--center');
       var extra = item.buttons || [];
@@ -994,7 +1003,8 @@ var PROJECTS = [
         actions.appendChild(buildButton(b.label, '', b.url, 'primary', true));
       });
     } else {
-      actions.appendChild(buildButton('Blueprints', SVG_BLUEPRINT, item.blueprints, 'blue'));
+      actions.classList.add('card__actions--bp');
+      actions.appendChild(buildButton('Available Blueprints', SVG_BLUEPRINT, item.blueprints, 'blue', true));
       actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
     }
     card.appendChild(actions);
