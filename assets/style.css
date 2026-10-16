@@ -515,7 +515,8 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.card__banner img {
+.card__banner img,
+.card__banner video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -526,7 +527,8 @@ button {
   visibility: hidden;
 }
 
-.card__banner img.is-active {
+.card__banner img.is-active,
+.card__banner video.is-active {
   opacity: 1;
   visibility: visible;
 }
@@ -744,6 +746,7 @@ button {
 
 /* images can't be long-pressed, right-clicked or dragged out */
 .card__banner img,
+.card__banner video,
 .card__icon img {
   pointer-events: none;
   -webkit-user-drag: none;
