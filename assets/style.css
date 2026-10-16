@@ -990,7 +990,7 @@ button {
   container-type: inline-size;
   display: flex;
   flex-wrap: nowrap;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 1.25rem;
 }
 
@@ -998,8 +998,10 @@ button {
 .card__actions:has(> :nth-child(3)) { --cap: 25; }
 .card__actions:has(> :nth-child(4)) { --cap: 30; }
 /* "Available Blueprints" is longer, so these rows need more room before the text shrinks */
-.card__actions.card__actions--bp { --cap: 24; }
-.card__actions.card__actions--visit.card__actions--bp { --cap: 31; }
+.card__actions.card__actions--bp { --cap: 22.5; }
+.card__actions.card__actions--visit.card__actions--bp { --cap: 28; }
+.card__actions.card__actions--bp:not(:has(> :nth-child(2))) { --cap: 12.6; }
+.card__actions.card__actions--visit.card__actions--bp:not(:has(> :nth-child(3))) { --cap: 18; }
 
 .card__actions .btn {
   flex: none;
