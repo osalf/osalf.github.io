@@ -57,22 +57,16 @@ var PROJECTS = [
     title: "Untitled",
     tags: [
       {
-        label: "ISLR",
-        wiki: "https://en.wikipedia.org/wiki/Sign_language_recognition",
-        bold: "Isolated sign language recognition (ISLR)",
-        text: "Isolated sign language recognition (ISLR), also known as word-level SLR, is the task of recognizing individual signs from a given segment."
-      },
-      {
-        label: "CSLR",
-        wiki: "https://en.wikipedia.org/wiki/Sign_language_recognition",
-        bold: "Continuous sign language recognition (CSLR)",
-        text: "Continuous sign language recognition (CSLR), involves predicting all signs from a given sequence of sign language.\nThis task is more suitable for real-world transcription and is sometimes considered an extension of ISLR, depending on the approach used."
+        label: "Embedded system",
+        wiki: "https://en.wikipedia.org/wiki/Embedded_system",
+        bold: "embedded system",
+        text: "An embedded system is a specialized [computer system](https://en.wikipedia.org/wiki/Computer_system)—a combination of a [computer processor](https://en.wikipedia.org/wiki/Computer_processor), [computer memory](https://en.wikipedia.org/wiki/Computer_memory), and [input/output](https://en.wikipedia.org/wiki/Input/output) [peripheral devices](https://en.wikipedia.org/wiki/Peripheral_device)—that has a dedicated function within a larger mechanical or [electronic](https://en.wikipedia.org/wiki/Electronics) system.[[1]](https://en.wikipedia.org/wiki/Embedded_system#cite_note-Barr-glossary-1)[[2]](https://en.wikipedia.org/wiki/Embedded_system#cite_note-2) It is embedded as part of a complete device.\nEmbedded systems range in size from portable personal devices such as digital watches and MP3 players to bigger machines like home appliances, industrial assembly lines, robots, transport vehicles, traffic light controllers, and medical imaging systems."
       }
     ],
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
     videoLabel: "Prototype",
-    years: "2022 – Mid 2025",
+    years: "2022 – Early 2026",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
@@ -654,6 +648,22 @@ var PROJECTS = [
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
+  // plain text with [label](https://...) markdown links turned into real links
+  function richText(parent, str) {
+    var re = /\[(\[\d+\]|[^\[\]]+)\]\((https?:\/\/[^)\s]+)\)/g, last = 0, m;
+    while ((m = re.exec(str))) {
+      if (m.index > last) parent.appendChild(document.createTextNode(str.slice(last, m.index)));
+      var a = document.createElement('a');
+      a.href = m[2];
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = m[1];
+      parent.appendChild(a);
+      last = re.lastIndex;
+    }
+    if (last < str.length) parent.appendChild(document.createTextNode(str.slice(last)));
+  }
+
   function openWiki(tag, opener) {
     ensurePopup();
     var my = ++reqId;
@@ -683,13 +693,15 @@ var PROJECTS = [
     String(tag.text || '').split('\n').forEach(function (para, i) {
       if (!para) return;
       var p = document.createElement('p');
-      if (i === 0 && tag.bold && para.indexOf(tag.bold) === 0) {
+      var at = (i === 0 && tag.bold) ? para.indexOf(tag.bold) : -1;
+      if (at >= 0) {
+        richText(p, para.slice(0, at));
         var b = document.createElement('strong');
         b.textContent = tag.bold;
         p.appendChild(b);
-        p.appendChild(document.createTextNode(para.slice(tag.bold.length)));
+        richText(p, para.slice(at + tag.bold.length));
       } else {
-        p.textContent = para;
+        richText(p, para);
       }
       textEl.appendChild(p);
     });
