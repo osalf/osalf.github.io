@@ -997,6 +997,9 @@ button {
 .card__actions:has(> :nth-child(2)) { --cap: 20.5; }
 .card__actions:has(> :nth-child(3)) { --cap: 25; }
 .card__actions:has(> :nth-child(4)) { --cap: 30; }
+/* "Available Blueprints" is longer, so these rows need more room before the text shrinks */
+.card__actions.card__actions--bp { --cap: 24; }
+.card__actions.card__actions--visit.card__actions--bp { --cap: 31; }
 
 .card__actions .btn {
   flex: none;
@@ -1044,6 +1047,13 @@ button {
   box-shadow: 0 2px 6px rgba(var(--header-deep-rgb), 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
+.btn--blue {
+  color: #fff;
+  background: #2d4f9c;
+  border-color: #2d4f9c;
+  box-shadow: 0 2px 6px rgba(45, 79, 156, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
 .btn--ghost {
   color: var(--text);
   background: rgba(var(--header-rgb), 0.14);
@@ -1081,6 +1091,7 @@ button {
 @media (hover: hover) and (pointer: fine) {
   .btn:not(.btn--disabled):not(.btn--soon):hover { transform: translateY(-1px); }
   .btn--primary:not(.btn--disabled):not(.btn--soon):hover { background: #1c2029; }
+  .btn--blue:not(.btn--disabled):not(.btn--soon):hover { background: #234087; }
   .btn--ghost:not(.btn--disabled):hover { background: rgba(var(--header-rgb), 0.28); }
 }
 
