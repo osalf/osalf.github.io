@@ -1371,6 +1371,8 @@ button {
   line-height: 1.5;
 }
 
+.wiki-text a { color: #0645ad; }
+
 .wiki-link {
   color: #0645ad;
   font-weight: 500;
