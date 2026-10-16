@@ -976,7 +976,7 @@ var PROJECTS = [
     var actions = el('div', 'card__actions');
     if (item.visit) {
       actions.classList.add('card__actions--visit');
-      actions.appendChild(buildButton('Visit', SVG_VISIT, item.visit, 'primary'));
+      actions.appendChild(buildButton('Visit', '', item.visit, 'primary'));
     }
     if (item.command || (item.buttons && item.buttons.length)) {
       actions.classList.add('card__actions--center');
@@ -1004,7 +1004,7 @@ var PROJECTS = [
       });
     } else {
       actions.classList.add('card__actions--bp');
-      actions.appendChild(buildButton('Available Blueprints', SVG_BLUEPRINT, item.blueprints, 'blue', true));
+      actions.appendChild(buildButton('Available Blueprints', '', item.blueprints, 'blue', true));
       actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
     }
     card.appendChild(actions);
