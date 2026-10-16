@@ -14,6 +14,7 @@
                                          // (or delete the line) and no space is reserved.
        video:      "b/clip.mp4",         // optional — an mp4 in /assets/ that opens in a pop-up when the banner
                                          // is clicked (time + seek bar + full screen, no download / save options)
+                                         // no banner image? the first frame of the video is used as the banner
        videoLabel: "Prototype",          // optional — small text under the play icon of the banner
        center:     true,                 // optional — centres the icon, title, tags and years (like a card with no icon)
        tagsSuffix: "project",            // optional — plain text after the tags, e.g. "ETL pipeline project"
@@ -138,6 +139,7 @@ var PROJECTS = [
     version: "1.13.0",
     icon: "pluk.webp",
     banner: "",
+    video: "b/2021-11-13 19-12-00.mkv",
     years: "2021 – 2022",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by date and time for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
@@ -217,6 +219,32 @@ var PROJECTS = [
       };
       im.onerror = function () { resolve(null); };
       im.src = ICON_DIR + src;
+    });
+  }
+
+  // load the first frame of a video to use as the banner (resolves with the <video>, or null if it failed)
+  function loadVideoFrame(src) {
+    return new Promise(function (resolve) {
+      var v = document.createElement('video');
+      var done = false;
+      function finish(res) {
+        if (done) return;
+        done = true;
+        resolve(res);
+      }
+      v.muted = true;
+      v.defaultMuted = true;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      v.setAttribute('disablepictureinpicture', '');
+      v.setAttribute('disableremoteplayback', '');
+      v.controls = false;
+      v.draggable = false;
+      v.preload = 'metadata';
+      v.onloadeddata = function () { finish(v); };
+      v.onloadedmetadata = function () { setTimeout(function () { finish(v); }, 1500); };
+      v.onerror = function () { finish(null); };
+      v.src = ICON_DIR + src + '#t=0.1';
     });
   }
 
@@ -854,6 +882,11 @@ var PROJECTS = [
         var imgs = loaded.filter(Boolean);
         if (!imgs.length) return;
         card.insertBefore(buildBanner(imgs, item.video, item.videoLabel), card.firstChild);
+      });
+    } else if (item.video) {
+      loadVideoFrame(item.video).then(function (vid) {
+        if (!vid) return;
+        card.insertBefore(buildBanner([vid], item.video, item.videoLabel), card.firstChild);
       });
     }
 
