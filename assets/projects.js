@@ -120,7 +120,6 @@ var PROJECTS = [
       }
     ],
     visit: "https://hiddenball.github.io/",
-    download: "",
     blueprints: ""
   },
   {
@@ -162,7 +161,6 @@ var PROJECTS = [
     banner: "",
     years: "2024 – 2025",
     desc: "SVG editor.",
-    download: "",
     blueprints: ""
   }
 ];
@@ -1005,7 +1003,8 @@ var PROJECTS = [
     } else {
       actions.classList.add('card__actions--bp');
       actions.appendChild(buildButton('Available Blueprints', '', item.blueprints, 'blue', true));
-      actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
+      // Download only shows when the project has a "download" field (even an empty one)
+      if (item.download !== undefined) actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
     }
     card.appendChild(actions);
 
