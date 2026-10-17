@@ -141,7 +141,12 @@ var PROJECTS = [
     video: "b/2021-11-13 19-12-00.mkv",
     years: "Late 2021",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
-    availableOn: ["debian", "redhat", "arch", "suse", "void"],
+    availableOn: ["debian", "redhat", "arch"],
+    distroList: [
+      { key: "debian", items: ["Ubuntu", "Linux Mint", "Pop!_OS"] },
+      { key: "redhat", items: ["Fedora", "RHEL", "Nobara"] },
+      { key: "arch",   items: ["Manjaro (unstable)", "EndeavourOS (unstable)"] }
+    ],
     descTags: [
       {
         label: "SQLite",
@@ -152,7 +157,7 @@ var PROJECTS = [
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
     buttons: [
-      { label: "Distros", url: "" }
+      { label: "Distros", popup: "distros" }
     ]
   },
   {
@@ -699,6 +704,7 @@ var PROJECTS = [
     distEl.textContent = '';
     distEl.hidden = true;
     if (tag.distros && tag.distros.length) fillDistros(distEl, tag.distros);
+    popup.classList.toggle('wiki-popup--distros', !!(tag.distros && tag.distros.length));
 
     // custom description; the term is bold, "\n" starts a new paragraph
     textEl.textContent = '';
@@ -826,28 +832,28 @@ var PROJECTS = [
     }
   };
 
-  // Distros pop-up: each logo with the distros it covers listed underneath
+  // Distros pop-up: logos on one line (soft | between them), the distros listed under each one
   function fillDistros(box, groups) {
     var n = 0;
     groups.forEach(function (g) {
       var d = DISTROS[g.key];
       if (!d) return;
       n++;
-      var group = el('div', 'wiki-distro');
+      var col = el('div', 'wiki-distro');
       var logo = el('span', 'wiki-distro__logo');
       logo.style.setProperty('--r', d.ratio);
       logo.setAttribute('role', 'img');
       logo.setAttribute('aria-label', d.name);
       logo.innerHTML = d.svg;
-      group.appendChild(logo);
+      col.appendChild(logo);
       var list = el('ul', 'wiki-distro__list');
       (g.items || []).forEach(function (name) {
         var li = document.createElement('li');
         li.textContent = name;
         list.appendChild(li);
       });
-      group.appendChild(list);
-      box.appendChild(group);
+      col.appendChild(list);
+      box.appendChild(col);
     });
     box.hidden = !n;
   }
@@ -1050,7 +1056,7 @@ var PROJECTS = [
             var lists = {};
             item.distroList.forEach(function (g) { lists[g.key] = g.items; });
             openWiki({
-              title: 'Available on',
+              title: '',
               text: '',
               distros: item.availableOn.map(function (k) { return { key: k, items: lists[k] || [] }; })
             }, db);
