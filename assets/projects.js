@@ -126,7 +126,7 @@ var PROJECTS = [
     title: "Pluk",
     version: "1.13.0",
     icon: "pluk.webp",
-    banner: "",
+    banner: ["b/Screenshot (945) 2021-11-13.webp"],
     video: "b/2021-11-13 19-12-00.mkv",
     years: "Late 2021",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
