@@ -1379,28 +1379,52 @@ button {
 }
 
 
-/* Distros pop-up: logo on top, the distros it covers listed underneath */
+/* Distros pop-up: ALL logos on ONE line (soft | between them), the distros centred under each.
+   Everything is sized from the pop-up's own width, so the row never wraps or overflows. */
+.wiki-popup--distros {
+  width: calc(100% - 1rem);
+  max-width: clamp(520px, 52vw, 780px);
+  padding-left: clamp(0.5rem, 2vw, 1.5rem);
+  padding-right: clamp(0.5rem, 2vw, 1.5rem);
+}
+
+.wiki-title:empty { display: none; }
+
+.wiki-distros { container-type: inline-size; width: 100%; margin: 0.25rem 0; }
+
+.wiki-distros:not([hidden]) {
+  --h: clamp(1.1rem, 5.5vw, 2.1rem);
+  --fs: clamp(0.62rem, 2.4vw, 1rem);
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+@supports (width: 1cqw) {
+  .wiki-distros:not([hidden]) {
+    --h: clamp(1.1rem, 4.6cqw, 2.1rem);
+    --fs: clamp(0.62rem, 2.7cqw, 1rem);
+  }
+}
+
 .wiki-distro {
-  padding: 1.1rem 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0 clamp(0.25rem, 1.6cqw, 0.9rem);
   text-align: center;
-  border-top: 1.5px solid rgba(27, 36, 48, 0.18);
 }
 
-.wiki-distro:first-child {
-  padding-top: 0.25rem;
-  border-top: 0;
-}
-
-.wiki-distro:last-child { padding-bottom: 0.25rem; }
+.wiki-distro + .wiki-distro { border-left: 1.5px solid rgba(27, 36, 48, 0.28); }
 
 .wiki-distro__logo {
-  --h: clamp(2.2rem, calc(1.9rem + 0.6vw), 2.8rem);
   position: relative;
   display: block;
   width: calc(var(--h) * var(--r));
   max-width: 100%;
   aspect-ratio: var(--r);
-  margin: 0 auto 0.7rem;
+  margin: 0 auto 0.8em;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -1418,12 +1442,14 @@ button {
   margin: 0;
   padding: 0;
   list-style: none;
+  font-size: var(--fs);
 }
 
 .wiki-distro__list li {
-  margin: 0;
-  font-size: var(--wp-text);
-  line-height: 1.6;
+  margin: 0 0 0.3em;
+  font-size: 1em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 /* smaller text + wider pop-up = more words per line */
