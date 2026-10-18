@@ -23,6 +23,7 @@
        tagsSuffix: "project",            // optional — plain text after the tags, e.g. "ETL pipeline project"
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
+       license:    "Open source | GPL",  // optional — small, subtle line under the years (and note)
        subtitle:   "Secondary title",    // optional — one black line under the years, a bit bigger than desc
        subtitleTag: {                    // optional — makes the start of the subtitle (label) clickable,
                      label: "MASL",      // opening the same pop-up as the tags, but without Wikipedia
@@ -92,6 +93,7 @@ var PROJECTS = [
     icon: "Klem.webp",
     banner: ["b/klem1.webp", "b/klem2.webp"],
     years: "2022 – 2023",
+    license: "Open source | GPL",
     desc: "**Linux vid compressor software**, built around [[FFmpeg]], it has a basic/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it for you automatically.**",
     availableOn: ["debian", "redhat", "arch", "suse", "void"],
     distroList: [
@@ -143,7 +145,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "2021 – Late 2022",
-    desc: "**[[Hidden Ball]] is a MLB archive from the 80's.**\nWas primarily built as a fan project/testing an ETL workflow.",
+    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep the archive up to date, **was primarily built to test an ETL workflow/fan project.**",
     descTags: [
       {
         label: "Hidden Ball",
@@ -162,11 +164,11 @@ var PROJECTS = [
     banner: ["b/Screenshot (945) 2021-11-13.webp"],
     video: "b/2021-11-13 19-12-00.mkv",
     years: "Late 2021",
+    license: "Open source | GPL",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
-    availableOn: ["debian", "redhat", "arch"],
+    availableOn: ["debian", "arch"],
     distroList: [
       { key: "debian", items: ["Ubuntu", "Linux Mint", "Pop!_OS"] },
-      { key: "redhat", items: ["Fedora", "RHEL", "Nobara"] },
       { key: "arch",   items: ["Manjaro (unstable)", "EndeavourOS (unstable)"] }
     ],
     descTags: [
@@ -179,6 +181,7 @@ var PROJECTS = [
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
     source: "c/Pluk=1.13.0.zip",
+    twoRows: true,
     buttons: [
       { label: "Supported Distros", popup: "distros" }
     ]
@@ -1058,6 +1061,11 @@ var PROJECTS = [
       var note = el('p', 'card__note');
       note.textContent = '(' + item.note + ')';
       text.appendChild(note);
+    }
+    if (item.license) {
+      var lic = el('p', 'card__license');
+      lic.textContent = item.license;
+      text.appendChild(lic);
     }
     if (item.subtitle) {
       var sub = el('p', 'card__subtitle');
