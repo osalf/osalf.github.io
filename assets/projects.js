@@ -17,6 +17,9 @@
                                          // no banner image? the first frame of the video is used as the banner
        videoLabel: "Prototype",          // optional — small text under the play icon of the banner
        center:     true,                 // optional — centres the icon, title, tags and years (like a card with no icon)
+       iconRatio:  "1016 / 561",         // optional — for a NON-square icon (use with center: true): the icon's width / height,
+                                         // e.g. "1016 / 561" or 1.811. It keeps the same height as a square icon, gets
+                                         // wider to match, and has no rounded clipping (so transparent corners stay as drawn)
        tagsSuffix: "project",            // optional — plain text after the tags, e.g. "ETL pipeline project"
        years:      "2022 – 2023",        // duration of the project
        note:       "ownership transferred", // optional — small line under the years, shown in brackets
@@ -127,6 +130,7 @@ var PROJECTS = [
   {
     title: "Hidden Ball",
     icon: "hiddenball.webp",
+    iconRatio: "1016 / 561",
     center: true,
     tags: [
       {
@@ -1017,6 +1021,14 @@ var PROJECTS = [
 
     // icon slot — stays as an empty placeholder until an image is provided
     var badge = el('span', 'card__icon');
+    if (!noIcon && item.iconRatio) {
+      var rp = String(item.iconRatio).split('/');
+      var ir = rp.length > 1 ? parseFloat(rp[0]) / parseFloat(rp[1]) : parseFloat(rp[0]);
+      if (isFinite(ir) && ir > 0) {
+        badge.classList.add('card__icon--wide');
+        badge.style.setProperty('--ir', String(Math.round(ir * 10000) / 10000));
+      }
+    }
     if (!noIcon) {
       var img = document.createElement('img');
       img.src = ICON_DIR + item.icon;
