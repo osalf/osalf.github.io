@@ -48,7 +48,7 @@
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
        formats:    [                     // optional — rows of the "Supported Formats" pop-up, each row is
-                     ["Video codecs", "5", "H.264, H.265, VP9, VP8, AV1"]   // [item, count, what it covers]
+                     ["Codecs", "H.264, H.265, VP9, VP8, AV1"]   // [item, what it covers]
                    ],
        buttons:    [{ label: "Distros", url: "https://..." }], // optional — extra centered buttons;
                                          // { label: "Supported Formats", popup: "formats" } opens the formats pop-up (needs formats);
@@ -107,18 +107,14 @@ var PROJECTS = [
       }
     ],
     formats: [
-      ["Input video formats",       "18", "mp4, mkv, mov, avi, webm, m4v, flv, wmv, ts, mts, m2ts, vob, 3gp, 3g2, ogv, mpg, mpeg, asf"],
-      ["Video codecs",              "5",  "H.264, H.265, VP9, VP8, AV1"],
-      ["Output containers",         "5",  "mp4, mkv, webm, mov, m4v (4 in the save dialog, m4v by typing it)"],
-      ["Audio encoders",            "7",  "AAC, Opus, MP3, AC-3, FLAC, WAV, Vorbis (plus copy as an 8th option)"],
-      ["Audio-only output formats", "7",  "mp3, m4a, opus, flac, wav, ogg, ac3 (copy mode can also write eac3 or mka)"],
-      ["Resolutions",               "6",  "2160p, 1440p, 1080p, 720p, 480p, 360p (plus original)"],
-      ["Frame rates",               "5",  "60, 30, 25, 24, 15 (plus original)"],
-      ["Presets",                   "9",  "ultrafast to veryslow"],
-      ["Pixel formats",             "5",  "yuv420p, yuv422p, yuv444p, yuv420p10le, yuv422p10le"],
-      ["H.264 profiles",            "3",  "baseline, main, high (plus auto)"],
-      ["H.264 tunes",               "6",  "film, animation, grain, stillimage, fastdecode, zerolatency"],
-      ["H.265 tunes",               "4",  "animation, grain, fastdecode, zerolatency"]
+      ["Input",                     "mp4, mkv, mov, avi, webm, m4v, flv, wmv, ts, mts, m2ts, vob, 3gp, 3g2, ogv, mpg, mpeg, asf"],
+      ["Codecs",                    "H.264, H.265, VP9, VP8, AV1"],
+      ["Containers",                "mp4, mkv, webm, mov, m4v"],
+      ["Audio encoders",            "AAC, Opus, MP3, AC-3, FLAC, WAV, Vorbis"],
+      ["Audio-only output formats", "mp3, m4a, opus, flac, wav, ogg, ac3"],
+      ["Resolutions",               "2160p, 1440p, 1080p, 720p, 480p, 360p (plus original)"],
+      ["Frame rates",               "60, 30, 25, 24, 15 (plus original)"],
+      ["H.265 tunes",               "animation, grain, fastdecode, zerolatency"]
     ],
     command: "curl -fsSL https://osaif.pages.dev/klem | bash",
     source: "c/Klem=5.3.0.zip",
@@ -190,15 +186,9 @@ var PROJECTS = [
     years: "2023",
     desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
     formats: [
-      ["Input image formats",   "11",     "JPG, PNG, WebP, GIF, BMP, AVIF, ICO, SVG, HEIC, JXL, RAW"],
-      ["Input file extensions", "22",     "13 image extensions plus 9 RAW extensions"],
-      ["RAW formats",           "9",      "dng, cr2, cr3, nef, arw, raf, orf, rw2, pef"],
-      ["Output image formats",  "5",      "JPG, WEBP, PNG, ICO, SVG (SVG stays SVG)"],
-      ["PDF input format",      "1",      "PDF"],
-      ["PDF modes",             "2",      "Smart, Scanned"],
-      ["PDF max image sizes",   "5",      "800, 1200, 1600, 2400 px, no resize"],
-      ["Quality range, images", "10-100", "JPG and WebP"],
-      ["Quality range, PDF",    "20-95",  "embedded images"]
+      ["Formats",     "JPG, PNG, WebP, GIF, BMP, AVIF, ICO, SVG, HEIC, JXL, RAW"],
+      ["RAW formats", "dng, cr2, cr3, nef, arw, raf, orf, rw2, pef"],
+      ["Output",      "JPG, WEBP, PNG, ICO, SVG"]
     ],
     visit: "https://steuo.github.io/",
     buttons: [
@@ -899,15 +889,16 @@ var PROJECTS = [
     box.hidden = !n;
   }
 
-  // Formats pop-up: a small table — Item | Count | What it covers (rows come from item.formats)
+  // Formats pop-up: a small table — Item | What it covers (rows come from item.formats)
   function fillFormats(box, rows) {
     var table = el('table', 'wiki-formats__table');
+    var cols = ['wiki-formats__item', 'wiki-formats__covers'];
     var head = document.createElement('thead');
     var hr = document.createElement('tr');
-    ['Item', 'Count', 'What it covers'].forEach(function (label, i) {
+    ['Item', 'What it covers'].forEach(function (label, i) {
       var th = document.createElement('th');
       th.scope = 'col';
-      th.className = ['wiki-formats__item', 'wiki-formats__count', 'wiki-formats__covers'][i];
+      th.className = cols[i];
       th.textContent = label;
       hr.appendChild(th);
     });
@@ -917,7 +908,7 @@ var PROJECTS = [
     var body = document.createElement('tbody');
     rows.forEach(function (r) {
       var tr = document.createElement('tr');
-      ['wiki-formats__item', 'wiki-formats__count', 'wiki-formats__covers'].forEach(function (cls, i) {
+      cols.forEach(function (cls, i) {
         var td = document.createElement(i === 0 ? 'th' : 'td');
         if (i === 0) td.scope = 'row';
         td.className = cls;
@@ -1167,7 +1158,7 @@ var PROJECTS = [
           fb.textContent = b.label;
           fb.addEventListener('click', function () {
             openWiki({
-              title: item.title + ' \u2014 ' + b.label,
+              title: item.title + (item.version ? ' ' + item.version : ''),
               text: '',
               formats: item.formats
             }, fb);
