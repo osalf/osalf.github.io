@@ -47,7 +47,11 @@
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
+       formats:    [                     // optional — rows of the "Supported Formats" pop-up, each row is
+                     ["Video codecs", "5", "H.264, H.265, VP9, VP8, AV1"]   // [item, count, what it covers]
+                   ],
        buttons:    [{ label: "Distros", url: "https://..." }], // optional — extra centered buttons;
+                                         // { label: "Supported Formats", popup: "formats" } opens the formats pop-up (needs formats);
                                          // { label: "Distros", popup: "distros" } opens the distro pop-up instead of a link;
                                          // with command/buttons, Download / Blueprints are replaced
        visit:      "https://...",        // optional — Visit button (opens the website) shown first in the row
@@ -102,12 +106,26 @@ var PROJECTS = [
         text: "FFmpeg is a free and open-source software project consisting of a suite of libraries and programs for handling video, audio, and other multimedia files and streams."
       }
     ],
+    formats: [
+      ["Input video formats",       "18", "mp4, mkv, mov, avi, webm, m4v, flv, wmv, ts, mts, m2ts, vob, 3gp, 3g2, ogv, mpg, mpeg, asf"],
+      ["Video codecs",              "5",  "H.264, H.265, VP9, VP8, AV1"],
+      ["Output containers",         "5",  "mp4, mkv, webm, mov, m4v (4 in the save dialog, m4v by typing it)"],
+      ["Audio encoders",            "7",  "AAC, Opus, MP3, AC-3, FLAC, WAV, Vorbis (plus copy as an 8th option)"],
+      ["Audio-only output formats", "7",  "mp3, m4a, opus, flac, wav, ogg, ac3 (copy mode can also write eac3 or mka)"],
+      ["Resolutions",               "6",  "2160p, 1440p, 1080p, 720p, 480p, 360p (plus original)"],
+      ["Frame rates",               "5",  "60, 30, 25, 24, 15 (plus original)"],
+      ["Presets",                   "9",  "ultrafast to veryslow"],
+      ["Pixel formats",             "5",  "yuv420p, yuv422p, yuv444p, yuv420p10le, yuv422p10le"],
+      ["H.264 profiles",            "3",  "baseline, main, high (plus auto)"],
+      ["H.264 tunes",               "6",  "film, animation, grain, stillimage, fastdecode, zerolatency"],
+      ["H.265 tunes",               "4",  "animation, grain, fastdecode, zerolatency"]
+    ],
     command: "curl -fsSL https://osaif.pages.dev/klem | bash",
     source: "c/Klem=5.3.0.zip",
     twoRows: true,
     buttons: [
       { label: "Supported Distros", popup: "distros" },
-      { label: "Supported Formats", url: "" }
+      { label: "Supported Formats", popup: "formats" }
     ]
   },
   {
@@ -171,9 +189,20 @@ var PROJECTS = [
     banner: ["b/steno.webp"],
     years: "2023",
     desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
+    formats: [
+      ["Input image formats",   "11",     "JPG, PNG, WebP, GIF, BMP, AVIF, ICO, SVG, HEIC, JXL, RAW"],
+      ["Input file extensions", "22",     "13 image extensions plus 9 RAW extensions"],
+      ["RAW formats",           "9",      "dng, cr2, cr3, nef, arw, raf, orf, rw2, pef"],
+      ["Output image formats",  "5",      "JPG, WEBP, PNG, ICO, SVG (SVG stays SVG)"],
+      ["PDF input format",      "1",      "PDF"],
+      ["PDF modes",             "2",      "Smart, Scanned"],
+      ["PDF max image sizes",   "5",      "800, 1200, 1600, 2400 px, no resize"],
+      ["Quality range, images", "10-100", "JPG and WebP"],
+      ["Quality range, PDF",    "20-95",  "embedded images"]
+    ],
     visit: "https://steuo.github.io/",
     buttons: [
-      { label: "Supported Formats", url: "" }
+      { label: "Supported Formats", popup: "formats" }
     ]
   },
   {
@@ -591,6 +620,7 @@ var PROJECTS = [
       '<div class="wiki-imgs" hidden></div>' +
       '<div class="wiki-text"></div>' +
       '<div class="wiki-distros" hidden></div>' +
+      '<div class="wiki-formats" hidden></div>' +
       '<pre class="wiki-code" hidden tabindex="0" role="button" aria-label="Copy command"><code></code></pre>' +
       '<a class="wiki-link" target="_blank" rel="noopener">Read full article \u2192</a>' +
       '<div class="wiki-powered">Powered by <svg class="wiki-powered__logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455 455" fill="#000000" aria-hidden="true" focusable="false"><path fill-rule="evenodd" clip-rule="evenodd" d="M0,0v455h455V0H0z M385,118.141c0,1.918-1.558,3.47-3.477,3.47h-9.736 c-3.546,0-6.744,2.15-8.081,5.439l-88.815,217.909L230.16,244.55L182.3,344.958L90.709,126.964 c-1.364-3.239-4.535-5.345-8.049-5.345h-9.181c-1.918,0-3.479-1.56-3.479-3.479v-8.099h79.147l-0.223,8.193 c-0.05,1.886-1.593,3.385-3.477,3.385h-13.249c-4.926,0-8.302,4.971-6.495,9.548l64.305,162.675l32.522-70.485l-41.099-96.434 c-1.373-3.215-4.526-5.312-8.031-5.312h-6.392c-1.918,0-3.479-1.552-3.479-3.47v-8.099h59.436v8.099c0,1.918-1.56,3.47-3.477,3.47 c-5.013,0-8.398,5.133-6.421,9.745l24.288,56.572l24.799-56.52c2.021-4.614-1.355-9.788-6.401-9.788h-9.284 c-1.927,0-3.479-1.56-3.479-3.479v-8.099h62.242v8.099c0,1.918-1.552,3.479-3.479,3.479h-10.358c-3.385,0-6.471,1.962-7.903,5.03 l-38.312,81.925l35.772,84.058l62.589-161.542c1.739-4.57-1.637-9.472-6.53-9.472H321.54c-1.918,0-3.479-1.56-3.479-3.479v-8.099 H385V118.141z"/></svg></div>';
@@ -710,6 +740,12 @@ var PROJECTS = [
     distEl.hidden = true;
     if (tag.distros && tag.distros.length) fillDistros(distEl, tag.distros);
     popup.classList.toggle('wiki-popup--distros', !!(tag.distros && tag.distros.length));
+    var fmtEl = popup.querySelector('.wiki-formats');
+    fmtEl.textContent = '';
+    fmtEl.hidden = true;
+    if (tag.formats && tag.formats.length) fillFormats(fmtEl, tag.formats);
+    popup.classList.toggle('wiki-popup--formats', !!(tag.formats && tag.formats.length));
+    popup.scrollTop = 0;
 
     // custom description; the term is bold, "\n" starts a new paragraph
     textEl.textContent = '';
@@ -861,6 +897,38 @@ var PROJECTS = [
       box.appendChild(col);
     });
     box.hidden = !n;
+  }
+
+  // Formats pop-up: a small table — Item | Count | What it covers (rows come from item.formats)
+  function fillFormats(box, rows) {
+    var table = el('table', 'wiki-formats__table');
+    var head = document.createElement('thead');
+    var hr = document.createElement('tr');
+    ['Item', 'Count', 'What it covers'].forEach(function (label, i) {
+      var th = document.createElement('th');
+      th.scope = 'col';
+      th.className = ['wiki-formats__item', 'wiki-formats__count', 'wiki-formats__covers'][i];
+      th.textContent = label;
+      hr.appendChild(th);
+    });
+    head.appendChild(hr);
+    table.appendChild(head);
+
+    var body = document.createElement('tbody');
+    rows.forEach(function (r) {
+      var tr = document.createElement('tr');
+      ['wiki-formats__item', 'wiki-formats__count', 'wiki-formats__covers'].forEach(function (cls, i) {
+        var td = document.createElement(i === 0 ? 'th' : 'td');
+        if (i === 0) td.scope = 'row';
+        td.className = cls;
+        td.textContent = r[i] == null ? '' : r[i];
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    table.appendChild(body);
+    box.appendChild(table);
+    box.hidden = false;
   }
 
   // "Available on:" + the logos, separated by a soft |
@@ -1089,6 +1157,22 @@ var PROJECTS = [
             }, db);
           });
           (rowTwo || actions).appendChild(db);
+          return;
+        }
+        // "Supported Formats" opens a pop-up with the formats table
+        if (b.popup === 'formats' && item.formats && item.formats.length) {
+          var fb = el('button', 'btn btn--primary');
+          fb.type = 'button';
+          fb.setAttribute('aria-haspopup', 'dialog');
+          fb.textContent = b.label;
+          fb.addEventListener('click', function () {
+            openWiki({
+              title: item.title + ' \u2014 ' + b.label,
+              text: '',
+              formats: item.formats
+            }, fb);
+          });
+          (rowTwo || actions).appendChild(fb);
           return;
         }
         (rowTwo || actions).appendChild(buildButton(b.label, '', b.url, 'primary', true));
