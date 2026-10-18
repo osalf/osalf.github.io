@@ -1410,11 +1410,11 @@ button {
 
 .wiki-title:empty { display: none; }
 
-/* Formats pop-up: Item | Count | What it covers.
+/* Formats pop-up: Item | What it covers.
    Wider than the default pop-up so the long lists get more words per line. */
 .wiki-popup--formats {
   width: calc(100% - 1rem);
-  max-width: clamp(540px, 50vw, 780px);
+  max-width: clamp(520px, 46vw, 720px);
 }
 
 .wiki-formats {
@@ -1452,24 +1452,15 @@ button {
 }
 
 .wiki-formats__item {
-  width: 32%;
+  width: 34%;
   font-weight: 600;
   color: var(--text);
 }
 
-.wiki-formats__table tbody th.wiki-formats__item { font-weight: 600; }
-
-.wiki-formats__count {
-  width: 1%;
-  text-align: center;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
 .wiki-formats__covers { color: var(--text-dim); }
 
-/* narrow screens: each row becomes a small block (item + count on the first line,
-   what it covers underneath) so nothing is squeezed into a thin column */
+/* narrow screens: each row becomes a small block (item on top, what it covers underneath)
+   so nothing is squeezed into a thin column */
 @media (max-width: 480px) {
   .wiki-formats__table,
   .wiki-formats__table tbody { display: block; }
@@ -1484,10 +1475,7 @@ button {
   }
 
   .wiki-formats__table tbody tr {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 0.75em;
-    row-gap: 0.15em;
+    display: block;
     padding: 0.6em 0.8em;
   }
 
@@ -1502,9 +1490,7 @@ button {
     padding: 0;
   }
 
-  .wiki-formats__table tbody .wiki-formats__item { grid-column: 1; grid-row: 1; }
-  .wiki-formats__table tbody .wiki-formats__count { grid-column: 2; grid-row: 1; text-align: right; color: var(--text-dim); }
-  .wiki-formats__table tbody .wiki-formats__covers { grid-column: 1 / -1; grid-row: 2; }
+  .wiki-formats__table tbody .wiki-formats__covers { margin-top: 0.15em; }
 }
 
 .wiki-distros { container-type: inline-size; width: 100%; margin: 0.25rem 0; }
