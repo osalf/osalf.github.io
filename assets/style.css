@@ -897,7 +897,6 @@ button {
   grid-row: 3;
   margin-top: 1rem;
   text-align: center;
-  container-type: inline-size;   /* the logos are sized from the card's own width */
 }
 
 .card__avail-label {
@@ -913,26 +912,12 @@ button {
   /* logo height grows with the screen; the row never wraps — if it ever gets too wide
      for the card, all the logos shrink together (same ratio) until it fits */
   --h: clamp(1.5rem, calc(1.2rem + 0.45vw), 2rem);
-  --m: clamp(0.45rem, 2.2vw, 0.9rem);   /* space on each side of the soft | */
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
   min-width: 0;
   margin-top: 0.6rem;
-}
-
-/* when the card has room the logos grow to use it (all the same height, so still the same size);
-   --n = how many logos and --sum = their widths added up (set by projects.js).
-   Bigger card or fewer logos = bigger logos, up to a cap; small screens keep the old minimum. */
-@supports (width: 1cqw) {
-  .card__avail-list {
-    --h: clamp(
-      1.5rem,
-      calc((100cqw - (var(--n, 1) - 1) * (var(--m) * 2 + 1.5px)) / var(--sum, 1) * 0.94),
-      3rem
-    );
-  }
 }
 
 .card__distro {
@@ -960,7 +945,7 @@ button {
   align-self: center;
   width: 0;
   height: calc(var(--h) * 0.75);
-  margin: 0 var(--m, 0.9rem);
+  margin: 0 clamp(0.45rem, 2.2vw, 0.9rem);
   border-left: 1.5px solid rgba(27, 36, 48, 0.28);
 }
 
@@ -1536,12 +1521,10 @@ button {
   justify-content: center;
 }
 
-/* the logos / names grow with the pop-up: fewer distros or a wider pop-up = bigger ones.
-   --n = how many logos, --sum = their widths added up (set by projects.js). */
 @supports (width: 1cqw) {
   .wiki-distros:not([hidden]) {
-    --h: clamp(1.1rem, calc(100cqw * 0.6 / var(--sum, 8)), 2.75rem);
-    --fs: clamp(0.62rem, calc(13.5cqw / var(--n, 5)), 1rem);
+    --h: clamp(1.1rem, 4.6cqw, 2.1rem);
+    --fs: clamp(0.62rem, 2.7cqw, 1rem);
   }
 }
 
@@ -1553,12 +1536,6 @@ button {
 }
 
 .wiki-distro + .wiki-distro { border-left: 1.5px solid rgba(27, 36, 48, 0.28); }
-
-/* set by projects.js when the row fits without squeezing: a column never gets narrower than its
-   logo or its longest word (names wrap between words, never in the middle of one) */
-.wiki-distros.is-fit .wiki-distro { min-width: min-content; }
-.wiki-distros.is-fit .wiki-distro__logo { max-width: none; }
-.wiki-distros.is-fit .wiki-distro__list li { overflow-wrap: normal; }
 
 .wiki-distro__logo {
   position: relative;
