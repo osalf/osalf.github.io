@@ -45,6 +45,8 @@
                      { key: "debian", items: ["Ubuntu", "..."] }   // (same keys as availableOn; pop-up follows availableOn order)
                    ],
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
+       source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
+       twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
        buttons:    [{ label: "Distros", url: "https://..." }], // optional — extra centered buttons;
                                          // { label: "Distros", popup: "distros" } opens the distro pop-up instead of a link;
                                          // with command/buttons, Download / Blueprints are replaced
@@ -65,7 +67,7 @@ var PROJECTS = [
         label: "Embedded system",
         wiki: "https://en.wikipedia.org/wiki/Embedded_system",
         bold: "embedded system",
-        text: "An embedded system is a specialized [computer system](https://en.wikipedia.org/wiki/Computer_system)—a combination of a [computer processor](https://en.wikipedia.org/wiki/Computer_processor), [computer memory](https://en.wikipedia.org/wiki/Computer_memory), and [input/output](https://en.wikipedia.org/wiki/Input/output) [peripheral devices](https://en.wikipedia.org/wiki/Peripheral_device)—that has a dedicated function within a larger mechanical or [electronic](https://en.wikipedia.org/wiki/Electronics) system. It is embedded as part of a complete device.\nEmbedded systems range in size from portable personal devices such as digital watches and MP3 players to bigger machines like home appliances, industrial assembly lines, robots, transport vehicles, traffic light controllers, and medical imaging systems."
+        text: "An embedded system is a specialized [computer system](https://en.wikipedia.org/wiki/Computer_system).\na combination of a [computer processor](https://en.wikipedia.org/wiki/Computer_processor), [computer memory](https://en.wikipedia.org/wiki/Computer_memory), and [input/output](https://en.wikipedia.org/wiki/Input/output) [peripheral devices](https://en.wikipedia.org/wiki/Peripheral_device) that has a dedicated function within a larger mechanical or [electronic](https://en.wikipedia.org/wiki/Electronics) system. It is embedded as part of a complete device.\nEmbedded systems range in size from portable personal devices such as digital watches and MP3 players to bigger machines like home appliances, industrial assembly lines, traffic light controllers, and medical imaging systems."
       }
     ],
     banner: ["b/i.webp"],
@@ -101,9 +103,11 @@ var PROJECTS = [
       }
     ],
     command: "curl -fsSL https://osaif.pages.dev/klem | bash",
+    source: "c/Klem=5.3.0.zip",
+    twoRows: true,
     buttons: [
-      { label: "Distros", popup: "distros" },
-      { label: "Formats", url: "" }
+      { label: "Supported Distros", popup: "distros" },
+      { label: "Supported Formats", url: "" }
     ]
   },
   {
@@ -156,8 +160,9 @@ var PROJECTS = [
       }
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
+    source: "c/Pluk=1.13.0.zip",
     buttons: [
-      { label: "Distros", popup: "distros" }
+      { label: "Supported Distros", popup: "distros" }
     ]
   },
   {
@@ -168,7 +173,7 @@ var PROJECTS = [
     desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
     visit: "https://steuo.github.io/",
     buttons: [
-      { label: "Formats", url: "" }
+      { label: "Supported Formats", url: "" }
     ]
   },
   {
@@ -1045,6 +1050,28 @@ var PROJECTS = [
         actions.appendChild(dl);
       }
 
+      // Source code downloads the zip straight from /assets/
+      if (item.source) {
+        var sc = buildButton('Source code', '', ICON_DIR + item.source, 'primary');
+        sc.removeAttribute('target');
+        sc.removeAttribute('rel');
+        sc.setAttribute('download', '');
+        actions.appendChild(sc);
+      }
+
+      // twoRows: Download + Source code stay on the first line, everything after goes on a second line
+      var rowTwo = null;
+      if (item.twoRows) {
+        actions.classList.add('card__actions--split');
+        var rowOne = el('div', 'card__actions-row');
+        while (actions.firstChild) rowOne.appendChild(actions.firstChild);
+        actions.appendChild(rowOne);
+        rowTwo = el('div', 'card__actions-row');
+        actions.appendChild(rowTwo);
+      } else if (item.source) {
+        actions.classList.add('card__actions--wide');
+      }
+
       extra.forEach(function (b) {
         // "Distros" opens a pop-up with the logos + the distros under each one
         if (b.popup === 'distros' && item.availableOn && item.distroList) {
@@ -1061,10 +1088,10 @@ var PROJECTS = [
               distros: item.availableOn.map(function (k) { return { key: k, items: lists[k] || [] }; })
             }, db);
           });
-          actions.appendChild(db);
+          (rowTwo || actions).appendChild(db);
           return;
         }
-        actions.appendChild(buildButton(b.label, '', b.url, 'primary', true));
+        (rowTwo || actions).appendChild(buildButton(b.label, '', b.url, 'primary', true));
       });
     } else {
       actions.classList.add('card__actions--bp');
