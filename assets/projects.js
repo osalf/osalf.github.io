@@ -75,7 +75,7 @@ var PROJECTS = [
         label: "Embedded system",
         wiki: "https://en.wikipedia.org/wiki/Embedded_system",
         bold: "embedded system",
-        text: "An embedded system is a specialized [computer system](https://en.wikipedia.org/wiki/Computer_system).\na combination of a [computer processor](https://en.wikipedia.org/wiki/Computer_processor), [computer memory](https://en.wikipedia.org/wiki/Computer_memory), and [input/output](https://en.wikipedia.org/wiki/Input/output) [peripheral devices](https://en.wikipedia.org/wiki/Peripheral_device) that has a dedicated function within a larger mechanical or [electronic](https://en.wikipedia.org/wiki/Electronics) system. It is embedded as part of a complete device.\nEmbedded systems range in size from portable personal devices such as digital watches and MP3 players to bigger machines like home appliances, industrial assembly lines, traffic light controllers, and medical imaging systems."
+        text: "An embedded system is a a specialized combination of computer hardware and software designed to perform a dedicated function within a larger mechanical or electronic system.\nEmbedded systems span from small devices like digital watches to large industrial machinery and medical systems."
       }
     ],
     banner: ["b/i.webp"],
@@ -137,8 +137,8 @@ var PROJECTS = [
       {
         label: "ETL pipeline",
         wiki: "https://en.wikipedia.org/wiki/Extract,_transform,_load",
-        bold: "Extract, transform, load (ETL)",
-        text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed and loaded into an output data container."
+        bold: "ETL (Extract, Transform, Load)",
+        text: "ETL (Extract, Transform, Load) is an automated data pipeline process executed without human intervention.\nIt ingests raw datasets from single or distributed endpoints, normalizes and cleans the payloads, and writes the transformed data to designated storage sinks."
       }
     ],
     tagsSuffix: "project",
@@ -164,9 +164,10 @@ var PROJECTS = [
     video: "b/2021-11-13 19-12-00.mkv",
     years: "Late 2021",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
-    availableOn: ["debian", "arch"],
+    availableOn: ["debian", "redhat", "arch"],
     distroList: [
       { key: "debian", items: ["Ubuntu", "Linux Mint", "Pop!_OS"] },
+      { key: "redhat", items: ["Fedora", "RHEL", "Nobara"] },
       { key: "arch",   items: ["Manjaro (unstable)", "EndeavourOS (unstable)"] }
     ],
     descTags: [
@@ -179,7 +180,6 @@ var PROJECTS = [
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
     source: "c/Pluk=1.13.0.zip",
-    twoRows: true,
     buttons: [
       { label: "Supported Distros", popup: "distros" }
     ]
@@ -642,14 +642,8 @@ var PROJECTS = [
       if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();
     });
     window.addEventListener('resize', function () {
-      if (popup.classList.contains('is-open')) { fitCode(); fitDistros(); }
+      if (popup.classList.contains('is-open')) fitCode();
     });
-    // the web font can change text widths after the pop-up is already open
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(function () {
-        if (popup.classList.contains('is-open')) fitDistros();
-      });
-    }
   }
 
   // copy text to the user's clipboard (modern API first, old method as a fallback)
@@ -687,48 +681,6 @@ var PROJECTS = [
     var base = parseFloat(getComputedStyle(code).fontSize);
     var avail = code.clientWidth, need = code.scrollWidth;
     if (avail && need > avail) code.style.fontSize = (Math.floor(base * avail / need * 10) / 10) + 'px';
-  }
-
-  // Distros pop-up: the logos and names always stay on ONE line. They start at the full size the CSS
-  // gives them (bigger when the pop-up is bigger) and shrink together, in small steps, only as far as
-  // needed so that no column is squeezed (no logo squashed, no word cut in the middle).
-  // If even the smallest size does not fit (very narrow screens) the CSS squeeze is used instead.
-  function fitDistros() {
-    if (!popup) return;
-    var box = popup.querySelector('.wiki-distros');
-    if (!box || box.hidden || !popup.classList.contains('is-open')) return;
-    var logo = box.querySelector('.wiki-distro__logo');
-    var list = box.querySelector('.wiki-distro__list');
-    var cols = box.children;
-    if (!logo || !list || !cols.length) return;
-
-    box.classList.add('is-fit');
-    box.style.removeProperty('--h');
-    box.style.removeProperty('--fs');
-
-    var h0 = logo.getBoundingClientRect().height;
-    var fs0 = parseFloat(getComputedStyle(list).fontSize);
-    var hMin = 14, fsMin = 8.8;
-
-    function overflows() {
-      var b = box.getBoundingClientRect();
-      var first = cols[0].getBoundingClientRect();
-      var last = cols[cols.length - 1].getBoundingClientRect();
-      return first.left < b.left - 0.5 || last.right > b.right + 0.5;
-    }
-
-    for (var k = 1; k > 0.3; k -= 0.03) {
-      if (k < 1) {
-        box.style.setProperty('--h', Math.max(h0 * k, hMin) + 'px');
-        box.style.setProperty('--fs', Math.max(fs0 * k, fsMin) + 'px');
-      }
-      if (!overflows()) return;
-      if (h0 * k <= hMin && fs0 * k <= fsMin) break;
-    }
-    // does not fit even at the smallest size: go back to the squeezed layout
-    box.classList.remove('is-fit');
-    box.style.removeProperty('--h');
-    box.style.removeProperty('--fs');
   }
 
   function closePopup() {
@@ -781,9 +733,6 @@ var PROJECTS = [
     var distEl = popup.querySelector('.wiki-distros');
     distEl.textContent = '';
     distEl.hidden = true;
-    distEl.classList.remove('is-fit');
-    distEl.style.removeProperty('--h');
-    distEl.style.removeProperty('--fs');
     if (tag.distros && tag.distros.length) fillDistros(distEl, tag.distros);
     popup.classList.toggle('wiki-popup--distros', !!(tag.distros && tag.distros.length));
     var fmtEl = popup.querySelector('.wiki-formats');
@@ -815,7 +764,6 @@ var PROJECTS = [
     overlay.classList.add('is-open');
     popup.focus({ preventScroll: true });
     if (tag.code) fitCode();
-    if (tag.distros && tag.distros.length) fitDistros();
 
     // article title + pictures come from Wikipedia; the text stays custom
     // (no wiki link = nothing to fetch)
@@ -922,12 +870,11 @@ var PROJECTS = [
 
   // Distros pop-up: logos on one line (soft | between them), the distros listed under each one
   function fillDistros(box, groups) {
-    var n = 0, sum = 0;
+    var n = 0;
     groups.forEach(function (g) {
       var d = DISTROS[g.key];
       if (!d) return;
       n++;
-      sum += d.ratio;
       var col = el('div', 'wiki-distro');
       var logo = el('span', 'wiki-distro__logo');
       logo.style.setProperty('--r', d.ratio);
@@ -945,8 +892,6 @@ var PROJECTS = [
       box.appendChild(col);
     });
     box.hidden = !n;
-    box.style.setProperty('--n', String(n || 1));
-    box.style.setProperty('--sum', String(sum || 1));
   }
 
   // Formats pop-up: a small table — Item | What it covers (rows come from item.formats)
@@ -990,11 +935,10 @@ var PROJECTS = [
     box.appendChild(label);
 
     var list = el('div', 'card__avail-list');
-    var n = 0, sum = 0;
+    var n = 0;
     keys.forEach(function (key) {
       var d = DISTROS[key];
       if (!d) return;
-      sum += d.ratio;
       if (n++) {
         var sep = el('span', 'card__avail-sep');
         sep.setAttribute('aria-hidden', 'true');
@@ -1007,8 +951,6 @@ var PROJECTS = [
       logo.innerHTML = d.svg;
       list.appendChild(logo);
     });
-    list.style.setProperty('--n', String(n || 1));
-    list.style.setProperty('--sum', String(sum || 1));
     box.appendChild(list);
     return box;
   }
