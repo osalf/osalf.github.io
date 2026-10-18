@@ -1003,6 +1003,24 @@ button {
 .card__actions.card__actions--bp:not(:has(> :nth-child(2))) { --cap: 12.6; }
 .card__actions.card__actions--visit.card__actions--bp:not(:has(> :nth-child(3))) { --cap: 18; }
 
+/* Download + Source code add a third button to one line */
+.card__actions.card__actions--wide { --cap: 30; }
+
+/* two lines: Download / Source code on top, Supported Distros / Supported Formats underneath,
+   both lines centred and using the same text size */
+.card__actions.card__actions--split {
+  --cap: 26;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.card__actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
 .card__actions .btn {
   flex: none;
   font-size: min(clamp(0.92rem, calc(0.82rem + 0.3vw), 1.05rem), calc(100cqw / var(--cap)));
