@@ -833,8 +833,20 @@ button {
 /* title, years and the bracket note each stay on a single line */
 .card__title,
 .card__years,
-.card__note {
+.card__note,
+.card__license {
   white-space: nowrap;
+}
+
+/* "Open source | GPL" — small and quiet, clearly not a main element */
+.card__license {
+  font-family: var(--sans);
+  font-weight: 500;
+  color: var(--text-dim);
+  font-size: clamp(0.8rem, 3.4vw, 0.92rem);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  margin: 0.35rem 0 0;
 }
 
 /* card without an icon: title centred, years + note on a single line under it */
