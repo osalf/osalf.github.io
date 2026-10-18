@@ -854,6 +854,22 @@ button {
   margin: 0 auto 0.9rem;
 }
 
+/* centred card whose icon is NOT square (iconRatio, e.g. 1016 x 561): same height as the square
+   icon, the width follows the ratio, and it is never clipped — the image keeps its own
+   transparent rounded corners. On narrow screens it shrinks to the card width, ratio kept. */
+.card__main--center .card__icon--wide {
+  width: calc(var(--icon) * 1.15 * var(--ir, 1));
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: var(--ir, 1);
+  border-radius: 0;
+}
+
+.card__main--center .card__icon--wide img {
+  border-radius: 0;
+  object-fit: contain;
+}
+
 /* small space between the paragraphs of a description */
 .card__gap {
   display: block;
