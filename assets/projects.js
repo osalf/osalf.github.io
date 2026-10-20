@@ -154,7 +154,7 @@ var PROJECTS = [
       }
     ],
     visit: "https://hiddenball.github.io/",
-    blueprints: ""
+    blueprints: "../assets/hiddenball/0.html"
   },
   {
     title: "Pluk",
