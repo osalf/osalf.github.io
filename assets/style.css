@@ -1613,21 +1613,3 @@ button {
 .main:not(:has(.tabs)) .card:first-child {
   padding-top: 1.5rem;
 }
-
-/* Projects page: "Some of my works" sits right under the Links / Projects buttons,
-   and the divider line moves from under the buttons to under this text */
-.crossnav--with-note {
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.crossnav-note {
-  margin: 0.9rem 0 0;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--line);
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--text);
-}
