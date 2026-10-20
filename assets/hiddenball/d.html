@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1466">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>1980-2022 RAW DATA · radial pipeline</title>
 <style>
 :root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#c5d0e4;--chip:#eef2f6}
@@ -12,8 +12,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{display:flex;flex-direction:column;justify-content:center;min-height:100vh;background:var(--bg);color:var(--fg);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 main{width:100%;margin:0 auto;padding:56px 28px 96px}
 .d{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2d4f9c;flex:none}
-.scroll{overflow-x:auto;padding:4px 4px 16px}
-.inner{position:relative;width:max-content;min-width:100%}
+.scroll{position:relative;width:100%;overflow:hidden}
+.inner{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0}
 .wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
 .wires path{fill:none;stroke-width:1.5;opacity:.6}
 
@@ -35,7 +35,7 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 .funnel{width:100%;height:58px;background:color-mix(in srgb,#2d4f9c 22%,transparent);clip-path:polygon(0 0,100% 0,68% 100%,32% 100%)}
 .scale{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:6px}
 .fan{height:64px}
-#fan{height:150px}
+#fan{height:104px}
 .gap{height:56px}
 #decades+.gap{height:170px}
 .cap.dot{position:absolute;left:0;width:max-content;text-align:center;padding:0 8px;color:var(--fg);font-weight:600;font-size:13px;background:var(--bg);transform:translate(-50%,-100%);line-height:1.3;white-space:nowrap}
@@ -64,7 +64,7 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 #radial .gp{font-size:11px;font-style:italic;font-weight:600}
 #radial .ct{font-size:12.5px;font-weight:700}
 #radial g.leaf:hover .lf{font-weight:700}
-@media(max-width:600px){main{padding:40px 16px 64px}}
+@media(max-width:600px){main{padding:24px 8px 40px}}
 </style>
 </head>
 <body>
@@ -72,14 +72,13 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 <div class="scroll" id="scroll"><div class="inner" id="inner">
   <svg class="wires" id="wires"></svg>
   <div class="top" id="top">
-    <div class="node"><i class="d"></i>
+    <div class="node">
       <div class="titleRow"><h2>1980-2022 RAW DATA</h2><span class="size">171 GB</span></div>
       <div class="vol"><div class="bar"></div></div>
       <div class="scale"><span>1980</span><span>2022</span></div></div>
-    <div class="vl"></div>
-    <div class="node"><i class="d"></i>
+    <div class="node">
       <div class="vol vert"><div class="funnel"></div><div class="vlabel">Compressed data</div><div class="bar s"></div></div></div>
-    <div class="vl"></div>
+    
     <div class="fan" id="fan"></div>
     <div class="cap dot" id="cap1">Decade labeling</div>
     <div id="decades"></div>
@@ -243,9 +242,8 @@ function wire(){
         pt=(e,bot)=>{const b=e.getBoundingClientRect();return[b.left-ib.left+b.width/2,(bot?b.bottom:b.top)-ib.top]},
         edge=(e,side)=>{const b=e.getBoundingClientRect();return[(side==="right"?b.right:b.left)-ib.left,b.top-ib.top+b.height/2]};
   if(!D.length||!R.length)return;
-  const fb=fan.getBoundingClientRect(), ox=fb.left-ib.left+fb.width/2, oy=fb.top-ib.top+46;
+  const fb=fan.getBoundingClientRect(), ox=fb.left-ib.left+fb.width/2, oy=fb.top-ib.top;
   const place=(id,px,py)=>{const c=document.getElementById(id);c.style.left=(px+ib.left-tb.left)+"px";c.style.top=(py+ib.top-tb.top-9)+"px"};
-  place("cap1",ox,oy);
 
   const curve=(x1,y1,x2,y2,c,arrow)=>{
     const m=(y1+y2)/2;
@@ -254,8 +252,15 @@ function wire(){
   };
   const hline=(x1,y,x2,c)=>`<path d="M${x1} ${y}L${x2} ${y}" stroke="${c}" style="stroke-width:2;opacity:.9"/><circle cx="${x1}" cy="${y}" r="3.5" fill="${c}"/><circle cx="${x2}" cy="${y}" r="3.5" fill="${c}"/>`;
 
-  let p=`<path d="M${ox} ${fb.top-ib.top}V${oy}" stroke="${LINE}" style="opacity:1"/><circle cx="${ox}" cy="${oy}" r="4" fill="${LINE}"/>`;
+  let p=``;
   D.forEach(d=>{const[x,y]=pt(d,0);p+=curve(ox,oy,x,y,LINE)});
+  {
+    const t=.76, sv=3*t*t-2*t*t*t, [xa,ya]=pt(D[1],0), [xb]=pt(D[2],0),
+          mm=(oy+ya)/2, yy=(1-t)**3*oy+(3*(1-t)**2*t+3*(1-t)*t*t)*mm+t**3*ya,
+          cx1=ox+(((xa-ox)+(xb-ox))/2)*sv, c1=document.getElementById("cap1");
+    c1.style.left=(cx1+ib.left-tb.left)+"px";c1.style.top=(yy+ib.top-tb.top)+"px";
+    c1.style.transform="translate(-50%,-50%)";
+  }
 
   const dB=D.map(d=>pt(d,1)), rT=R.map(r=>pt(r,0)),
         mx=((dB[1][0]+rT[3][0])/2+(dB[2][0]+rT[4][0])/2)/2, my=(dB[0][1]+rT[0][1])/2+18;
@@ -292,14 +297,22 @@ function wire(){
   }
   document.getElementById("wires").innerHTML=p;
 }
-function start(){
+/* ---- fit the whole diagram to the screen (same idea as the example) ----
+   the diagram keeps its fixed design size; wires are measured at scale 1,
+   then the whole thing is scaled down to the available width */
+function fit(){
+  const sc=document.getElementById("scroll"), inner=document.getElementById("inner");
+  inner.style.transform="none";
   wire();
-  const sc=document.getElementById("scroll");
-  sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2;
+  const DW=inner.offsetWidth, DH=inner.offsetHeight, k=Math.min(1,sc.clientWidth/DW);
+  inner.style.transform="scale("+k+")";
+  sc.style.height=(DH*k)+"px";
 }
-start();
-addEventListener("resize",wire);
-document.fonts&&document.fonts.ready.then(wire);
+fit();
+addEventListener("resize",fit);
+addEventListener("load",fit);
+document.fonts&&document.fonts.ready.then(fit);
+if(window.ResizeObserver)new ResizeObserver(fit).observe(document.getElementById("scroll"));
 </script>
 </body>
 </html>
