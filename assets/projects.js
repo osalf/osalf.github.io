@@ -81,7 +81,7 @@ var PROJECTS = [
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
     videoLabel: "Prototype",
-    years: "2022 – Early 2026",
+    years: "2022 – Late 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
@@ -144,7 +144,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
     years: "2021 – Late 2022",
-    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep the archive up to date.{br}**was primarily built to test an ETL workflow/fan project.**",
+    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nTo keep the archive updated, Hidden Ball pulls data every 100s (3s if a game is live).{br}**It was primarily built to test an ETL workflow/fan project.**",
     descTags: [
       {
         label: "Hidden Ball",
@@ -164,11 +164,10 @@ var PROJECTS = [
     video: "b/2021-11-13 19-12-00.mkv",
     years: "Late 2021",
     desc: "**Pluk is a Linux tray program that grabs text from anywhere on your screen**. every text is saved to a local [[SQLite]] history, sorted by time/date for each entry.\nThe default shortcut text capture is **Ctrl+Shift+P**, which can be changed in Pluk's settings.\nOn GNOME, Pluk registers the shortcut with the desktop itself, so capture works even when the tray app is closed.",
-    availableOn: ["debian", "redhat", "arch"],
+    availableOn: ["debian", "redhat"],
     distroList: [
-      { key: "debian", items: ["Ubuntu", "Linux Mint", "Pop!_OS"] },
-      { key: "redhat", items: ["Fedora", "RHEL", "Nobara"] },
-      { key: "arch",   items: ["Manjaro (unstable)", "EndeavourOS (unstable)"] }
+      { key: "debian", items: ["Ubuntu", "Linux Mint"] },
+      { key: "redhat", items: ["Fedora", "Nobara (unstable)"] }
     ],
     descTags: [
       {
@@ -180,6 +179,7 @@ var PROJECTS = [
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
     source: "c/Pluk=1.13.0.zip",
+    twoRows: true,
     buttons: [
       { label: "Supported Distros", popup: "distros" }
     ]
