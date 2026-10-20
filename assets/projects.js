@@ -207,14 +207,6 @@ var PROJECTS = [
     years: "2024 – 2025",
     desc: "SVG editor.",
     blueprints: ""
-  },
-  {
-    title: "Antigra",
-    banner: "",
-    years: "2026",
-    note: "in progress",
-    desc: "**Clipboard sync between a PC and an Android phone over your local network.**\nA Python server runs on the PC and the Android app (Kotlin) connects to it over WiFi, syncing the clipboard both ways.",
-    blueprints: ""
   }
 ];
 
