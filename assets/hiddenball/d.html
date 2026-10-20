@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.1, maximum-scale=10, user-scalable=yes, viewport-fit=cover">
 <title>1980-2022 RAW DATA · radial pipeline</title>
 <style>
 :root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#c5d0e4;--chip:#eef2f6}
@@ -12,7 +12,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{display:flex;flex-direction:column;justify-content:center;min-height:100vh;background:var(--bg);color:var(--fg);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
 main{width:100%;margin:0 auto;padding:56px 28px 96px}
 .d{display:inline-block;width:9px;height:9px;border-radius:50%;background:#2d4f9c;flex:none}
-.scroll{position:relative;width:100%;overflow:hidden}
+.scroll{position:relative;width:100%;overflow:hidden;touch-action:pan-x pan-y}
+.sizer{position:relative}
 .inner{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0}
 .wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
 .wires path{fill:none;stroke-width:1.5;opacity:.6}
@@ -29,8 +30,8 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 .vl{width:1.5px;height:30px;margin:12px auto 0;background:var(--line)}
 .vol{display:flex;align-items:center;margin-top:14px}
 .vol.vert{flex-direction:column;align-items:center;gap:8px;width:130px;margin:14px auto 0}
-.bar{flex:1;height:34px;border-radius:8px;background:#2d4f9c;mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 7px)}
-.bar.s{flex:none;width:26%;mask:repeating-linear-gradient(90deg,#000 0 3px,transparent 3px 4px)}
+.bar{flex:1;height:34px;border-radius:8px;background:repeating-linear-gradient(90deg,#2d4f9c 0,#2d4f9c 2.2px,transparent 3.6px,transparent 5.6px,#2d4f9c 7px)}
+.bar.s{flex:none;width:26%;background:repeating-linear-gradient(90deg,#2d4f9c 0,#2d4f9c 1.6px,transparent 2.6px,transparent 3px,#2d4f9c 4px)}
 .vol.vert .bar.s{width:42%;height:22px}
 .funnel{width:100%;height:58px;background:color-mix(in srgb,#2d4f9c 22%,transparent);clip-path:polygon(0 0,100% 0,68% 100%,32% 100%)}
 .scale{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:6px}
@@ -69,7 +70,7 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 </head>
 <body>
 <main>
-<div class="scroll" id="scroll"><div class="inner" id="inner">
+<div class="scroll" id="scroll"><div class="sizer" id="sizer"><div class="inner" id="inner">
   <svg class="wires" id="wires"></svg>
   <div class="top" id="top">
     <div class="node">
@@ -99,7 +100,7 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
       </div>
     </div>
   </div>
-</div></div>
+</div></div></div>
 </main>
 <script>
 const pal=Array(6).fill("#4a6cb3");
@@ -297,22 +298,58 @@ function wire(){
   }
   document.getElementById("wires").innerHTML=p;
 }
-/* ---- fit the whole diagram to the screen (same idea as the example) ----
-   the diagram keeps its fixed design size; wires are measured at scale 1,
-   then the whole thing is scaled down to the available width */
-function fit(){
-  const sc=document.getElementById("scroll"), inner=document.getElementById("inner");
-  inner.style.transform="none";
-  wire();
-  const DW=inner.offsetWidth, DH=inner.offsetHeight, k=Math.min(1,sc.clientWidth/DW);
-  inner.style.transform="scale("+k+")";
-  sc.style.height=(DH*k)+"px";
+/* ---- fit to screen + unlimited zoom ----
+   the diagram keeps a fixed design size and is scaled to the screen width (K).
+   On top of that the user can zoom in (Z) with pinch, ctrl+wheel, +/- keys or the buttons;
+   once zoomed the diagram scrolls/drags inside its frame. */
+const SC=document.getElementById("scroll"), SZ=document.getElementById("sizer"), IN=document.getElementById("inner");
+let Z=1, DW=1, DH=1, K=1;
+function apply(){
+  const s=K*Z, zoomed=Z>1.001;
+  IN.style.transform="scale("+s+")";
+  SZ.style.width=(DW*s)+"px"; SZ.style.height=(DH*s)+"px";
+  SC.style.height=(zoomed?Math.min(DH*s,innerHeight*.92):DH*s)+"px";
+  SC.style.overflow=zoomed?"auto":"hidden";
 }
+function fit(){
+  IN.style.transform="none";
+  wire();
+  DW=IN.offsetWidth; DH=IN.offsetHeight; K=Math.min(1,SC.clientWidth/DW);
+  apply();
+}
+function zoomTo(nz,fx,fy){
+  nz=Math.max(1,Math.min(200,nz));
+  if(fx==null){fx=SC.clientWidth/2;fy=SC.clientHeight/2}
+  const so=K*Z, sn=K*nz, cx=(SC.scrollLeft+fx)/so, cy=(SC.scrollTop+fy)/so;
+  Z=nz; apply();
+  SC.scrollLeft=cx*sn-fx; SC.scrollTop=cy*sn-fy;
+}
+SC.addEventListener("wheel",e=>{
+  if(!(e.ctrlKey||e.metaKey))return;
+  e.preventDefault();
+  const r=SC.getBoundingClientRect();
+  zoomTo(Z*Math.exp(-e.deltaY*.01),e.clientX-r.left,e.clientY-r.top);
+},{passive:false});
+let pd=0;
+const tdist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+SC.addEventListener("touchstart",e=>{if(e.touches.length===2)pd=tdist(e.touches)},{passive:true});
+SC.addEventListener("touchmove",e=>{
+  if(e.touches.length!==2||!pd)return;
+  e.preventDefault();
+  const d=tdist(e.touches), r=SC.getBoundingClientRect(),
+        mx=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left, my=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;
+  zoomTo(Z*d/pd,mx,my); pd=d;
+},{passive:false});
+SC.addEventListener("touchend",()=>{pd=0});
+addEventListener("keydown",e=>{
+  if(e.key==="+"||e.key==="=")zoomTo(Z*1.4);
+  else if(e.key==="-"||e.key==="_")zoomTo(Z/1.4);
+  else if(e.key==="0")zoomTo(1);
+});
 fit();
 addEventListener("resize",fit);
 addEventListener("load",fit);
 document.fonts&&document.fonts.ready.then(fit);
-if(window.ResizeObserver)new ResizeObserver(fit).observe(document.getElementById("scroll"));
 </script>
 </body>
 </html>
