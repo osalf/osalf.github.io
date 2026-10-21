@@ -142,7 +142,7 @@ var PROJECTS = [
       }
     ],
     tagsSuffix: "project",
-    banner: ["b/hb1.webp", "b/hb2.webp", "b/hb3.webp", "b/hb4.webp", "b/hb5.webp"],
+    banner: ["hb/chrome_572019_2022-07-07_14-02-48.webp", "hb/chrome_572019_2022-07-07_14-02-23.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_849201_2022-07-07_14-01-14.webp"],
     years: "2021 – Late 2022",
     desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nTo keep the archive updated, Hidden Ball pulls data every 100s (3s if a game is live).{br}**It was primarily built to test an ETL workflow/fan project.**",
     descTags: [
@@ -154,7 +154,7 @@ var PROJECTS = [
       }
     ],
     visit: "https://hiddenball.github.io/",
-    blueprints: "../assets/hiddenball/0.html"
+    blueprints: "../assets/hb/728829.html"
   },
   {
     title: "Pluk",
