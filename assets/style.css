@@ -1373,6 +1373,23 @@ button {
 
 .wiki-imgs[hidden] { display: none; }
 
+/* phones / short screens: smaller pop-up pictures, and the pop-up never reaches the bottom edge,
+   so there is always dimmed space left to tap and close it */
+@media (max-width: 640px), (max-height: 700px) {
+  .wiki-img {
+    width: auto;
+    height: auto;
+    max-height: 18vh;
+    max-height: 18dvh;
+    object-fit: contain;
+  }
+
+  .wiki-popup {
+    max-height: calc(100vh - 7rem);
+    max-height: calc(100dvh - 7rem);
+  }
+}
+
 .wiki-link[hidden] { display: none; }
 
 .wiki-powered[hidden] { display: none; }
