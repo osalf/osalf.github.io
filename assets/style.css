@@ -1679,7 +1679,9 @@ button {
   color: #323745;
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
-  text-underline-offset: 0.28em;
+  text-underline-offset: 0.12em;        /* closer to the text */
+  text-decoration-skip-ink: auto;       /* the line breaks around g, y, p... and continues after */
+  -webkit-text-decoration-skip: ink;
   background: none;
   border: 0;
   cursor: pointer;
