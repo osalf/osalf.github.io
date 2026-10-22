@@ -819,6 +819,7 @@ button {
   letter-spacing: 0;
   margin-left: 0.6em;
   opacity: 0.55;              /* subtle */
+  vertical-align: 0.48em;     /* lifted off the baseline so it sits level with the middle of the title's letters */
 }
 
 .card__years {
@@ -1647,20 +1648,29 @@ button {
   background-color: #ffffff;
   --line: rgba(27, 36, 48, 0.14);
   /* invisible, unclickable stretch below the links: the panel is always at least one
-     screen tall (whatever the device), so the footer stays out of sight until you scroll */
+     screen tall, so the footer stays out of sight until you scroll. A fixed height
+     (100vh / 100lvh) is used on purpose: 100dvh changes while a phone's address bar
+     slides in and out, and that made the bottom of the page jump. */
   min-height: 100vh;
-  min-height: 100dvh;
+}
+
+@supports (min-height: 100lvh) {
+  .main.main--links { min-height: 100lvh; }
 }
 
 .main.main--links .crossnav {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;   /* the gap under the line is set by .zig below */
 }
 
 .zig {
+  --fs: clamp(1.4rem, 5vw, 2rem);   /* link text size */
   display: flex;
   flex-direction: column;
   gap: clamp(2.2rem, 6vw, 3.4rem);
-  padding: 1rem 0 0.5rem;
+  /* the line under Links / Projects sits 1.5rem under the buttons; the top of the first
+     link's letters (an x: 0.425em below the top of its line box) sits the same 1.5rem under that line */
+  margin-top: calc(1.5rem - 0.425 * var(--fs));
+  padding: 0 0 0.5rem;
 }
 
 .zig__link {
@@ -1671,7 +1681,7 @@ button {
   padding: 0 0.6rem 0 0;
   font-family: var(--serif);   /* same font as the "osaif" title in the header */
   text-transform: lowercase;   /* all lowercase letters */
-  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-size: var(--fs);
   font-weight: 800;
   font-style: italic;
   letter-spacing: -0.01em;
