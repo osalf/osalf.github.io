@@ -138,7 +138,7 @@ var PROJECTS = [
         label: "ETL pipeline",
         wiki: "https://en.wikipedia.org/wiki/Extract,_transform,_load",
         bold: "Extract, transform, load (ETL)",
-        text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed (including cleaning), and loaded into an output data container.\nETL pipelines are fully automatic and run with zero human intervention during their normal day-to-day operations.\nOnce engineers set up the pipeline, it runs on a schedule (e.g., every night at 2 AM) or triggers automatically whenever new data arrives."
+        text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed (including cleaning), and loaded into an output data container.\nETL pipelines are fully automatic and run with zero human intervention during their normal day-to-day operations."
       }
     ],
     tagsSuffix: "project",
