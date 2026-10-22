@@ -1664,12 +1664,15 @@ button {
 
 .zig {
   --fs: clamp(1.4rem, 5vw, 2rem);   /* link text size */
+  --drop: 1.25rem;                  /* extra space pushing all links lower, away from Links / Projects */
+  --shift: calc(var(--fs) * 3);     /* how far the left links (X, VSCO, tvbox) sit left of the centre line */
+  --slant: -6deg;                   /* extra italic slant on top of the italic font */
   display: flex;
   flex-direction: column;
   gap: clamp(2.2rem, 6vw, 3.4rem);
   /* the line under Links / Projects sits 1.5rem under the buttons; the top of the first
      link's letters (an x: 0.425em below the top of its line box) sits the same 1.5rem under that line */
-  margin-top: calc(1.5rem - 0.425 * var(--fs));
+  margin-top: calc(1.5rem - 0.425 * var(--fs) + var(--drop));
   padding: 0 0 0.5rem;
 }
 
@@ -1678,7 +1681,7 @@ button {
   align-self: flex-start;
   width: 50%;
   text-align: right;
-  padding: 0 0.6rem 0 0;
+  padding: 0 calc(0.6rem + var(--shift)) 0 0;   /* odd links sit further left of the centre line */
   font-family: var(--serif);   /* same font as the "osaif" title in the header */
   text-transform: lowercase;   /* all lowercase letters */
   font-size: var(--fs);
@@ -1696,6 +1699,8 @@ button {
   border: 0;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transform: skewX(var(--slant));   /* a little more italic */
+  transform-origin: right center;
   transition: opacity 0.15s ease;
 }
 
@@ -1703,6 +1708,7 @@ button {
   align-self: flex-end;
   text-align: left;
   padding: 0 0 0 0.6rem;
+  transform-origin: left center;
 }
 
 @media (hover: hover) and (pointer: fine) {
