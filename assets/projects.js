@@ -51,6 +51,7 @@
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
        sourceBlue: true,                 // optional — makes the "Source code" button blue (same blue as Available Blueprints)
+       downloadBlue: true,               // optional — makes the "Download" button blue too
        titlePrefix: "GPL-3.0 licensed",    // optional — small text right in front of the title, on the same line
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
        formats:    [                     // optional — rows of the "Supported Formats" pop-up, each row is
@@ -162,6 +163,7 @@ var PROJECTS = [
     title: "Pluk",
     titlePrefix: "GPL-3.0 licensed",
     sourceBlue: true,
+    downloadBlue: true,
     version: "1.13.0",
     icon: "pluk.webp",
     banner: ["b/Screenshot (945) 2021-11-13.webp"],
@@ -1117,7 +1119,7 @@ var PROJECTS = [
 
       // Download opens the pop-up with the install command
       if (item.command) {
-        var dl = el('button', 'btn btn--primary');
+        var dl = el('button', 'btn ' + (item.downloadBlue ? 'btn--blue' : 'btn--primary'));
         dl.type = 'button';
         dl.setAttribute('aria-haspopup', 'dialog');
         dl.innerHTML = SVG_DOWNLOAD;
@@ -1195,7 +1197,7 @@ var PROJECTS = [
       actions.classList.add('card__actions--bp');
       actions.appendChild(buildButton('Available Blueprints', '', item.blueprints, 'blue', true));
       // Download only shows when the project has a "download" field (even an empty one)
-      if (item.download !== undefined) actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, 'primary'));
+      if (item.download !== undefined) actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, item.downloadBlue ? 'blue' : 'primary'));
     }
     card.appendChild(actions);
 
