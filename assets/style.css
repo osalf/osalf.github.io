@@ -819,7 +819,6 @@ button {
   letter-spacing: 0;
   margin-left: 0.6em;
   opacity: 0.55;              /* subtle */
-  vertical-align: 0.5em;      /* lifted off the baseline so it sits level with the middle of the title */
 }
 
 .card__years {
