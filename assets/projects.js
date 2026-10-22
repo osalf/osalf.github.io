@@ -51,7 +51,7 @@
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
        sourceBlue: true,                 // optional — makes the "Source code" button blue (same blue as Available Blueprints)
-       titlePrefix: "open source | GPL", // optional — small text right in front of the title, on the same line
+       titlePrefix: "GPL-3.0 licensed",    // optional — small text right in front of the title, on the same line
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
        formats:    [                     // optional — rows of the "Supported Formats" pop-up, each row is
                      ["Codecs", "H.264, H.265, VP9, VP8, AV1"]   // [item, what it covers]
@@ -160,7 +160,7 @@ var PROJECTS = [
   },
   {
     title: "Pluk",
-    titlePrefix: "open source | GPL",
+    titlePrefix: "GPL-3.0 licensed",
     sourceBlue: true,
     version: "1.13.0",
     icon: "pluk.webp",
