@@ -1,7 +1,7 @@
 /* Saif — index
    A personal directory, kept like a ledger. */
 
-@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400..700;1,400..700&display=swap');
 
 :root {
   --bg: #eef2f6;
@@ -1638,4 +1638,57 @@ button {
 
 .main:not(:has(.tabs)) .card:first-child {
   padding-top: 1.5rem;
+}
+
+/* ---------- Links page: zig-zag text links ---------- */
+
+/* no tabs any more, so keep the white panel + normal nav spacing on this page */
+.main.main--links {
+  background-color: #ffffff;
+  --line: rgba(27, 36, 48, 0.14);
+}
+
+.main.main--links .crossnav {
+  margin-bottom: 1.5rem;
+}
+
+.zig {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.6rem, 4.5vw, 2.4rem);
+  padding: 1rem 0 0.5rem;
+}
+
+.zig__link {
+  /* odd links end at the centre line, even links start at it: a zig-zag around the middle */
+  align-self: flex-start;
+  width: 50%;
+  text-align: right;
+  padding: 0 0.6rem 0 0;
+  font-family: var(--serif);   /* same font as the "osaif" title in the header */
+  text-transform: lowercase;   /* all lowercase letters */
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: #323745;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.28em;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.zig__link:nth-child(even) {
+  align-self: flex-end;
+  text-align: left;
+  padding: 0 0 0 0.6rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .zig__link:hover { opacity: 0.65; }
 }
