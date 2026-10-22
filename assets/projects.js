@@ -75,13 +75,13 @@ var PROJECTS = [
         label: "Embedded system",
         wiki: "https://en.wikipedia.org/wiki/Embedded_system",
         bold: "embedded system",
-        text: "An embedded system is a a specialized combination of computer hardware and software designed to perform a dedicated function within a larger mechanical or electronic system.\nEmbedded systems span from small devices like digital watches to large industrial machinery and medical systems."
+        text: "An embedded system is a dedicated computer system combining hardware and software designed to perform a specific function. It is embedded as part of a complete device.\nUnlike general computers like laptops, they operate under strict limits for power, memory, and timing."
       }
     ],
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
     videoLabel: "Prototype",
-    years: "2022 – Late 2025",
+    years: "Feb 2022 - Dec 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
@@ -137,20 +137,20 @@ var PROJECTS = [
       {
         label: "ETL pipeline",
         wiki: "https://en.wikipedia.org/wiki/Extract,_transform,_load",
-        bold: "ETL (Extract, Transform, Load)",
-        text: "ETL (Extract, Transform, Load) is an automated data pipeline process executed without human intervention.\nIt ingests raw datasets from single or distributed endpoints, normalizes and cleans the payloads, and writes the transformed data to designated storage sinks."
+        bold: "Extract, transform, load (ETL)",
+        text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed (including cleaning), and loaded into an output data container.\nETL pipelines are fully automatic and run with zero human intervention during their normal day-to-day operations.\nOnce engineers set up the pipeline, it runs on a schedule (e.g., every night at 2 AM) or triggers automatically whenever new data arrives."
       }
     ],
     tagsSuffix: "project",
     banner: ["hb/chrome_572019_2022-07-07_14-02-48.webp", "hb/chrome_572019_2022-07-07_14-02-23.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_849201_2022-07-07_14-01-14.webp"],
     years: "2021 – Late 2022",
-    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nTo keep the archive updated, Hidden Ball pulls data every 100s (3s if a game is live).{br}**It was primarily built to test an ETL workflow/fan project.**",
+    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep things up to date.{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
     descTags: [
       {
         label: "Hidden Ball",
         wiki: "https://en.wikipedia.org/wiki/Hidden_ball_trick",
-        bold: "The hidden ball trick",
-        text: "The hidden ball trick is a deceptive defensive play in baseball where a fielder keeps the ball out of sight, tricks a baserunner into thinking the play is over or the ball has been thrown back to the pitcher, and tags the runner out when they step off the base."
+        bold: "hidden ball trick",
+        text: "A hidden ball trick is a play in baseball which a player deceives the opposing team about the location of the ball, waits for a baserunner to step off base and tags him out."
       }
     ],
     visit: "https://hiddenball.github.io/",
