@@ -812,12 +812,12 @@ button {
   margin: 0;
 }
 
-/* small text right in front of the title (e.g. "open source | GPL" before Pluk) */
+/* small text right after the title on the same line (e.g. "Pluk GPL-3.0 licensed") */
 .card__title-pre {
   font-size: 0.42em;
   font-weight: 600;
   letter-spacing: 0;
-  margin-right: 0.45em;
+  margin-left: 0.6em;
 }
 
 .card__years {
