@@ -50,6 +50,8 @@
                    ],
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
+       sourceBlue: true,                 // optional — makes the "Source code" button blue (same blue as Available Blueprints)
+       titlePrefix: "open source | GPL", // optional — small text right in front of the title, on the same line
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
        formats:    [                     // optional — rows of the "Supported Formats" pop-up, each row is
                      ["Codecs", "H.264, H.265, VP9, VP8, AV1"]   // [item, what it covers]
@@ -158,6 +160,8 @@ var PROJECTS = [
   },
   {
     title: "Pluk",
+    titlePrefix: "open source | GPL",
+    sourceBlue: true,
     version: "1.13.0",
     icon: "pluk.webp",
     banner: ["b/Screenshot (945) 2021-11-13.webp"],
@@ -1044,7 +1048,12 @@ var PROJECTS = [
 
     var text = el('div', 'card__text');
     var title = el('h3', 'card__title');
-    title.textContent = item.title;
+    if (item.titlePrefix) {
+      var pre = el('span', 'card__title-pre');
+      pre.textContent = item.titlePrefix;
+      title.appendChild(pre);
+    }
+    title.appendChild(document.createTextNode(item.title));
     text.appendChild(title);
     if (item.tags && item.tags.length) {
       var tagRow = buildTags(item.tags);
@@ -1125,7 +1134,7 @@ var PROJECTS = [
 
       // Source code downloads the zip straight from /assets/
       if (item.source) {
-        var sc = buildButton('Source code', '', ICON_DIR + item.source, 'primary');
+        var sc = buildButton('Source code', '', ICON_DIR + item.source, item.sourceBlue ? 'blue' : 'primary');
         sc.removeAttribute('target');
         sc.removeAttribute('rel');
         sc.setAttribute('download', '');
