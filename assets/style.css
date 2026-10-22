@@ -1646,6 +1646,10 @@ button {
 .main.main--links {
   background-color: #ffffff;
   --line: rgba(27, 36, 48, 0.14);
+  /* invisible, unclickable stretch below the links: the panel is always at least one
+     screen tall (whatever the device), so the footer stays out of sight until you scroll */
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .main.main--links .crossnav {
@@ -1655,7 +1659,7 @@ button {
 .zig {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.6rem, 4.5vw, 2.4rem);
+  gap: clamp(2.2rem, 6vw, 3.4rem);
   padding: 1rem 0 0.5rem;
 }
 
@@ -1667,7 +1671,7 @@ button {
   padding: 0 0.6rem 0 0;
   font-family: var(--serif);   /* same font as the "osaif" title in the header */
   text-transform: lowercase;   /* all lowercase letters */
-  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  font-size: clamp(1.4rem, 5vw, 2rem);
   font-weight: 800;
   font-style: italic;
   letter-spacing: -0.01em;
