@@ -84,7 +84,7 @@ var PROJECTS = [
     banner: ["b/i.webp"],
     video: "b/20230325_103823.mp4",
     videoLabel: "Prototype",
-    years: "Feb 2022 - Dec 2025",
+    years: "Aug 2022 - Dec 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
     download: "",
@@ -138,7 +138,7 @@ var PROJECTS = [
     center: true,
     tags: [
       {
-        label: "ETL pipeline",
+        label: "ETL",
         wiki: "https://en.wikipedia.org/wiki/Extract,_transform,_load",
         bold: "Extract, transform, load (ETL)",
         text: "Extract, transform, load (ETL) is a three-phase computing process where data are extracted from an input source, transformed (including cleaning), and loaded into an output data container.\nETL pipelines are fully automatic and run with zero human intervention during their normal day-to-day operations."
@@ -146,7 +146,7 @@ var PROJECTS = [
     ],
     tagsSuffix: "project",
     banner: ["hb/chrome_572019_2022-07-07_14-02-48.webp", "hb/chrome_572019_2022-07-07_14-02-23.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_849201_2022-07-07_14-01-14.webp"],
-    years: "2021 – Late 2022",
+    years: "Apr 2021 - Jan 2022",
     desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep things up to date.{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
     descTags: [
       {
