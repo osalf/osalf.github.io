@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.1, maximum-scale=10, user-scalable=yes, viewport-fit=cover">
-<title>1980-2022 RAW DATA · radial pipeline</title>
+<title>1980-2021 RAW DATA · radial pipeline</title>
 <style>
 :root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#c5d0e4;--chip:#eef2f6}
 *{box-sizing:border-box}
@@ -57,9 +57,7 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 #radial{position:absolute;left:0;top:0;z-index:0}
 .lgHdr{position:absolute;transform:translate(-50%,-50%);z-index:2;padding:9px 20px;border-radius:10px;border-top:3px solid #000;background:var(--chip);box-shadow:0 0 0 4px var(--bg);font-size:14px;font-weight:700;white-space:nowrap}
 #coreBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;width:max-content;padding:18px;border-radius:18px;background:var(--chip);border:1.5px solid #000}
-#coreBox .label{margin-bottom:10px;font-size:13px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
-#coreBox .ic{width:68px;height:68px;border-radius:12px;overflow:hidden;display:flex}
-#coreBox .ic svg{width:100%;height:100%;display:block}
+#coreBox .label{font-size:13px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
 #radial text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 #radial .lf{font-size:10.5px;fill:#1c2430}
 #radial .gp{font-size:11px;font-style:italic;font-weight:600}
@@ -85,9 +83,9 @@ body{font-family:Arial,Helvetica,sans-serif}
   <svg class="wires" id="wires"></svg>
   <div class="top" id="top">
     <div class="node">
-      <div class="titleRow"><h2>1980-2022 RAW DATA</h2><span class="size">171 GB</span></div>
+      <div class="titleRow"><h2>1980-2021 RAW DATA</h2><span class="size">171 GB</span></div>
       <div class="vol"><div class="bar"></div></div>
-      <div class="scale"><span>1980</span><span>2022</span></div></div>
+      <div class="scale"><span>1980</span><span>2021</span></div></div>
     <div class="node">
       <div class="vol vert"><div class="funnel"></div><div class="vlabel">Compressed data</div><div class="bar s"></div></div></div>
     
@@ -107,7 +105,6 @@ body{font-family:Arial,Helvetica,sans-serif}
     <div class="stage" id="stage">
       <div id="coreBox">
         <div class="label">DATA MAPPING CORE</div>
-        <div class="ic"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="28" height="28" fill="#FFCA28"></rect><path d="M19 25.2879L21.0615 23.9237C21.2231 24.4313 22.2462 25.6368 23.5385 25.6368C24.8308 25.6368 25.4308 24.931 25.4308 24.463C25.4308 23.1878 24.1112 22.7382 23.4774 22.5223C23.374 22.4871 23.289 22.4581 23.2308 22.4328C23.2009 22.4198 23.1558 22.4025 23.0979 22.3804C22.393 22.1111 19.7923 21.1175 19.7923 18.2373C19.7923 15.065 22.8538 14.7002 23.5462 14.7002C23.9991 14.7002 26.1769 14.7557 27.2615 16.7939L25.2615 18.1898C24.8231 17.3015 24.0946 17.0081 23.6462 17.0081C22.5385 17.0081 22.3077 17.8201 22.3077 18.1898C22.3077 19.227 23.5112 19.6919 24.5273 20.0844C24.7932 20.1871 25.0462 20.2848 25.2615 20.3866C26.3692 20.91 28 21.7666 28 24.463C28 25.8136 26.8672 28.0002 24.0154 28.0002C20.1846 28.0002 19.1692 25.7003 19 25.2879Z" fill="#3E3E3E"></path><path d="M9 25.5587L11.1487 24.1953C11.317 24.7026 11.9713 25.638 12.9205 25.638C13.8698 25.638 14.3557 24.663 14.3557 24.1953V15.0002H16.9982V24.1953C17.041 25.4636 16.3376 28.0002 13.2332 28.0002C10.379 28.0002 9.19242 26.3039 9 25.5587Z" fill="#3E3E3E"></path></svg></div>
       </div>
     </div>
   </div>
@@ -121,10 +118,10 @@ const seg=(t,sub,c,w)=>`<div class="seg" style="--c:${c};--w:${w}"><b>${t}</b></
 
 /* ---- top diagram ---- */
 document.getElementById("decades").innerHTML='<div class="tl">'+[
-  ["1980–1990",10],["1990–2000",10],["2000–2010",10],["2010–2020",10],["2020–2022",4]
+  ["1980–1990",10],["1990–2000",10],["2000–2010",10],["2010–2020",10],["2020–2021",4]
 ].map((d,i)=>seg(d[0],"",pal[i],d[1])).join("")+'</div>';
 document.getElementById("ranges").innerHTML='<div class="tl" style="min-width:920px">'+[
-  "1980–1985","1985–1990","1990–1995","1995–2000","2000–2005","2005–2010","2010–2015","2015–2020","2020–2022"
+  "1980–1985","1985–1990","1990–1995","1995–2000","2000–2005","2005–2010","2010–2015","2015–2020","2020–2021"
 ].map((r,i)=>seg(r,"",pal[i>>1],i==8?4:5)).join("")+'</div>';
 document.getElementById("subyears").innerHTML='<div class="years sub">'+
   ["2001","2002","2003","2004","2005"].map(y=>`<span${y==="2003"?' style="color:var(--fg);font-weight:500"':''}>${y}</span>`).join("")+'</div>';
@@ -255,7 +252,7 @@ function wire(){
         edge=(e,side)=>{const b=e.getBoundingClientRect();return[(side==="right"?b.right:b.left)-ib.left,b.top-ib.top+b.height/2]};
   if(!D.length||!R.length)return;
   const fb=fan.getBoundingClientRect(), ox=fb.left-ib.left+fb.width/2, oy=fb.top-ib.top;
-  const place=(id,px,py)=>{const c=document.getElementById(id);c.style.left=(px+ib.left-tb.left)+"px";c.style.top=(py+ib.top-tb.top-9)+"px"};
+  const place=(id,px,py)=>{const c=document.getElementById(id);c.style.left=((px+ib.left-tb.left)/TOPK)+"px";c.style.top=((py+ib.top-tb.top)/TOPK-9)+"px"};
 
   const curve=(x1,y1,x2,y2,c,arrow)=>{
     const m=(y1+y2)/2;
@@ -270,7 +267,7 @@ function wire(){
     const t=.76, sv=3*t*t-2*t*t*t, [xa,ya]=pt(D[1],0), [xb]=pt(D[2],0),
           mm=(oy+ya)/2, yy=(1-t)**3*oy+(3*(1-t)**2*t+3*(1-t)*t*t)*mm+t**3*ya,
           cx1=ox+(((xa-ox)+(xb-ox))/2)*sv, c1=document.getElementById("cap1");
-    c1.style.left=(cx1+ib.left-tb.left)+"px";c1.style.top=(yy+ib.top-tb.top)+"px";
+    c1.style.left=((cx1+ib.left-tb.left)/TOPK)+"px";c1.style.top=((yy+ib.top-tb.top)/TOPK)+"px";
     c1.style.transform="translate(-50%,-50%)";
   }
 
@@ -322,8 +319,19 @@ function apply(){
   SC.style.height=(zoomed?Math.min(DH*s,innerHeight*.92):DH*s)+"px";
   SC.style.overflow=zoomed?"auto":"hidden";
 }
+/* enlarge only the top diagram (RAW DATA -> Central); the radial tree below is untouched */
+const TOPK=2;
+function scaleTop(){
+  const t=document.getElementById("top");
+  t.style.transform="none"; t.style.marginBottom="0";
+  const h=t.offsetHeight;
+  t.style.transformOrigin="50% 0";
+  t.style.transform="scale("+TOPK+")";
+  t.style.marginBottom=(h*(TOPK-1))+"px";
+}
 function fit(){
   IN.style.transform="none";
+  scaleTop();
   wire();
   DW=IN.offsetWidth; DH=IN.offsetHeight; K=Math.min(1,SC.clientWidth/DW);
   apply();
