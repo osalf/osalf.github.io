@@ -184,7 +184,7 @@ var PROJECTS = [
       }
     ],
     command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
-    source: "c/Pluk=1.13.0.zip",
+    source: "c/Pluk-1.13.0.zip",
     twoRows: true,
     buttons: [
       { label: "Supported Distros", popup: "distros" }
