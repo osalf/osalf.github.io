@@ -1752,3 +1752,13 @@ button {
 @media (hover: hover) and (pointer: fine) {
   .zig__link:hover { opacity: 0.65; }
 }
+
+/* ---------- Links page: phones — links sit a little higher ---------- */
+
+/* extra bottom padding makes the free space below the links bigger than above,
+   so the auto margins push the whole group up (by half of the extra: 1.5rem) */
+@media (max-width: 640px) {
+  .main.main--links .zig {
+    padding-bottom: 4.5rem;
+  }
+}
