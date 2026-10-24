@@ -190,11 +190,12 @@ button {
 
 .top-header__icons a[aria-label="LinkedIn"] {
   width: auto;
+  transform: translateX(calc(var(--hu) * -0.3));   /* nudge a little to the left */
 }
 
 .top-header__icons a[aria-label="LinkedIn"] svg {
-  width: calc(var(--hu) * 4.25);
-  height: calc(var(--hu) * 1.06);
+  width: calc(var(--hu) * 4.7);      /* a little bigger (was 4.25 x 1.06, same 4:1 ratio) */
+  height: calc(var(--hu) * 1.175);
 }
 
 .top-header__icons a[aria-label="Email"] svg {
