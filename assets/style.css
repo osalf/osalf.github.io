@@ -1759,6 +1759,6 @@ button {
    so the auto margins push the whole group up (by half of the extra: 1.5rem) */
 @media (max-width: 640px) {
   .main.main--links .zig {
-    padding-bottom: 4.5rem;
+    padding-bottom: 7.5rem;
   }
 }
