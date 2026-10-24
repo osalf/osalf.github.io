@@ -1725,3 +1725,16 @@ button {
 @media (hover: hover) and (pointer: fine) {
   .zig__link:hover { opacity: 0.65; }
 }
+
+/* mobile: links sit in one centred column instead of the left / right zig-zag */
+@media (max-width: 640px) {
+  .zig__link,
+  .zig__link:nth-child(even) {
+    align-self: center;
+    width: auto;
+    max-width: 100%;
+    text-align: center;
+    padding: 0;
+    transform-origin: center center;
+  }
+}
