@@ -1669,8 +1669,22 @@ button {
   .main.main--links { min-height: 100lvh; }
 }
 
+.main.main--links {
+  display: flex;
+  flex-direction: column;
+}
+
 .main.main--links .crossnav {
+  flex: none;
   margin-bottom: 0;   /* the gap under the line is set by .zig below */
+}
+
+/* the links sit in the middle of the free space between the Links / Projects line and the
+   bottom of the screen; the auto margins do the centring, the padding is the minimum gap */
+.main.main--links .zig {
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 1.5rem 0;
 }
 
 .zig {
@@ -1724,17 +1738,4 @@ button {
 
 @media (hover: hover) and (pointer: fine) {
   .zig__link:hover { opacity: 0.65; }
-}
-
-/* mobile: links sit in one centred column instead of the left / right zig-zag */
-@media (max-width: 640px) {
-  .zig__link,
-  .zig__link:nth-child(even) {
-    align-self: center;
-    width: auto;
-    max-width: 100%;
-    text-align: center;
-    padding: 0;
-    transform-origin: center center;
-  }
 }
