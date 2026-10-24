@@ -1675,7 +1675,7 @@ button {
 .zig {
   --fs: clamp(1.4rem, 5vw, 2rem);   /* link text size */
   --drop: 1.25rem;                  /* extra space pushing all links lower, away from Links / Projects */
-  --shift: calc(var(--fs) * 3);     /* how far the left links (X, VSCO, tvbox) sit left of the centre line */
+  --shift: 0rem;                    /* how far the left links (X, VSCO, storygraph...) sit left of the centre line; 0 = mirrors the right links, so the space left of the left column equals the space right of the right column */
   --slant: -6deg;                   /* extra italic slant on top of the italic font */
   display: flex;
   flex-direction: column;
