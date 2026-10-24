@@ -960,6 +960,11 @@ button {
   border-left: 1.5px solid rgba(27, 36, 48, 0.28);
 }
 
+/* only two logos (e.g. Pluk): give them more room on both sides of the | */
+.card__avail-sep:nth-child(2):nth-last-child(2) {
+  margin: 0 clamp(1.1rem, 6vw, 2.25rem);
+}
+
 .card__main--center .card__desc {
   margin-left: auto;
   margin-right: auto;
@@ -1566,6 +1571,19 @@ button {
 }
 
 .wiki-distro + .wiki-distro { border-left: 1.5px solid rgba(27, 36, 48, 0.28); }
+
+/* only two distro columns (e.g. Pluk): more room around the | between them */
+.wiki-distro:first-child:nth-last-child(2),
+.wiki-distro:last-child:nth-child(2) {
+  padding: 0 clamp(1rem, 5vw, 2.5rem);
+}
+
+@supports (width: 1cqw) {
+  .wiki-distro:first-child:nth-last-child(2),
+  .wiki-distro:last-child:nth-child(2) {
+    padding: 0 clamp(1rem, 7cqw, 2.75rem);
+  }
+}
 
 .wiki-distro__logo {
   position: relative;
