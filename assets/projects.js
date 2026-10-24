@@ -50,7 +50,7 @@
                    ],
        command:    "curl -fsSL https://...", // optional — adds a Download button that opens a pop-up with this command
        source:     "c/Name=1.0.0.zip",   // optional — adds a "Source code" button that downloads this file from /assets/
-       sourceBlue: true,                 // optional — makes the "Source code" button blue (same blue as Available Blueprints)
+       sourceBlue: true,                 // optional — makes the "Source code" button blue (same blue as Blueprints)
        downloadBlue: true,               // optional — makes the "Download" button blue too
        titlePrefix: "GPL-3.0 licensed",    // optional — small text right after the title, on the same line (Pluk GPL-3.0 licensed)
        twoRows:    true,                 // optional — Download + Source code on one line, the extra buttons on a second line
@@ -87,49 +87,7 @@ var PROJECTS = [
     years: "Aug 2022 - Dec 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
-    download: "",
     blueprints: ""
-  },
-  {
-    title: "Klem",
-    version: "5.3.0",
-    icon: "Klem.webp",
-    banner: ["b/klem1.webp", "b/klem2.webp"],
-    years: "2022 – 2023",
-    desc: "**Linux vid compressor software**, built around [[FFmpeg]], it has a basic/advanced modes with codec, quality and audio settings.\n**If FFmpeg is missing or outdated, Klem downloads it for you automatically.**",
-    availableOn: ["debian", "redhat", "arch", "suse", "void"],
-    distroList: [
-      { key: "debian", items: ["Ubuntu", "Linux Mint", "Pop!_OS", "Zorin", "Elementary", "Any distro with apt-get"] },
-      { key: "redhat", items: ["Fedora", "RHEL", "CentOS", "Rocky Linux", "AlmaLinux", "Nobara"] },
-      { key: "arch",   items: ["Manjaro", "EndeavourOS", "Any distro with pacman"] },
-      { key: "suse",   items: ["openSUSE", "SUSE"] },
-      { key: "void",   items: ["Void Linux"] }
-    ],
-    descTags: [
-      {
-        label: "FFmpeg",
-        wiki: "https://en.wikipedia.org/wiki/FFmpeg",
-        images: 2,
-        text: "FFmpeg is a free and open-source software project consisting of a suite of libraries and programs for handling video, audio, and other multimedia files and streams."
-      }
-    ],
-    formats: [
-      ["Input",                     "mp4, mkv, mov, avi, webm, m4v, flv, wmv, ts, mts, m2ts, vob, 3gp, 3g2, ogv, mpg, mpeg, asf"],
-      ["Codecs",                    "H.264, H.265, VP9, VP8, AV1"],
-      ["Containers",                "mp4, mkv, webm, mov, m4v"],
-      ["Audio encoders",            "AAC, Opus, MP3, AC-3, FLAC, WAV, Vorbis"],
-      ["Audio-only output formats", "mp3, m4a, opus, flac, wav, ogg, ac3"],
-      ["Resolutions",               "2160p, 1440p, 1080p, 720p, 480p, 360p (plus original)"],
-      ["Frame rates",               "60, 30, 25, 24, 15 (plus original)"],
-      ["H.265 tunes",               "animation, grain, fastdecode, zerolatency"]
-    ],
-    command: "curl -fsSL https://osaif.pages.dev/klem | bash",
-    source: "c/Klem=5.3.0.zip",
-    twoRows: true,
-    buttons: [
-      { label: "Supported Distros", popup: "distros" },
-      { label: "Supported Formats", popup: "formats" }
-    ]
   },
   {
     title: "Hidden Ball",
@@ -189,30 +147,6 @@ var PROJECTS = [
     buttons: [
       { label: "Supported Distros", popup: "distros" }
     ]
-  },
-  {
-    title: "Steno",
-    icon: "steno.webp",
-    banner: ["b/steno.webp"],
-    years: "2023",
-    desc: "Steno is a browser based IMG/PDF compressor.\n**Files are processed locally and never uploaded.**",
-    formats: [
-      ["Formats",     "JPG, PNG, WebP, GIF, BMP, AVIF, ICO, SVG, HEIC, JXL, RAW"],
-      ["RAW formats", "dng, cr2, cr3, nef, arw, raf, orf, rw2, pef"],
-      ["Output",      "JPG, WEBP, PNG, ICO, SVG"]
-    ],
-    visit: "https://steuo.github.io/",
-    buttons: [
-      { label: "Supported Formats", popup: "formats" }
-    ]
-  },
-  {
-    title: "SVGxl",
-    icon: "svgxl.webp",
-    banner: "",
-    years: "2024 – 2025",
-    desc: "SVG editor.",
-    blueprints: ""
   }
 ];
 
@@ -1198,7 +1132,7 @@ var PROJECTS = [
       });
     } else {
       actions.classList.add('card__actions--bp');
-      actions.appendChild(buildButton('Available Blueprints', '', item.blueprints, 'blue', true));
+      actions.appendChild(buildButton('Blueprints', '', item.blueprints, 'blue', true));
       // Download only shows when the project has a "download" field (even an empty one)
       if (item.download !== undefined) actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, item.downloadBlue ? 'blue' : 'primary'));
     }
