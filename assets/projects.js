@@ -105,15 +105,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["hb/chrome_572019_2022-07-07_14-02-48.webp", "hb/chrome_572019_2022-07-07_14-02-23.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_849201_2022-07-07_14-01-14.webp"],
     years: "Apr 2021 - Jan 2022",
-    desc: "[[Hidden Ball]] is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep things up to date.{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
-    descTags: [
-      {
-        label: "Hidden Ball",
-        wiki: "https://en.wikipedia.org/wiki/Hidden_ball_trick",
-        bold: "hidden ball trick",
-        text: "A hidden ball trick is a play in baseball which a player deceives the opposing team about the location of the ball, waits for a baserunner to step off base and tags him out."
-      }
-    ],
+    desc: "Hidden Ball is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep things up to date.{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
     visit: "https://hiddenball.github.io/",
     blueprints: "../assets/hb/728829.html"
   },
