@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Pipeline blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--fg:#1c2430;--mute:#5f6979;--line:#ccc;--chip:#eef2f6;--ink:#2d4f9c;--ln:#2d4f9c}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#fff}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* full-screen viewer: fills the whole screen, no frame, no zoom; the diagram keeps its design size and scrolls/pans inside */
+#scroll{position:fixed;left:0;right:0;top:0;bottom:0;overflow:auto;background:#fff;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+.pad{display:flex;min-width:100%;min-height:100%;padding:calc(32px + env(safe-area-inset-top,0px)) 10px calc(32px + env(safe-area-inset-bottom,0px))}
+.pad>main{margin:auto;flex:none}
+body{margin:0;background:#fff;color:var(--fg);font:15px/1.5 "Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+main{display:flex;flex-direction:row;align-items:flex-start;gap:80px;width:max-content}
+.tree{display:flex;flex-direction:column;align-items:center}
+.t1{flex:none;width:1100px}
+a{color:inherit;text-decoration:none}
+.nb{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;width:260px;max-width:100%;min-height:64px;padding:8px 14px;font-weight:600;font-size:15px;letter-spacing:.02em;border-radius:8px;background:var(--c);color:#fff;border-top:3px solid color-mix(in srgb,var(--c) 80%,#000);box-shadow:0 2px 6px rgba(35,64,135,.28);transition:background .15s ease,box-shadow .15s ease,transform .15s ease}
+.nb:hover{background:color-mix(in srgb,var(--c) 80%,#000);box-shadow:0 4px 12px rgba(35,64,135,.38);transform:translateY(-1px)}
+.nb.pass,.nb.fail{color:#1c2430;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.nb.pass:hover,.nb.fail:hover{box-shadow:0 4px 12px rgba(0,0,0,.22)}
+.nb:focus-visible{outline:3px solid #FFCA28;outline-offset:2px}
+.nb small{font-weight:400;font-size:13px;color:rgba(255,255,255,.75);letter-spacing:0}
+.ln{position:relative;width:2px;height:28px;background:var(--ln);flex:none}
+.ln::after{content:"";position:absolute;bottom:-1px;left:50%;margin-left:-5px;border:5px solid transparent;border-top:7px solid var(--ln);border-bottom:0}
+.ln.nh::after{display:none}
+.loop{display:flex;flex-direction:column;align-items:center;padding:20px 18px 22px;border:2px solid #4a6cb3;border-radius:40px;max-width:100%}
+.cyc{display:flex;align-items:center;gap:6px}
+.cyc .nb{width:140px;padding-left:8px;padding-right:8px}
+.ar{color:var(--ln);font-weight:700;font-size:18px;width:22px;text-align:center}
+.stem{position:relative}
+.stage{position:absolute!important;right:calc(100% + 34px);top:50%;transform:translateY(-50%);width:104px!important;max-width:none!important;min-height:48px!important}
+.stage::after{content:"";position:absolute;left:100%;top:50%;width:34px;height:0;border-top:2px dashed var(--ln)}
+
+/* branching: horizontal bar runs from the centre of the first branch to the centre of the last */
+.split{display:flex;justify-content:center;max-width:100%}
+.br{position:relative;display:flex;flex-direction:column;align-items:center;padding:0 12px}
+.br::before{content:"";position:absolute;top:0;height:2px;background:var(--ln)}
+.split>.br:first-child::before{left:50%;right:0}
+.split>.br:last-child::before{left:0;right:50%}
+.br .nb{width:220px;max-width:100%}
+
+/* outer split: same symmetric layout as the CSLR Stage1 split (Pass left, Fail right, stem in the middle) */
+.split.outer{display:grid;grid-template-columns:424px 424px;justify-content:normal;align-items:start;width:848px;max-width:none}
+.split.outer .split{width:488px;max-width:none}
+
+/* ---- new section under DATA (zero-width wrapper so it never changes the layout above; it grows evenly left and right around DATA) ---- */
+.free{width:0;display:flex;flex-direction:column;align-items:center}
+.free .nb,.free .br .nb{width:200px;max-width:none}
+.free .br{padding:0 6px}
+.free .split{max-width:none}
+.free .split.s1{display:grid;grid-template-columns:424px 424px;width:848px;justify-content:normal;align-items:start}
+.free .split.s2{width:424px}
+.free.t2{width:848px;flex:none}
+.tri{position:relative;width:660px;height:450px;flex:none}
+.tri .nb{position:absolute}
+.tri svg{position:absolute;left:0;top:0;overflow:visible}
+.tri svg line{stroke:var(--ln);stroke-width:2}
+.tri b{position:absolute;left:316px;top:218px;width:28px;height:28px;border:2px solid var(--ln);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ln);font-weight:700;font-size:20px;line-height:1;background:#fff}
+.tri .out{position:absolute;left:50%;margin-left:-1px}
+.pair{display:flex;align-items:center;width:460px;flex:none}
+.pl{width:60px;flex:none;display:flex;align-items:center;justify-content:center}
+.pl b{width:28px;height:28px;border:2px solid var(--ln);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ln);font-weight:700;font-size:20px;line-height:1;background:#fff}
+.fk,.mg{position:relative;width:260px;height:40px;flex:none}
+.fk i,.mg i{position:absolute;display:block;background:var(--ln)}
+.fk .c{left:50%;margin-left:-1px;top:0;height:20px;width:2px}
+.fk .h,.mg .h{left:-1px;right:-1px;top:19px;height:2px}
+.fk .a,.mg .a{left:-1px;width:2px}
+.fk .b,.mg .b{right:-1px;width:2px}
+.fk .a,.fk .b{top:20px;bottom:0}
+.mg .a,.mg .b{top:0;height:20px}
+.mg .c{left:50%;margin-left:-1px;top:20px;bottom:0;width:2px}
+.fk .a::after,.fk .b::after,.mg .c::after{content:"";position:absolute;bottom:-1px;left:50%;margin-left:-5px;border:5px solid transparent;border-top:7px solid var(--ln);border-bottom:0}
+.mbw{position:relative;width:200px;flex:none}
+.side{position:absolute;left:100%;top:50%;transform:translateY(-50%);display:flex;align-items:center}
+
+/* ---- Model Training: steps arranged as a ring (arrows instead of +) ---- */
+.lw{position:relative;display:flex;flex-direction:column;align-items:center}
+.lw{margin-top:31px}
+.lw .ttl{position:absolute;left:50%;margin-left:-130px;top:-31px;z-index:2}
+.loop{padding-top:46px}
+.rng{position:relative;width:700px;height:306px;flex:none}
+.rng svg{position:absolute;left:0;top:0;overflow:visible}
+.rng svg line{stroke:var(--ln);stroke-width:2}
+.rng .nb{position:absolute;width:170px;left:var(--x);top:var(--y)}
+.rng b{position:absolute;left:336px;top:139px;width:28px;height:28px;border:2px solid var(--ln);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ln);font-weight:700;font-size:17px;line-height:1;background:#fff}
+.rng .ln{position:absolute;left:50%;margin-left:-1px}
+.rng .xo{top:274px;height:56px}
+
+</style>
+</head>
+<body>
+<div id="scroll"><div class="pad">
+<main>
+<div class="tree t1">
+<a class="nb" style="--c:#2d4f9c" href="input.html">Data Acquisition</a>
+<div class="ln"></div>
+<a class="nb" style="--c:#2d4f9c" href="sign-labeling.html">Cleaning</a>
+<div class="ln"></div>
+<a class="nb" style="--c:#2d4f9c" href="3d-coordinates.html">Coordinates</a>
+<div class="ln"></div>
+<a class="nb" style="--c:#2d4f9c" href="3d-motion.html">Data Augmentation</a>
+<div class="ln"></div>
+<div class="lw">
+<a class="nb ttl" style="--c:#2d4f9c" href="model-algorithm-training.html">Supervised Learning</a>
+<div class="loop">
+  <div class="rng">
+    <svg width="700" height="306" viewBox="0 0 700 306" aria-hidden="true"><defs><marker id="ra" markerWidth="9" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4 L0,8 z" fill="#2d4f9c"/></marker></defs><line x1="310.0" y1="32.0" x2="390.0" y2="32.0" marker-end="url(#ra)"/><line x1="508.1" y1="64.0" x2="566.9" y2="121.0" marker-end="url(#ra)"/><line x1="566.9" y1="185.0" x2="508.1" y2="242.0" marker-end="url(#ra)"/><line x1="390.0" y1="274.0" x2="310.0" y2="274.0" marker-end="url(#ra)"/><line x1="191.9" y1="242.0" x2="133.1" y2="185.0" marker-end="url(#ra)"/><line x1="133.1" y1="121.0" x2="191.9" y2="64.0" marker-end="url(#ra)"/></svg>
+    <a class="nb" style="--c:#4a6cb3;--x:140px;--y:0px" href="learning.html">Gradient Descent</a>
+    <a class="nb" style="--c:#4a6cb3;--x:390px;--y:0px" href="weighting.html">Learned Parameters</a>
+    <a class="nb" style="--c:#4a6cb3;--x:515px;--y:121px" href="scoring.html">Softmax Inference</a>
+    <a class="nb" style="--c:#4a6cb3;--x:390px;--y:242px" href="limiting.html">Robustness Testing</a>
+    <a class="nb" style="--c:#4a6cb3;--x:140px;--y:242px" href="counting.html">Temporal Debouncing</a>
+    <a class="nb" style="--c:#4a6cb3;--x:15px;--y:121px" href="validation.html">Hyperparameter Validation</a>
+    <b>↻</b>
+    <div class="ln nh xo"></div>
+  </div>
+</div>
+</div>
+<div class="ln"></div>
+<a class="nb" style="--c:#2d4f9c" href="data-beta.html">Model V1 (Beta)</a>
+<div class="ln"></div>
+<a class="nb" style="--c:#2d4f9c" href="3d-motion.html">ISLR Stage1 Testing</a>
+<div class="ln nh"></div>
+<div class="split outer">
+  <!-- Pass branch -->
+  <div class="br wide">
+    <div class="ln"></div>
+    <a class="nb pass" style="--c:#a5d6a7" href="pass.html">Pass</a>
+    <div class="ln"></div>
+    <a class="nb" style="--c:#4a6cb3" href="stage-testing.html">ISLR Stage2 testing</a>
+    <div class="ln nh"></div>
+    <div class="split">
+      <div class="br">
+        <div class="ln"></div>
+        <a class="nb pass" style="--c:#a5d6a7" href="pass.html">Pass</a>
+        <div class="ln"></div>
+        <a class="nb" style="--c:#2d4f9c" href="data.html">Model V1</a>
+      </div>
+      <div class="br">
+        <div class="ln"></div>
+        <a class="nb fail" style="--c:#ef9a9a" href="fail.html">Fail</a>
+        <div class="ln"></div>
+        <a class="nb" style="--c:#4a6cb3" href="model-retraining.html">Backpropagation</a>
+      </div>
+    </div>
+  </div>
+  <!-- Fail branch -->
+  <div class="br">
+    <div class="ln"></div>
+    <a class="nb fail" style="--c:#ef9a9a" href="fail.html">Fail</a>
+    <div class="ln"></div>
+    <a class="nb" style="--c:#4a6cb3" href="model-retraining.html">Backpropagation</a>
+  </div>
+</div>
+</div>
+<div class="tree free t2">
+    <div class="tri">
+      <svg width="660" height="450" viewBox="0 0 660 450" aria-hidden="true"><line x1="330" y1="32" x2="549" y2="170"/><line x1="549" y1="170" x2="465" y2="394"/><line x1="465" y1="394" x2="195" y2="394"/><line x1="195" y1="394" x2="111" y2="170"/><line x1="111" y1="170" x2="330" y2="32"/></svg>
+      <a class="nb" style="--c:#2d4f9c;left:230px;top:0" href="islr-data.html">ISLR Trained Module</a>
+      <a class="nb" style="--c:#2d4f9c;left:449px;top:138px" href="sl-grammar.html">SL Grammar Injection</a>
+      <a class="nb" style="--c:#2d4f9c;left:365px;top:362px" href="sentences-injection.html">Continuous Corpus</a>
+      <a class="nb" style="--c:#2d4f9c;left:95px;top:362px" href="sentences-decoding.html">CTC Beam Search</a>
+      <a class="nb" style="--c:#2d4f9c;left:11px;top:138px" href="cslr.html">CSLR Model Injection</a>
+      <b>+</b>
+      <div class="ln out" style="top:394px;height:56px"></div>
+    </div>
+    <div class="mbw">
+      <a class="nb" style="--c:#2d4f9c" href="model-beta.html">Model V2 (Beta)</a>
+      <div class="side">
+        <span class="pl"><b>+</b></span>
+        <a class="nb" style="--c:#2d4f9c" href="marker.html">Marker</a>
+      </div>
+    </div>
+    <div class="ln"></div>
+    <a class="nb" style="--c:#4a6cb3" href="cslr-stage1-testing.html">CSLR Stage1 Testing</a>
+    <div class="ln nh"></div>
+    <div class="split s1">
+      <!-- Stage1 Pass -->
+      <div class="br">
+        <div class="ln"></div>
+        <a class="nb pass" style="--c:#a5d6a7" href="pass.html">Pass</a>
+        <div class="ln"></div>
+        <a class="nb" style="--c:#4a6cb3" href="cslr-stage2-testing.html">CSLR Stage2 Testing</a>
+        <div class="ln nh"></div>
+        <div class="split s2">
+          <div class="br">
+            <div class="ln"></div>
+            <a class="nb pass" style="--c:#a5d6a7" href="pass.html">Pass</a>
+            <div class="ln"></div>
+            <a class="nb" style="--c:#2d4f9c" href="model-v2.html">Model V2</a>
+          </div>
+          <div class="br">
+            <div class="ln"></div>
+            <a class="nb fail" style="--c:#ef9a9a" href="fail.html">Fail</a>
+            <div class="ln"></div>
+            <a class="nb" style="--c:#4a6cb3" href="model-retraining.html">Backpropagation</a>
+          </div>
+        </div>
+      </div>
+      <!-- Stage1 Fail -->
+      <div class="br">
+        <div class="ln"></div>
+        <a class="nb fail" style="--c:#ef9a9a" href="fail.html">Fail</a>
+        <div class="ln"></div>
+        <a class="nb" style="--c:#4a6cb3" href="model-retraining.html">Backpropagation</a>
+      </div>
+    </div>
+</div>
+</main>
+</div></div>
+</body>
+</html>
