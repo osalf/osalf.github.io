@@ -87,7 +87,7 @@ var PROJECTS = [
     years: "Aug 2022 - Dec 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
-    blueprints: ""
+    blueprints: "../assets/f/B.html"
   },
   {
     title: "Hidden Ball",
