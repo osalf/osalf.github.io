@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.1, maximum-scale=10, user-scalable=yes, viewport-fit=cover">
+<title>1980-2021 RAW DATA · radial pipeline</title>
+<style>
+:root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#c5d0e4;--chip:#eef2f6}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{display:flex;flex-direction:column;justify-content:center;min-height:100vh;background:var(--bg);color:var(--fg);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+main{width:100%;margin:0 auto;padding:56px 28px 96px}
+.d{display:inline-block;width:9px;height:9px;border-radius:50%;background:#000;flex:none}
+.scroll{position:relative;width:100%;overflow:hidden;touch-action:pan-x pan-y}
+.scroll.full{position:fixed;left:0;right:0;top:0;width:auto;z-index:1000;background:var(--bg)}
+.sizer{position:relative}
+.inner{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0}
+.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
+.wires path{fill:none;stroke-width:1.5;opacity:1}
+
+/* top column */
+.top{position:relative;width:940px;margin:0 auto}
+.node{text-align:center}
+.node>.d{display:block;margin:0 auto}
+.node h2{margin:10px 0 0;font-size:15px;font-weight:600}
+.node .titleRow{position:relative;width:460px;margin:0 auto}
+.node .size{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:.85em;color:var(--mute)}
+.vol.vert .vlabel{font-size:13px;font-weight:600}
+.node .vol,.node .scale{width:460px;margin:0 auto}
+.vl{width:1.5px;height:30px;margin:12px auto 0;background:var(--line)}
+.vol{display:flex;align-items:center;margin-top:14px}
+.vol.vert{flex-direction:column;align-items:center;gap:8px;width:130px;margin:14px auto 0}
+.bar{flex:1;height:34px;border-radius:8px;background:repeating-linear-gradient(90deg,#000 0,#000 2.2px,transparent 3.6px,transparent 5.6px,#000 7px)}
+.bar.s{flex:none;width:26%;background:repeating-linear-gradient(90deg,#000 0,#000 1.6px,transparent 2.6px,transparent 3px,#000 4px)}
+.vol.vert .bar.s{width:42%;height:22px}
+.funnel{width:100%;height:58px;background:#000;clip-path:polygon(0 0,100% 0,68% 100%,32% 100%)}
+.scale{display:flex;justify-content:space-between;color:var(--mute);font-size:12px;margin-top:6px}
+.fan{height:64px}
+#fan{height:104px}
+.gap{height:56px}
+#decades+.gap{height:170px}
+.cap.dot{position:absolute;left:0;width:max-content;text-align:center;padding:0 8px;color:var(--fg);font-weight:600;font-size:13px;background:var(--bg);transform:translate(-50%,-100%);line-height:1.3;white-space:nowrap}
+
+.tl{display:grid;grid-template-columns:repeat(44,minmax(0,1fr));width:940px;min-width:0;transform:translateX(-10.68px)}
+.seg{grid-column:span var(--w);margin:0 2px;padding:9px 10px 10px;border-radius:8px;border-top:3px solid var(--c);background:color-mix(in srgb,var(--c) 11%,var(--chip));font-size:13.5px;line-height:1.35}
+.seg b{font-weight:500;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap}
+#decades .seg{justify-self:center}
+.years{display:flex;gap:4px;width:max-content;max-width:420px;margin:14px auto 0;--c:#000}
+.years span{flex:1;text-align:center;padding:7px 22px;border-radius:8px;border-top:3px solid var(--c);background:color-mix(in srgb,var(--c) 11%,var(--chip));font-size:13px;color:var(--mute)}
+#divisions .years span{flex:none;width:72px;padding:7px 0}
+.years.sub{margin-top:10px}
+.years.sub span{padding:5px 12px;font-size:11.5px}
+
+/* radial stage */
+.tree{margin-top:30px}
+.stage{position:relative;margin:0 auto}
+#radial{position:absolute;left:0;top:0;z-index:0}
+.lgHdr{position:absolute;transform:translate(-50%,-50%);z-index:2;padding:9px 20px;border-radius:10px;border-top:3px solid #000;background:var(--chip);box-shadow:0 0 0 4px var(--bg);font-size:14px;font-weight:700;white-space:nowrap}
+#coreBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;width:max-content;padding:18px;border-radius:18px;background:var(--chip);border:1.5px solid #000}
+#coreBox .label{font-size:13px;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+#radial text{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#radial .lf{font-size:10.5px;fill:#1c2430}
+#radial .gp{font-size:11px;font-style:italic;font-weight:600}
+#radial .ct{font-size:12.5px;font-weight:700}
+#radial g.leaf:hover .lf{font-weight:700}
+@media(max-width:600px){main{padding:24px 8px 40px}}
+/* plain */
+:root{--bg:#fff;--chip:#fff;--fg:#222;--mute:#666;--line:#888}
+html,body{background:#fff}
+body{font-family:Arial,Helvetica,sans-serif}
+.seg,.years span,.lgHdr{border:1px solid #333;border-radius:3px;background:#fff;box-shadow:none}
+.lgHdr{box-shadow:0 0 0 4px #fff}
+#coreBox{box-shadow:none;border-radius:6px}
+#radial text{font-family:Arial,Helvetica,sans-serif}
+#radial .lf{fill:#333}
+#radial .gp{font-style:normal;font-weight:700;fill:#222!important}
+#radial .ct{fill:#111!important}
+</style>
+</head>
+<body>
+<main>
+<div class="scroll" id="scroll"><div class="sizer" id="sizer"><div class="inner" id="inner">
+  <svg class="wires" id="wires"></svg>
+  <div class="top" id="top">
+    <div class="node">
+      <div class="titleRow"><h2>1980-2021 RAW DATA</h2><span class="size">171 GB</span></div>
+      <div class="vol"><div class="bar"></div></div>
+      <div class="scale"><span>1980</span><span>2021</span></div></div>
+    <div class="node">
+      <div class="vol vert"><div class="funnel"></div><div class="vlabel">Compressed data</div><div class="bar s"></div></div></div>
+    
+    <div class="fan" id="fan"></div>
+    <div class="cap dot" id="cap1">Decade labeling</div>
+    <div id="decades"></div>
+    <div class="gap"></div>
+    <div class="cap dot" id="cap2">5y labeling</div>
+    <div id="ranges"></div>
+    <div class="gap"></div>
+    <div id="subyears"></div>
+    <div class="gap"></div>
+    <div id="divisions"></div>
+    <div class="fan" id="yearFan"></div>
+  </div>
+  <div class="tree">
+    <div class="stage" id="stage">
+      <div id="coreBox">
+        <div class="label">DATA MAPPING CORE</div>
+      </div>
+    </div>
+  </div>
+</div></div></div>
+</main>
+<script>
+const pal=Array(6).fill("#000");
+const LINE="#000";
+const P=s=>s.split("|");
+const seg=(t,sub,c,w)=>`<div class="seg" style="--c:${c};--w:${w}"><b>${t}</b></div>`;
+
+/* ---- top diagram ---- */
+document.getElementById("decades").innerHTML='<div class="tl">'+[
+  ["1980–1990",10],["1990–2000",10],["2000–2010",10],["2010–2020",10],["2020–2021",4]
+].map((d,i)=>seg(d[0],"",pal[i],d[1])).join("")+'</div>';
+document.getElementById("ranges").innerHTML='<div class="tl" style="min-width:920px">'+[
+  "1980–1985","1985–1990","1990–1995","1995–2000","2000–2005","2005–2010","2010–2015","2015–2020","2020–2021"
+].map((r,i)=>seg(r,"",pal[i>>1],i==8?4:5)).join("")+'</div>';
+document.getElementById("subyears").innerHTML='<div class="years sub">'+
+  ["2001","2002","2003","2004","2005"].map(y=>`<span${y==="2003"?' style="color:var(--fg);font-weight:500"':''}>${y}</span>`).join("")+'</div>';
+document.getElementById("divisions").innerHTML='<div class="years">'+
+  ["West","Central","East"].map(d=>`<span${d==="Central"?' style="color:var(--fg);font-weight:500"':''}>${d}</span>`).join("")+'</div>';
+
+/* ---- schema data ---- */
+const PITCH=P("Air outs|At bats|Batting average|Balks|Walks|Batters faced|Blown saves|Catcher's interference|Caught stealing|Caught stealing percentage|Complete games|Doubles|Earned runs|Earned run average|Games finished|Games pitched|Games started|Grounded into double play|Ground outs|Ground outs to air outs ratio|Hit by pitch|Hits|Hits per 9 innings|Holds|Home runs|Home runs per 9 innings|Inherited runners|Inherited runners scored|Innings pitched|Intentional walks|Losses|Number of pitches|On-base percentage|On-base plus slugging|Outs|Pickoffs|Pitches per inning|Runs|Runs scored per 9 innings|Sacrifice bunts|Sacrifice flies|Save opportunities|Saves|Shutouts|Slugging percentage|Stolen base percentage|Stolen bases|Strikeouts|Strike percentage|Strikeout-to-walk ratio|Strikeouts per 9 innings|Strikes|Total bases|Triples|Walks per 9 innings|Walks plus hits per inning pitched|Wild pitches|Winning percentage|Wins");
+const FIELD=P("Age|Assists|Catcher earned run average|Catcher's interference|Caught stealing|Caught stealing percentage|Chances|Double plays|Errors|Fielding percentage|Games played|Games started|Innings|Passed balls|Pickoffs|Position|Put outs|Range factor per 9 innings|Range factor per game|Stolen base percentage|Stolen bases|Throwing errors|Triple plays|Wild pitches");
+const HIT=P("Age|Air outs|At bats|At bats per home run|Batting average|Batting average on balls in play|Walks|Catcher's interference|Caught stealing|Caught stealing percentage|Doubles|Games played|Grounded into double play|Ground outs|Ground outs to air outs ratio|Hit by pitch|Hits|Home runs|Intentional walks|Left on base|Number of pitches|On-base percentage|On-base plus slugging|Plate appearances|Runs batted in|Runs|Sacrifice bunts|Sacrifice flies|Slugging percentage|Stolen base percentage|Stolen bases|Strikeouts|Total bases|Triples");
+const DATA=[
+  ["Game",P("Attendance|Away score|Date|Game type|Home score|Status|Venue name at the time")],
+  ["Teams",[["Level",P("Active|Current name|Division|ID|League|Name history (past names only)|Trophies")],["Trophies",P("Division titles|Pennants|Wild cards|World Series")]]],
+  ["Players",P("Debut date|Status|Bat side|Birth date|Death date|Height|Last active season|Pitch hand|Weight")],
+  ["Managers",P("First season managed|Last season managed|Status")],
+  ["Player-stats",[["Pitching stats",PITCH],["Fielding stats",FIELD],["Hitting stats",HIT]]],
+  ["Rosters",P("Year|Teams")],
+  ["Manager-stats",P("Manager ID|Team ID")],
+  ["Awards",P("Player|Team")],
+  ["Transactions",[["File info",P("Version|Year|Month")],["Transaction fields",P("Date|Type code|Player ID|Player name|From team ID|To team ID|Description")],["Transaction types",P("Signed as Free Agent|Selected|Designated for Assignment|Number Change|Assigned|Trade|Released|Outrighted|Claimed Off Waivers|Status Change")]]],
+  ["Standings",P("Clinched|Division|Division rank|Losses|Winning percentage|Wins")],
+  ["Standings-splits",[["Splits",P("Home|Away|Left|Left home|Left away|Right|Right home|Right away|Last ten games|Extra-inning games|One-run games|Day games|Night games|Grass|Turf")],["Expected record",P("Expected win-loss record|Expected win-loss record for the season")]]],
+  ["Drafts",P("Player name|Bats (left, right or switch)|Throws (left or right)|Round|Overall pick number|Team ID|Position|School|Birth date|Height|Weight")]
+];
+const COLORS=["#000"];
+
+/* ---------------------------------------------------------------------
+ * RADIAL TREE
+ * AL fans out as a half circle to the left, NL as a half circle to the
+ * right. Rings (distance from each league root):
+ *   RC  category dot        RS  sub-group dot        RL  leaf dots
+ * Each ring is joined by an arc ("elbow") plus radial spokes.
+ * ------------------------------------------------------------------- */
+function buildRadial(){
+  const stage=document.getElementById("stage");
+  const cats=DATA.map(([n,it])=>typeof it[0]==="string"
+    ?{n,groups:[{n:null,leaves:it}]}
+    :{n,groups:it.map(g=>({n:g[0],leaves:g[1]}))});
+  const GG=1.5, CG=4.5, SPAN=176, SLOT=13.5, OFFSET=270;
+  const RC=300, RM1=450, RS=580, RM2=720;
+
+  let T=0;
+  cats.forEach((c,i)=>{if(i)T+=CG;c.groups.forEach((g,j)=>{if(j)T+=GG;T+=g.leaves.length})});
+  const a=SPAN/T, RL=Math.max(820,SLOT/(a*Math.PI/180));
+
+  let cur=-SPAN/2+a/2;
+  cats.forEach((c,i)=>{
+    if(i)cur+=CG*a;
+    c.groups.forEach((g,j)=>{
+      if(j)cur+=GG*a;
+      g.phis=g.leaves.map(()=>{const v=cur;cur+=a;return v});
+      g.phi=(g.phis[0]+g.phis[g.phis.length-1])/2;
+    });
+    const f=c.groups[0].phis[0], l=c.groups[c.groups.length-1].phis.slice(-1)[0];
+    c.phi=(f+l)/2;
+  });
+
+  const ctx=document.createElement("canvas").getContext("2d");
+  ctx.font="10.5px Arial,Helvetica,sans-serif";
+  let Lw=0;
+  cats.forEach(c=>c.groups.forEach(g=>g.leaves.forEach(l=>Lw=Math.max(Lw,ctx.measureText(l).width))));
+  const L=Lw+16;
+  const W=Math.ceil(2*(OFFSET+RL+L)+60), H=Math.ceil(2*(RL+L)+60);
+  stage.style.width=W+"px"; stage.style.height=H+"px";
+
+  const rad=Math.PI/180, f1=n=>n.toFixed(1);
+  function league(s){            // s=-1 American (left), s=+1 National (right)
+    const Ox=W/2+s*OFFSET, Oy=H/2;
+    const pol=(r,f)=>[Ox+s*r*Math.cos(f*rad),Oy+r*Math.sin(f*rad)];
+    const ln=(r1,f,r2,col,w,o)=>{const[a1,b1]=pol(r1,f),[a2,b2]=pol(r2,f);return `<path d="M${f1(a1)} ${f1(b1)}L${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" opacity="${o}" fill="none"/>`};
+    const arc=(r,fa,fb,col,w,o)=>{if(Math.abs(fb-fa)<.01)return"";const[a1,b1]=pol(r,fa),[a2,b2]=pol(r,fb);return `<path d="M${f1(a1)} ${f1(b1)}A${r} ${r} 0 0 ${s<0?0:1} ${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" opacity="${o}" fill="none"/>`};
+    const dot=(r,f,rr,col)=>{const[x,y]=pol(r,f);return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${rr}" fill="${col}"/>`};
+    const txt=(r,f,str,cls,col,dy)=>{
+      const[x,y]=pol(r,f);
+      const psi=Math.atan2(Math.sin(f*rad),s*Math.cos(f*rad))/rad;
+      const rot=s<0?psi+180:psi;
+      return `<text class="${cls}" transform="translate(${f1(x)} ${f1(y)}) rotate(${f1(rot)})" text-anchor="${s<0?"end":"start"}" dy="${dy}"${col?` style="fill:${col}"`:""}>${str}</text>`;
+    };
+    let o="";
+    cats.forEach((c,i)=>{
+      const col=COLORS[i%COLORS.length], multi=c.groups.length>1||c.groups[0].n;
+      o+=ln(0,c.phi,RC,col,1.6,.5);
+      o+=ln(RC,c.phi,multi?RM1:RM1,col,1.6,.8);
+      if(!multi){
+        const g=c.groups[0], ps=g.phis;
+        o+=arc(RM1,ps[0],ps[ps.length-1],col,1.4,.8);
+        ps.forEach((f,k)=>{o+=ln(RM1,f,RL,col,1,.5)});
+        ps.forEach((f,k)=>{o+=`<g class="leaf">${dot(RL,f,2.6,col)}${txt(RL+8,f,g.leaves[k],"lf",null,3.5)}</g>`});
+      }else{
+        const gs=c.groups;
+        o+=arc(RM1,gs[0].phi,gs[gs.length-1].phi,col,1.4,.8);
+        gs.forEach(g=>{
+          o+=ln(RM1,g.phi,RS,col,1.4,.8);
+          o+=ln(RS,g.phi,RM2,col,1.2,.7);
+          const ps=g.phis;
+          o+=arc(RM2,ps[0],ps[ps.length-1],col,1.2,.75);
+          ps.forEach(f=>{o+=ln(RM2,f,RL,col,1,.5)});
+          ps.forEach((f,k)=>{o+=`<g class="leaf">${dot(RL,f,2.6,col)}${txt(RL+8,f,g.leaves[k],"lf",null,3.5)}</g>`});
+          o+=dot(RS,g.phi,4.5,col)+txt(RS+9,g.phi,g.n,"gp",col,-4.5);
+        });
+      }
+      o+=dot(RC,c.phi,5.5,col)+txt(RC+9,c.phi,c.n,"ct",col,-5);
+    });
+    return o;
+  }
+  const svg=`<svg id="radial" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${league(-1)}${league(1)}</svg>`;
+  stage.insertAdjacentHTML("afterbegin",svg);
+  [["hdrAL","American League",-1],["hdrNL","National League",1]].forEach(([id,t,s])=>{
+    const h=document.createElement("div");
+    h.className="lgHdr";h.id=id;h.textContent=t;
+    h.style.left=(W/2+s*OFFSET)+"px";h.style.top=(H/2)+"px";
+    stage.append(h);
+  });
+}
+buildRadial();
+
+/* ---------------------------------------------------------------------
+ * wires for the top diagram, plus Central -> CORE -> both league roots
+ * ------------------------------------------------------------------- */
+function wire(){
+  const inner=document.getElementById("inner"), top=document.getElementById("top"),
+        ib=inner.getBoundingClientRect(), tb=top.getBoundingClientRect(),
+        D=[...document.querySelectorAll("#decades .seg")],
+        R=[...document.querySelectorAll("#ranges .seg")],
+        SY=[...document.querySelectorAll("#subyears span")],
+        fan=document.getElementById("fan"),
+        pt=(e,bot)=>{const b=e.getBoundingClientRect();return[b.left-ib.left+b.width/2,(bot?b.bottom:b.top)-ib.top]},
+        edge=(e,side)=>{const b=e.getBoundingClientRect();return[(side==="right"?b.right:b.left)-ib.left,b.top-ib.top+b.height/2]};
+  if(!D.length||!R.length)return;
+  const fb=fan.getBoundingClientRect(), ox=fb.left-ib.left+fb.width/2, oy=fb.top-ib.top;
+  const place=(id,px,py)=>{const c=document.getElementById(id);c.style.left=((px+ib.left-tb.left)/TOPK)+"px";c.style.top=((py+ib.top-tb.top)/TOPK-9)+"px"};
+
+  const curve=(x1,y1,x2,y2,c,arrow)=>{
+    const m=(y1+y2)/2;
+    const end=arrow?`<polygon points="${x2-4},${y2-7} ${x2+4},${y2-7} ${x2},${y2}" fill="${c}"/>`:`<circle cx="${x2}" cy="${y2}" r="3" fill="${c}"/>`;
+    return `<path d="M${x1} ${y1}C${x1} ${m} ${x2} ${m} ${x2} ${y2}" stroke="${c}"${arrow?' style="stroke-width:2;opacity:.9"':''}/>${end}`;
+  };
+  const hline=(x1,y,x2,c)=>`<path d="M${x1} ${y}L${x2} ${y}" stroke="${c}" style="stroke-width:2;opacity:.9"/><circle cx="${x1}" cy="${y}" r="3.5" fill="${c}"/><circle cx="${x2}" cy="${y}" r="3.5" fill="${c}"/>`;
+
+  let p=``;
+  D.forEach(d=>{const[x,y]=pt(d,0);p+=curve(ox,oy,x,y,LINE)});
+  {
+    const t=.76, sv=3*t*t-2*t*t*t, [xa,ya]=pt(D[1],0), [xb]=pt(D[2],0),
+          mm=(oy+ya)/2, yy=(1-t)**3*oy+(3*(1-t)**2*t+3*(1-t)*t*t)*mm+t**3*ya,
+          cx1=ox+(((xa-ox)+(xb-ox))/2)*sv, c1=document.getElementById("cap1");
+    c1.style.left=((cx1+ib.left-tb.left)/TOPK)+"px";c1.style.top=((yy+ib.top-tb.top)/TOPK)+"px";
+    c1.style.transform="translate(-50%,-50%)";
+  }
+
+  const dB=D.map(d=>pt(d,1)), rT=R.map(r=>pt(r,0)),
+        mx=((dB[1][0]+rT[3][0])/2+(dB[2][0]+rT[4][0])/2)/2, my=(dB[0][1]+rT[0][1])/2+18;
+  dB.forEach(([x,y],i)=>{
+    p+=`<circle cx="${x}" cy="${y}" r="3" fill="${LINE}"/>`;
+    (i<4?[i*2,i*2+1]:[8]).forEach(ri=>{const[rx,ry]=rT[ri];p+=curve(x,y,rx,ry,LINE,true)});
+  });
+  place("cap2",mx,my);
+
+  if(R[4]&&SY.length){
+    const[r4x,r4y]=pt(R[4],1);
+    p+=`<circle cx="${r4x}" cy="${r4y}" r="3" fill="${LINE}"/>`;
+    SY.forEach(sy=>{const[x,y]=pt(sy,0);p+=curve(r4x,r4y,x,y,LINE,true)});
+  }
+  const DIV=[...document.querySelectorAll("#divisions span")];
+  const sy2003=SY.find(el=>el.textContent.trim()==="2003");
+  if(sy2003&&DIV.length){
+    const[yx,yy]=pt(sy2003,1);
+    p+=`<circle cx="${yx}" cy="${yy}" r="3" fill="${LINE}"/>`;
+    DIV.forEach(d=>{const[dx,dy]=pt(d,0);p+=curve(yx,yy,dx,dy,LINE,true)});
+  }
+
+  // Central division -> CORE box -> American League (left) / National League (right)
+  const central=DIV.find(d=>d.textContent.trim()==="Central"),
+        core=document.getElementById("coreBox"),
+        hAL=document.getElementById("hdrAL"), hNL=document.getElementById("hdrNL");
+  if(central&&core&&hAL&&hNL){
+    const[cx,cy]=pt(central,1), cb=core.getBoundingClientRect(),
+          coreCx=cb.left-ib.left+cb.width/2, coreTop=cb.top-ib.top, m=cy+40;
+    p+=`<circle cx="${cx}" cy="${cy}" r="3" fill="${LINE}"/><path d="M${cx} ${cy}V${m}H${coreCx}V${coreTop}" stroke="${LINE}" style="stroke-width:2;opacity:.9"/><polygon points="${coreCx-4},${coreTop-7} ${coreCx+4},${coreTop-7} ${coreCx},${coreTop}" fill="${LINE}"/>`;
+    const[clx,cly]=edge(core,"left"), [crx,cry]=edge(core,"right"),
+          [alx,aly]=edge(hAL,"right"), [nlx,nly]=edge(hNL,"left");
+    p+=hline(clx,cly,alx,LINE)+hline(crx,cry,nlx,LINE);
+  }
+  document.getElementById("wires").innerHTML=p;
+}
+/* ---- fit to screen + unlimited zoom ----
+   the diagram keeps a fixed design size and is scaled to the screen width (K).
+   On top of that the user can zoom in (Z) with pinch, ctrl+wheel, +/- keys or the buttons;
+   once zoomed the diagram scrolls/drags inside its frame. */
+const SC=document.getElementById("scroll"), SZ=document.getElementById("sizer"), IN=document.getElementById("inner");
+let Z=1, DW=1, DH=1, K=1;
+const PH=document.createElement("div");
+PH.style.display="none";
+SC.parentNode.insertBefore(PH,SC);
+function apply(){
+  const s=K*Z, zoomed=Z>1.001;
+  IN.style.transform="scale("+s+")";
+  SZ.style.width=(DW*s)+"px"; SZ.style.height=(DH*s)+"px";
+  if(zoomed){
+    /* zoomed: the viewer fills the whole screen (no frame); a placeholder keeps the page layout in place */
+    PH.style.height=(DH*K)+"px"; PH.style.display="block";
+    SC.classList.add("full");
+    document.documentElement.style.overflow="hidden";
+    SC.style.height=innerHeight+"px";
+    SC.style.overflow="auto";
+  }else{
+    PH.style.display="none";
+    SC.classList.remove("full");
+    document.documentElement.style.overflow="";
+    SC.style.height=(DH*s)+"px";
+    SC.style.overflow="hidden";
+  }
+}
+/* enlarge only the top diagram (RAW DATA -> Central); the radial tree below is untouched */
+const TOPK=2;
+function scaleTop(){
+  const t=document.getElementById("top");
+  t.style.transform="none"; t.style.marginBottom="0";
+  const h=t.offsetHeight;
+  t.style.transformOrigin="50% 0";
+  t.style.transform="scale("+TOPK+")";
+  t.style.marginBottom=(h*(TOPK-1))+"px";
+}
+function fit(){
+  IN.style.transform="none";
+  scaleTop();
+  wire();
+  DW=IN.offsetWidth; DH=IN.offsetHeight;
+  const M=document.querySelector("main"), cs=getComputedStyle(M);
+  K=Math.min(1,(M.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight))/DW);
+  apply();
+}
+function zoomTo(nz,vx,vy){      /* vx,vy = focal point in viewport coordinates */
+  nz=Math.max(1,Math.min(200,nz));
+  const r=SC.getBoundingClientRect();
+  if(vx==null){vx=innerWidth/2;vy=Math.max(0,Math.min(innerHeight,Math.max(r.top,Math.min(r.bottom,innerHeight/2))))}
+  const so=K*Z, sn=K*nz, cx=(SC.scrollLeft+vx-r.left)/so, cy=(SC.scrollTop+vy-r.top)/so;
+  Z=nz; apply();
+  if(Z>1.001){SC.scrollLeft=cx*sn-vx; SC.scrollTop=cy*sn-vy}
+  else{SC.scrollLeft=0; SC.scrollTop=0}
+}
+SC.addEventListener("wheel",e=>{
+  if(!(e.ctrlKey||e.metaKey))return;
+  e.preventDefault();
+  zoomTo(Z*Math.exp(-e.deltaY*.01),e.clientX,e.clientY);
+},{passive:false});
+let pd=0;
+const tdist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+SC.addEventListener("touchstart",e=>{if(e.touches.length===2)pd=tdist(e.touches)},{passive:true});
+SC.addEventListener("touchmove",e=>{
+  if(e.touches.length!==2||!pd)return;
+  e.preventDefault();
+  const d=tdist(e.touches),
+        mx=(e.touches[0].clientX+e.touches[1].clientX)/2, my=(e.touches[0].clientY+e.touches[1].clientY)/2;
+  zoomTo(Z*d/pd,mx,my); pd=d;
+},{passive:false});
+SC.addEventListener("touchend",()=>{pd=0});
+addEventListener("keydown",e=>{
+  if(e.key==="+"||e.key==="=")zoomTo(Z*1.4);
+  else if(e.key==="-"||e.key==="_")zoomTo(Z/1.4);
+  else if(e.key==="0")zoomTo(1);
+});
+fit();
+addEventListener("resize",fit);
+addEventListener("load",fit);
+document.fonts&&document.fonts.ready.then(fit);
+</script>
+</body>
+</html>

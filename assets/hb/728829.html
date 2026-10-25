@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#ccc;--chip:#eef2f6;--ink:#2d4f9c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 "Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;box-sizing:border-box;display:flex;justify-content:center;align-items:center;min-height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));padding:56px 28px}
+svg{display:block;width:100%;max-width:448px;height:auto;font:inherit}
+.box{fill:color-mix(in srgb,var(--c) 11%,var(--chip))}
+.top{fill:none;stroke:var(--c);stroke-width:3}
+.t{fill:var(--fg);font-size:15px;font-weight:600;text-anchor:middle;dominant-baseline:central}
+.m{fill:var(--fg);font-size:15px;font-weight:600;text-anchor:start;dominant-baseline:central}
+.w{fill:none;stroke-width:2;opacity:.9}
+.lk{cursor:pointer}
+.lk .box{fill:#2d4f9c;transition:fill .15s ease}
+.lk .top{stroke:#234087}
+.lk:hover .box{fill:#234087}
+.lt{fill:#fff;pointer-events:none}
+a:focus-visible{outline:2px solid #234087;outline-offset:3px}
+@media (max-width:520px){
+  body{padding:32px 16px}
+  .t,.m{font-size:17px}
+}
+/* plain */
+:root{--bg:#fff;--chip:#fff;--fg:#222;--mute:#666;--line:#888}
+html,body{background:#fff}
+body{font-family:Arial,Helvetica,sans-serif}
+svg{font-family:Arial,Helvetica,sans-serif}
+.box{fill:#fff;stroke:#333;stroke-width:1;rx:3px;ry:3px}
+.top,.lk .top{stroke:none}
+.ok .box{fill:#e6f4e8;stroke:#333}
+.bad .box{fill:#fbe9e8;stroke:#333}
+.lk .box{fill:#fff;stroke:#1a4fd8;stroke-width:1.5}
+.lk:hover .box,a:hover .lk .box{fill:#eef3ff}
+.lt,.lt tspan{fill:#1a4fd8}
+.lt .u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.w{stroke:#444;stroke-width:1.5;opacity:1}
+marker path{fill:#444}
+</style>
+</head>
+<body>
+<svg viewBox="36 96 448 516" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pipeline: 1980–2021 blueprint, Hidden Ball Database, 2022 onward blueprint">
+  <defs>
+    <marker id="a0" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#234087"/></marker><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2d4f9c"/></marker><marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2d4f9c"/></marker><marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6d8ac4"/></marker><marker id="a4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9db0d6"/></marker><marker id="a5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2d4f9c"/></marker>
+  </defs>
+
+  <!-- vertical connectors -->
+  <path class="w" d="M260 174V298" stroke="#2d4f9c" marker-end="url(#a1)"/><path class="w" d="M260 490V370" stroke="#2d4f9c" marker-end="url(#a2)"/>
+
+
+  <!-- boxes -->
+  <a href="538786.html" aria-label="1980 – 2021 blueprint"><g class="lk" style="--c:#2d4f9c"><rect class="box" x="130" y="110" width="260" height="64" rx="8"/><path class="top" d="M130 118Q130 110 138 110H382Q390 110 390 118"/></g>
+  <text class="t lt" x="260" y="142">1980 – 2021 blueprint</text><rect x="184.13" y="150.5" width="151.74" height="1.5" fill="#1a4fd8"/></a>
+
+  <g style="--c:#4a6cb3"><rect class="box" x="150" y="300" width="220" height="68" rx="8"/><path class="top" d="M150 308Q150 300 158 300H362Q370 300 370 308"/></g>
+  <text class="t" x="260" y="334">Hidden Ball Database</text>
+
+  <a href="724842.html" aria-label="2022 – ∞ blueprint"><g class="lk" style="--c:#2d4f9c"><rect class="box" x="130" y="490" width="260" height="64" rx="8"/><path class="top" d="M130 498Q130 490 138 490H382Q390 490 390 498"/></g>
+  <text class="t lt" x="192.45" y="522" style="text-anchor:start"><tspan>2022 –</tspan></text>
+  <path d="M251.1 523.18C253.3 519.28 257.9 519.28 257.9 523.18C257.9 527.08 253.3 527.08 251.1 523.18C248.9 519.28 244.3 519.28 244.3 523.18C244.3 527.08 248.9 527.08 251.1 523.18Z" fill="none" stroke="#1a4fd8" stroke-width="1.7" stroke-linejoin="round" pointer-events="none"/>
+  <text class="t lt" x="263.25" y="522" style="text-anchor:start"><tspan>blueprint</tspan></text><rect x="192.45" y="530.5" width="135" height="1.5" fill="#1a4fd8"/></a>
+
+  <text class="t" x="260" y="592">ETL pipeline</text>
+</svg>
+</body>
+</html>
