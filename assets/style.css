@@ -1048,6 +1048,9 @@ button {
   justify-content: center;
 }
 
+/* Blueprints row + extra link buttons underneath (e.g. the YouTube documentary) */
+.card__actions.card__actions--split.card__actions--links { --cap: 22; }
+
 .card__actions .btn {
   flex: none;
   font-size: min(clamp(0.92rem, calc(0.82rem + 0.3vw), 1.05rem), calc(100cqw / var(--cap)));
@@ -1101,6 +1104,19 @@ button {
   box-shadow: 0 2px 6px rgba(45, 79, 156, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
+.btn--yt {
+  color: var(--text);
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.card__actions .btn--yt svg {
+  width: 1.55em;
+  height: 1.55em;
+  margin-left: -0.25em;
+}
+
 .btn--ghost {
   color: var(--text);
   background: rgba(var(--header-rgb), 0.14);
@@ -1139,6 +1155,7 @@ button {
   .btn:not(.btn--disabled):not(.btn--soon):hover { transform: translateY(-1px); }
   .btn--primary:not(.btn--disabled):not(.btn--soon):hover { background: #1c2029; }
   .btn--blue:not(.btn--disabled):not(.btn--soon):hover { background: #234087; }
+  .btn--yt:not(.btn--disabled):not(.btn--soon):hover { background: #f4f4f4; border-color: rgba(0, 0, 0, 0.28); }
   .btn--ghost:not(.btn--disabled):hover { background: rgba(var(--header-rgb), 0.28); }
 }
 
