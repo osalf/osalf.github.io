@@ -133,7 +133,7 @@ var PROJECTS = [
         text: "SQLite is a free and open-source relational database engine written in C. Instead of running as a separate server, it is embedded directly into the application that uses it."
       }
     ],
-    command: "curl -fsSL https://osaif.pages.dev/pluk | bash",
+    command: "curl -fsSL https://ocaif.pages.dev/pluk | bash",
     source: "c/Pluk-1.13.0.zip",
     twoRows: true,
     buttons: [
