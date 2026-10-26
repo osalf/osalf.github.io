@@ -10,8 +10,8 @@
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#fff}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-/* full-screen viewer: fills the whole screen, no frame, no zoom; the diagram keeps its design size and scrolls/pans inside */
-#scroll{position:fixed;left:0;right:0;top:0;bottom:0;overflow:auto;background:#fff;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
+/* full-screen viewer: fills the whole screen, no frame; pinch / ctrl+wheel / buttons zoom, drag pans */
+#scroll{position:fixed;left:0;right:0;top:0;bottom:0;overflow:auto;background:#fff;touch-action:none;-webkit-user-select:none;user-select:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .pad{display:flex;min-width:100%;min-height:100%;padding:calc(32px + env(safe-area-inset-top,0px)) 10px calc(32px + env(safe-area-inset-bottom,0px))}
 .pad>#fit{margin:auto;flex:none;position:relative}
 #fit>main{transform-origin:0 0;position:absolute;left:0;top:0}
@@ -216,16 +216,146 @@ a{color:inherit;text-decoration:none}
 </div></div></div>
 <script>
 (function(){
-var fit=document.getElementById("fit"),m=fit.firstElementChild;
-function go(){
-  m.style.transform="none";
-  var w=m.offsetWidth,h=m.offsetHeight;
-  var aw=window.innerWidth-20,ah=window.innerHeight-64;
-  var s=Math.min(1,aw/w,ah/h);
-  fit.style.width=Math.ceil(w*s)+"px";
-  fit.style.height=Math.ceil(h*s)+"px";
+var sc=document.getElementById("scroll"),fit=document.getElementById("fit"),m=fit.firstElementChild;
+var MAXZ=4,W=1,H=1,base=1,cur=1,userZoom=false,wcT=0,aRaf=0;
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+
+/* size + scale (only #fit's size and one transform change per step, so it stays cheap) */
+function apply(s){
+  cur=s;
+  fit.style.width=Math.ceil(W*s)+"px";
+  fit.style.height=Math.ceil(H*s)+"px";
   m.style.transform="scale("+s+")";
 }
+function go(){
+  W=m.offsetWidth;H=m.offsetHeight;
+  var aw=window.innerWidth-20,ah=window.innerHeight-64;
+  base=Math.min(1,aw/W,ah/H);
+  apply(userZoom?clamp(cur,base,MAXZ):base);
+  if(userZoom&&cur<=base+0.0005)userZoom=false;
+}
+
+/* while zooming, keep the diagram on its own GPU layer (smooth), then release so text re-renders crisp */
+function lift(){clearTimeout(wcT);m.style.willChange="transform"}
+function settle(){clearTimeout(wcT);wcT=setTimeout(function(){m.style.willChange=""},200)}
+
+/* zoom keeping the point (cx,cy) in client coordinates fixed under the finger / cursor */
+function zoomAt(ns,cx,cy){
+  ns=clamp(ns,base,MAXZ);
+  if(Math.abs(ns-cur)<1e-6)return;
+  var r=fit.getBoundingClientRect(),ux=(cx-r.left)/cur,uy=(cy-r.top)/cur;
+  apply(ns);
+  var r2=fit.getBoundingClientRect();
+  sc.scrollLeft+=r2.left-(cx-ux*ns);
+  sc.scrollTop+=r2.top-(cy-uy*ns);
+  userZoom=ns>base+0.0005;
+}
+function stopAnim(){if(aRaf){cancelAnimationFrame(aRaf);aRaf=0}}
+function animate(ns,cx,cy){
+  stopAnim();
+  ns=clamp(ns,base,MAXZ);
+  var s0=cur,t0=performance.now();
+  if(Math.abs(ns-s0)<1e-6)return;
+  lift();
+  (function f(t){
+    var k=Math.max(0,Math.min(1,(t-t0)/170));
+    k=1-Math.pow(1-k,3);
+    zoomAt(k>=1?ns:s0*Math.pow(ns/s0,k),cx,cy);
+    if(k<1)aRaf=requestAnimationFrame(f);else{aRaf=0;settle()}
+  })(t0);
+}
+
+/* desktop: ctrl/cmd + wheel (also trackpad pinch) zooms; plain wheel scrolls natively */
+sc.addEventListener("wheel",function(e){
+  if(!(e.ctrlKey||e.metaKey))return;
+  e.preventDefault();
+  stopAnim();stopFling();
+  var d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?100:1);
+  lift();
+  zoomAt(cur*Math.exp(-clamp(d,-40,40)*0.01),e.clientX,e.clientY);
+  settle();
+},{passive:false});
+
+/* Safari desktop trackpad pinch (and block iOS page-zoom) */
+var gb=1;
+document.addEventListener("gesturestart",function(e){e.preventDefault();gb=cur},{passive:false});
+document.addEventListener("gesturechange",function(e){
+  e.preventDefault();
+  if(ptrs.size||!isFinite(e.scale))return;
+  var x=isFinite(e.clientX)?e.clientX:window.innerWidth/2,y=isFinite(e.clientY)?e.clientY:window.innerHeight/2;
+  lift();zoomAt(gb*e.scale,x,y);settle();
+},{passive:false});
+document.addEventListener("gestureend",function(e){e.preventDefault()},{passive:false});
+
+/* touch / pen: one finger pans (with momentum), two fingers pinch-zoom + pan */
+var ptrs=new Map(),mode=0,lx=0,ly=0,sx=0,sy=0,vx=0,vy=0,lt=0,moved=false,suppress=false,sT=0,ld=0,lcx=0,lcy=0,fRaf=0;
+function stopFling(){if(fRaf){cancelAnimationFrame(fRaf);fRaf=0}}
+function two(){var a=[];ptrs.forEach(function(p){if(a.length<2)a.push(p)});return a}
+function startPinch(){
+  var a=two();
+  mode=2;moved=true;suppress=true;
+  ld=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+  lcx=(a[0].x+a[1].x)/2;lcy=(a[0].y+a[1].y)/2;
+  lift();
+}
+function fling(){
+  var px=sc.scrollLeft,py=sc.scrollTop,last=performance.now();
+  (function step(t){
+    var dt=Math.min(40,t-last);last=t;
+    px-=vx*dt;py-=vy*dt;
+    sc.scrollLeft=px;sc.scrollTop=py;
+    if(Math.abs(sc.scrollLeft-px)>1){px=sc.scrollLeft;vx=0}
+    if(Math.abs(sc.scrollTop-py)>1){py=sc.scrollTop;vy=0}
+    var f=Math.pow(0.94,dt/16.667);vx*=f;vy*=f;
+    if(Math.abs(vx)+Math.abs(vy)>0.02)fRaf=requestAnimationFrame(step);else fRaf=0;
+  })(last);
+}
+sc.addEventListener("pointerdown",function(e){
+  if(e.pointerType==="mouse")return;
+  stopFling();stopAnim();
+  if(!ptrs.size){clearTimeout(sT);suppress=false}
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===1){mode=1;moved=false;sx=lx=e.clientX;sy=ly=e.clientY;vx=vy=0;lt=e.timeStamp}
+  else if(ptrs.size===2)startPinch();
+});
+sc.addEventListener("pointermove",function(e){
+  var p=ptrs.get(e.pointerId);
+  if(!p)return;
+  p.x=e.clientX;p.y=e.clientY;
+  if(mode===1){
+    if(!moved){
+      if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)<8)return;
+      moved=true;suppress=true;lx=e.clientX;ly=e.clientY;lt=e.timeStamp;
+      return;
+    }
+    var dx=e.clientX-lx,dy=e.clientY-ly,dt=(e.timeStamp-lt)||1;
+    vx=vx*0.6+dx/dt*0.4;vy=vy*0.6+dy/dt*0.4;
+    lx=e.clientX;ly=e.clientY;lt=e.timeStamp;
+    sc.scrollLeft-=dx;sc.scrollTop-=dy;
+  }else if(mode===2){
+    var a=two(),d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),cx=(a[0].x+a[1].x)/2,cy=(a[0].y+a[1].y)/2;
+    if(d>0&&ld>0)zoomAt(cur*d/ld,lcx,lcy);
+    sc.scrollLeft-=cx-lcx;sc.scrollTop-=cy-lcy;
+    ld=d;lcx=cx;lcy=cy;
+  }
+});
+function endPtr(e){
+  if(!ptrs.delete(e.pointerId))return;
+  if(mode===2){
+    if(ptrs.size>=2)startPinch();
+    else if(ptrs.size===1){var q=two()[0];mode=1;lx=q.x;ly=q.y;vx=vy=0;lt=e.timeStamp;settle()}
+    else{mode=0;settle()}
+  }else if(mode===1){
+    mode=0;
+    if(moved&&e.type==="pointerup"&&e.timeStamp-lt<80&&Math.abs(vx)+Math.abs(vy)>0.05)fling();
+  }
+  if(!ptrs.size&&suppress){clearTimeout(sT);sT=setTimeout(function(){suppress=false},400)}
+}
+sc.addEventListener("pointerup",endPtr);
+sc.addEventListener("pointercancel",endPtr);
+/* a drag or pinch must never open a link */
+sc.addEventListener("click",function(e){if(suppress){e.preventDefault();e.stopPropagation()}},true);
+
 go();
 window.addEventListener("resize",go);
 window.addEventListener("orientationchange",go);
