@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.1, maximum-scale=10, user-scalable=yes, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>1980-2021 RAW DATA · radial pipeline</title>
 <style>
 :root{--bg:#d2d6dd;--fg:#1c2430;--mute:#5f6979;--line:#c5d0e4;--chip:#eef2f6}
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;height:100%;overflow:hidden;background:#fff}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-body{display:flex;flex-direction:column;justify-content:center;min-height:100vh;background:var(--bg);color:var(--fg);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-main{width:100%;margin:0 auto;padding:56px 28px 96px}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+/* full-screen viewer (same engine as the pipeline blueprint): pinch / ctrl+wheel / +,- keys zoom, drag pans */
+#scroll{position:fixed;left:0;right:0;top:0;bottom:0;overflow:auto;background:#fff;touch-action:none;-webkit-user-select:none;user-select:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.pad{display:flex;min-width:100%;min-height:100%;padding:calc(32px + env(safe-area-inset-top,0px)) 10px calc(32px + env(safe-area-inset-bottom,0px))}
+.pad>#fit{margin:auto;flex:none;position:relative}
 .d{display:inline-block;width:9px;height:9px;border-radius:50%;background:#000;flex:none}
-.scroll{position:relative;width:100%;overflow:hidden;touch-action:pan-x pan-y}
-.scroll.full{position:fixed;left:0;right:0;top:0;width:auto;z-index:1000;background:var(--bg)}
-.sizer{position:relative}
 .inner{position:absolute;left:0;top:0;width:max-content;transform-origin:0 0}
 .wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
 .wires path{fill:none;stroke-width:1.5;opacity:1}
@@ -64,7 +64,6 @@ main{width:100%;margin:0 auto;padding:56px 28px 96px}
 #radial .gp{font-size:11px;font-style:italic;font-weight:600}
 #radial .ct{font-size:12.5px;font-weight:700}
 #radial g.leaf:hover .lf{font-weight:700}
-@media(max-width:600px){main{padding:24px 8px 40px}}
 /* plain */
 :root{--bg:#fff;--chip:#fff;--fg:#222;--mute:#666;--line:#888}
 html,body{background:#fff}
@@ -79,8 +78,7 @@ body{font-family:Arial,Helvetica,sans-serif}
 </style>
 </head>
 <body>
-<main>
-<div class="scroll" id="scroll"><div class="sizer" id="sizer"><div class="inner" id="inner">
+<div id="scroll"><div class="pad"><div id="fit"><div class="inner" id="inner">
   <svg class="wires" id="wires"></svg>
   <div class="top" id="top">
     <div class="node">
@@ -109,8 +107,7 @@ body{font-family:Arial,Helvetica,sans-serif}
       </div>
     </div>
   </div>
-</div></div></div>
-</main>
+</div></div></div></div>
 <script>
 const pal=Array(6).fill("#000");
 const LINE="#000";
@@ -192,8 +189,8 @@ function buildRadial(){
   function league(s){            // s=-1 American (left), s=+1 National (right)
     const Ox=W/2+s*OFFSET, Oy=H/2;
     const pol=(r,f)=>[Ox+s*r*Math.cos(f*rad),Oy+r*Math.sin(f*rad)];
-    const ln=(r1,f,r2,col,w,o)=>{const[a1,b1]=pol(r1,f),[a2,b2]=pol(r2,f);return `<path d="M${f1(a1)} ${f1(b1)}L${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" opacity="${o}" fill="none"/>`};
-    const arc=(r,fa,fb,col,w,o)=>{if(Math.abs(fb-fa)<.01)return"";const[a1,b1]=pol(r,fa),[a2,b2]=pol(r,fb);return `<path d="M${f1(a1)} ${f1(b1)}A${r} ${r} 0 0 ${s<0?0:1} ${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" opacity="${o}" fill="none"/>`};
+    const ln=(r1,f,r2,col,w,o)=>{const[a1,b1]=pol(r1,f),[a2,b2]=pol(r2,f);return `<path d="M${f1(a1)} ${f1(b1)}L${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" stroke-opacity="${o}" fill="none"/>`};
+    const arc=(r,fa,fb,col,w,o)=>{if(Math.abs(fb-fa)<.01)return"";const[a1,b1]=pol(r,fa),[a2,b2]=pol(r,fb);return `<path d="M${f1(a1)} ${f1(b1)}A${r} ${r} 0 0 ${s<0?0:1} ${f1(a2)} ${f1(b2)}" stroke="${col}" stroke-width="${w}" stroke-opacity="${o}" fill="none"/>`};
     const dot=(r,f,rr,col)=>{const[x,y]=pol(r,f);return `<circle cx="${f1(x)}" cy="${f1(y)}" r="${rr}" fill="${col}"/>`};
     const txt=(r,f,str,cls,col,dy)=>{
       const[x,y]=pol(r,f);
@@ -307,36 +304,10 @@ function wire(){
   }
   document.getElementById("wires").innerHTML=p;
 }
-/* ---- fit to screen + unlimited zoom ----
-   the diagram keeps a fixed design size and is scaled to the screen width (K).
-   On top of that the user can zoom in (Z) with pinch, ctrl+wheel, +/- keys or the buttons;
-   once zoomed the diagram scrolls/drags inside its frame. */
-const SC=document.getElementById("scroll"), SZ=document.getElementById("sizer"), IN=document.getElementById("inner");
-let Z=1, DW=1, DH=1, K=1;
-const PH=document.createElement("div");
-PH.style.display="none";
-SC.parentNode.insertBefore(PH,SC);
-function apply(){
-  const s=K*Z, zoomed=Z>1.001;
-  IN.style.transform="scale("+s+")";
-  SZ.style.width=(DW*s)+"px"; SZ.style.height=(DH*s)+"px";
-  if(zoomed){
-    /* zoomed: the viewer fills the whole screen (no frame); a placeholder keeps the page layout in place */
-    PH.style.height=(DH*K)+"px"; PH.style.display="block";
-    SC.classList.add("full");
-    document.documentElement.style.overflow="hidden";
-    SC.style.height=innerHeight+"px";
-    SC.style.overflow="auto";
-  }else{
-    PH.style.display="none";
-    SC.classList.remove("full");
-    document.documentElement.style.overflow="";
-    SC.style.height=(DH*s)+"px";
-    SC.style.overflow="hidden";
-  }
-}
-/* enlarge only the top diagram (RAW DATA -> Central); the radial tree below is untouched */
-const TOPK=2;
+/* ---- full-screen viewer: fit to screen, smooth zoom + pan ----
+   The diagram keeps its fixed design size. Only one transform + the size of #fit change per zoom step,
+   and the diagram sits on its own GPU layer while zooming (smooth), then is released so text re-renders crisp. */
+const TOPK=2;      /* enlarge only the top diagram (RAW DATA -> Central); the radial tree below is untouched */
 function scaleTop(){
   const t=document.getElementById("top");
   t.style.transform="none"; t.style.marginBottom="0";
@@ -345,49 +316,164 @@ function scaleTop(){
   t.style.transform="scale("+TOPK+")";
   t.style.marginBottom=(h*(TOPK-1))+"px";
 }
-function fit(){
-  IN.style.transform="none";
+(function(){
+var sc=document.getElementById("scroll"),fit=document.getElementById("fit"),m=document.getElementById("inner");
+var MAXZ=12,W=1,H=1,base=1,cur=1,userZoom=false,wcT=0,aRaf=0;
+function clamp(v,a,b){return v<a?a:v>b?b:v}
+
+function apply(s){
+  cur=s;
+  fit.style.width=Math.ceil(W*s)+"px";
+  fit.style.height=Math.ceil(H*s)+"px";
+  m.style.transform="scale("+s+")";
+}
+/* current size of the screen -> smallest allowed zoom (whole diagram visible) */
+function go(){
+  var aw=window.innerWidth-20,ah=window.innerHeight-64;
+  base=Math.min(1,aw/W,ah/H);
+  apply(userZoom?clamp(cur,base,MAXZ):base);
+  if(userZoom&&cur<=base+0.0005)userZoom=false;
+}
+/* measure the diagram at its design size and draw the wires (only needed once / when fonts arrive, not on resize) */
+function layout(){
+  m.style.transform="none";
   scaleTop();
   wire();
-  DW=IN.offsetWidth; DH=IN.offsetHeight;
-  const M=document.querySelector("main"), cs=getComputedStyle(M);
-  K=Math.min(1,(M.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight))/DW);
-  apply();
+  W=m.offsetWidth;H=m.offsetHeight;
+  go();
 }
-function zoomTo(nz,vx,vy){      /* vx,vy = focal point in viewport coordinates */
-  nz=Math.max(1,Math.min(200,nz));
-  const r=SC.getBoundingClientRect();
-  if(vx==null){vx=innerWidth/2;vy=Math.max(0,Math.min(innerHeight,Math.max(r.top,Math.min(r.bottom,innerHeight/2))))}
-  const so=K*Z, sn=K*nz, cx=(SC.scrollLeft+vx-r.left)/so, cy=(SC.scrollTop+vy-r.top)/so;
-  Z=nz; apply();
-  if(Z>1.001){SC.scrollLeft=cx*sn-vx; SC.scrollTop=cy*sn-vy}
-  else{SC.scrollLeft=0; SC.scrollTop=0}
+
+function lift(){clearTimeout(wcT);m.style.willChange="transform"}
+function settle(){clearTimeout(wcT);wcT=setTimeout(function(){m.style.willChange=""},200)}
+
+/* zoom keeping the point (cx,cy) in client coordinates fixed under the finger / cursor */
+function zoomAt(ns,cx,cy){
+  ns=clamp(ns,base,MAXZ);
+  if(Math.abs(ns-cur)<1e-6)return;
+  var r=fit.getBoundingClientRect(),ux=(cx-r.left)/cur,uy=(cy-r.top)/cur;
+  apply(ns);
+  var r2=fit.getBoundingClientRect();
+  sc.scrollLeft+=r2.left-(cx-ux*ns);
+  sc.scrollTop+=r2.top-(cy-uy*ns);
+  userZoom=ns>base+0.0005;
 }
-SC.addEventListener("wheel",e=>{
+function stopAnim(){if(aRaf){cancelAnimationFrame(aRaf);aRaf=0}}
+function animate(ns,cx,cy){
+  stopAnim();
+  ns=clamp(ns,base,MAXZ);
+  var s0=cur,t0=performance.now();
+  if(Math.abs(ns-s0)<1e-6)return;
+  lift();
+  (function f(t){
+    var k=Math.max(0,Math.min(1,(t-t0)/170));
+    k=1-Math.pow(1-k,3);
+    zoomAt(k>=1?ns:s0*Math.pow(ns/s0,k),cx,cy);
+    if(k<1)aRaf=requestAnimationFrame(f);else{aRaf=0;settle()}
+  })(t0);
+}
+
+/* desktop: ctrl/cmd + wheel (also trackpad pinch) zooms; plain wheel scrolls natively */
+sc.addEventListener("wheel",function(e){
   if(!(e.ctrlKey||e.metaKey))return;
   e.preventDefault();
-  zoomTo(Z*Math.exp(-e.deltaY*.01),e.clientX,e.clientY);
+  stopAnim();stopFling();
+  var d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?100:1);
+  lift();
+  zoomAt(cur*Math.exp(-clamp(d,-40,40)*0.01),e.clientX,e.clientY);
+  settle();
 },{passive:false});
-let pd=0;
-const tdist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
-SC.addEventListener("touchstart",e=>{if(e.touches.length===2)pd=tdist(e.touches)},{passive:true});
-SC.addEventListener("touchmove",e=>{
-  if(e.touches.length!==2||!pd)return;
-  e.preventDefault();
-  const d=tdist(e.touches),
-        mx=(e.touches[0].clientX+e.touches[1].clientX)/2, my=(e.touches[0].clientY+e.touches[1].clientY)/2;
-  zoomTo(Z*d/pd,mx,my); pd=d;
-},{passive:false});
-SC.addEventListener("touchend",()=>{pd=0});
-addEventListener("keydown",e=>{
-  if(e.key==="+"||e.key==="=")zoomTo(Z*1.4);
-  else if(e.key==="-"||e.key==="_")zoomTo(Z/1.4);
-  else if(e.key==="0")zoomTo(1);
+
+/* keyboard: + / - / 0 */
+window.addEventListener("keydown",function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  var cx=window.innerWidth/2,cy=window.innerHeight/2;
+  if(e.key==="+"||e.key==="=")animate(cur*1.4,cx,cy);
+  else if(e.key==="-"||e.key==="_")animate(cur/1.4,cx,cy);
+  else if(e.key==="0")animate(base,cx,cy);
 });
-fit();
-addEventListener("resize",fit);
-addEventListener("load",fit);
-document.fonts&&document.fonts.ready.then(fit);
+
+/* Safari desktop trackpad pinch (and block iOS page-zoom) */
+var gb=1;
+document.addEventListener("gesturestart",function(e){e.preventDefault();gb=cur},{passive:false});
+document.addEventListener("gesturechange",function(e){
+  e.preventDefault();
+  if(ptrs.size||!isFinite(e.scale))return;
+  var x=isFinite(e.clientX)?e.clientX:window.innerWidth/2,y=isFinite(e.clientY)?e.clientY:window.innerHeight/2;
+  lift();zoomAt(gb*e.scale,x,y);settle();
+},{passive:false});
+document.addEventListener("gestureend",function(e){e.preventDefault()},{passive:false});
+
+/* touch / pen: one finger pans (with momentum), two fingers pinch-zoom + pan */
+var ptrs=new Map(),mode=0,lx=0,ly=0,sx=0,sy=0,vx=0,vy=0,lt=0,moved=false,sT=0,ld=0,lcx=0,lcy=0,fRaf=0;
+function stopFling(){if(fRaf){cancelAnimationFrame(fRaf);fRaf=0}}
+function two(){var a=[];ptrs.forEach(function(p){if(a.length<2)a.push(p)});return a}
+function startPinch(){
+  var a=two();
+  mode=2;moved=true;
+  ld=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+  lcx=(a[0].x+a[1].x)/2;lcy=(a[0].y+a[1].y)/2;
+  lift();
+}
+function fling(){
+  var px=sc.scrollLeft,py=sc.scrollTop,last=performance.now();
+  (function step(t){
+    var dt=Math.min(40,t-last);last=t;
+    px-=vx*dt;py-=vy*dt;
+    sc.scrollLeft=px;sc.scrollTop=py;
+    if(Math.abs(sc.scrollLeft-px)>1){px=sc.scrollLeft;vx=0}
+    if(Math.abs(sc.scrollTop-py)>1){py=sc.scrollTop;vy=0}
+    var f=Math.pow(0.94,dt/16.667);vx*=f;vy*=f;
+    if(Math.abs(vx)+Math.abs(vy)>0.02)fRaf=requestAnimationFrame(step);else fRaf=0;
+  })(last);
+}
+sc.addEventListener("pointerdown",function(e){
+  if(e.pointerType==="mouse")return;
+  stopFling();stopAnim();
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===1){mode=1;moved=false;sx=lx=e.clientX;sy=ly=e.clientY;vx=vy=0;lt=e.timeStamp}
+  else if(ptrs.size===2)startPinch();
+});
+sc.addEventListener("pointermove",function(e){
+  var p=ptrs.get(e.pointerId);
+  if(!p)return;
+  p.x=e.clientX;p.y=e.clientY;
+  if(mode===1){
+    if(!moved){
+      if(Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy)<8)return;
+      moved=true;lx=e.clientX;ly=e.clientY;lt=e.timeStamp;
+      return;
+    }
+    var dx=e.clientX-lx,dy=e.clientY-ly,dt=(e.timeStamp-lt)||1;
+    vx=vx*0.6+dx/dt*0.4;vy=vy*0.6+dy/dt*0.4;
+    lx=e.clientX;ly=e.clientY;lt=e.timeStamp;
+    sc.scrollLeft-=dx;sc.scrollTop-=dy;
+  }else if(mode===2){
+    var a=two(),d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y),cx=(a[0].x+a[1].x)/2,cy=(a[0].y+a[1].y)/2;
+    if(d>0&&ld>0)zoomAt(cur*d/ld,lcx,lcy);
+    sc.scrollLeft-=cx-lcx;sc.scrollTop-=cy-lcy;
+    ld=d;lcx=cx;lcy=cy;
+  }
+});
+function endPtr(e){
+  if(!ptrs.delete(e.pointerId))return;
+  if(mode===2){
+    if(ptrs.size>=2)startPinch();
+    else if(ptrs.size===1){var q=two()[0];mode=1;lx=q.x;ly=q.y;vx=vy=0;lt=e.timeStamp;settle()}
+    else{mode=0;settle()}
+  }else if(mode===1){
+    mode=0;
+    if(moved&&e.type==="pointerup"&&e.timeStamp-lt<80&&Math.abs(vx)+Math.abs(vy)>0.05)fling();
+  }
+}
+sc.addEventListener("pointerup",endPtr);
+sc.addEventListener("pointercancel",endPtr);
+
+layout();
+window.addEventListener("resize",go);
+window.addEventListener("orientationchange",go);
+window.addEventListener("load",layout);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
+})();
 </script>
 </body>
 </html>
