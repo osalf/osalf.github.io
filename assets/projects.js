@@ -61,6 +61,10 @@
                                          // { label: "Supported Formats", popup: "formats" } opens the formats pop-up (needs formats);
                                          // { label: "Distros", popup: "distros" } opens the distro pop-up instead of a link;
                                          // with command/buttons, Download / Blueprints are replaced
+       links:      [{                    // optional — extra pill buttons UNDER the Blueprints button (one per line),
+                     label: "Hands Speak | Documentary",   // each one opens its url in a new tab and gets a YouTube play icon
+                     url:   "https://youtu.be/..."
+                   }],
        visit:      "https://...",        // optional — Visit button (opens the website) shown first in the row
        download:   "https://...",        // Download button link
        blueprints: "https://..."         // Blueprints button link
@@ -87,7 +91,10 @@ var PROJECTS = [
     years: "Aug 2022 - Dec 2025",
     note: "ownership transferred",
     desc: "A sign language recognition app that turns hand gestures into text in real time.",
-    blueprints: "../assets/f/B.html"
+    blueprints: "../assets/f/B.html",
+    links: [
+      { label: "Hands Speak | Documentary", url: "https://youtu.be/bDA9YrBLFKk" }
+    ]
   },
   {
     title: "Hidden Ball",
@@ -150,6 +157,8 @@ var PROJECTS = [
   var SVG_DOWNLOAD = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>';
   var SVG_VISIT = '<svg viewBox="0 0 362.667 362.667" fill="currentColor" aria-hidden="true"><path d="M128,63.999444 L128,106.666444 L42.6666667,106.666667 L42.6666667,320 L256,320 L256,234.666444 L298.666,234.666444 L298.666667,362.666667 L0,362.666667 L0,64 L128,63.999444 Z M362.666667,0 L362.666667,170.666667 L320,170.666667 L320,72.835 L143.084945,249.751611 L112.915055,219.581722 L289.83,42.666 L192,42.6666667 L192,0 L362.666667,0 Z"/></svg>';
   var SVG_BLUEPRINT = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 4 2 8l3.5 4M10.5 4 14 8l-3.5 4"/></svg>';
+
+  var SVG_YOUTUBE = '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" focusable="false"><path fill="red" d="M14.712 4.633a1.754 1.754 0 00-1.234-1.234C12.382 3.11 8 3.11 8 3.11s-4.382 0-5.478.289c-.6.161-1.072.634-1.234 1.234C1 5.728 1 8 1 8s0 2.283.288 3.367c.162.6.635 1.073 1.234 1.234C3.618 12.89 8 12.89 8 12.89s4.382 0 5.478-.289a1.754 1.754 0 001.234-1.234C15 10.272 15 8 15 8s0-2.272-.288-3.367z"/><path fill="#ffffff" d="M6.593 10.11l3.644-2.098-3.644-2.11v4.208z"/></svg>';
 
   function el(tag, cls) {
     var n = document.createElement(tag);
@@ -1127,6 +1136,19 @@ var PROJECTS = [
       actions.appendChild(buildButton('Blueprints', '', item.blueprints, 'blue', true));
       // Download only shows when the project has a "download" field (even an empty one)
       if (item.download !== undefined) actions.appendChild(buildButton('Download', SVG_DOWNLOAD, item.download, item.downloadBlue ? 'blue' : 'primary'));
+
+      // extra link buttons (e.g. a YouTube documentary) — each on its own line under the Blueprints row
+      if (item.links && item.links.length) {
+        actions.classList.add('card__actions--split', 'card__actions--links');
+        var topRow = el('div', 'card__actions-row');
+        while (actions.firstChild) topRow.appendChild(actions.firstChild);
+        actions.appendChild(topRow);
+        item.links.forEach(function (l) {
+          var linkRow = el('div', 'card__actions-row');
+          linkRow.appendChild(buildButton(l.label, SVG_YOUTUBE, l.url, 'yt'));
+          actions.appendChild(linkRow);
+        });
+      }
     }
     card.appendChild(actions);
 
