@@ -1106,15 +1106,9 @@ button {
 
 .btn--yt {
   color: #fff;
-  background: #ff0000;
-  border-color: #ff0000;
-  box-shadow: 0 2px 6px rgba(255, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-.card__actions .btn--yt svg {
-  width: 1.55em;
-  height: 1.55em;
-  margin-left: -0.25em;
+  background: #b3262e;
+  border-color: #b3262e;
+  box-shadow: 0 2px 6px rgba(179, 38, 46, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .btn--ghost {
@@ -1155,7 +1149,7 @@ button {
   .btn:not(.btn--disabled):not(.btn--soon):hover { transform: translateY(-1px); }
   .btn--primary:not(.btn--disabled):not(.btn--soon):hover { background: #1c2029; }
   .btn--blue:not(.btn--disabled):not(.btn--soon):hover { background: #234087; }
-  .btn--yt:not(.btn--disabled):not(.btn--soon):hover { background: #d90000; border-color: #d90000; }
+  .btn--yt:not(.btn--disabled):not(.btn--soon):hover { background: #961e25; border-color: #961e25; }
   .btn--ghost:not(.btn--disabled):hover { background: rgba(var(--header-rgb), 0.28); }
 }
 
