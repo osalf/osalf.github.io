@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pipeline blueprint</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap" rel="stylesheet">
 <style>
@@ -13,7 +13,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* full-screen viewer: fills the whole screen, no frame, no zoom; the diagram keeps its design size and scrolls/pans inside */
 #scroll{position:fixed;left:0;right:0;top:0;bottom:0;overflow:auto;background:#fff;touch-action:pan-x pan-y;-webkit-overflow-scrolling:touch}
 .pad{display:flex;min-width:100%;min-height:100%;padding:calc(32px + env(safe-area-inset-top,0px)) 10px calc(32px + env(safe-area-inset-bottom,0px))}
-.pad>main{margin:auto;flex:none}
+.pad>#fit{margin:auto;flex:none;position:relative}
+#fit>main{transform-origin:0 0;position:absolute;left:0;top:0}
 body{margin:0;background:#fff;color:var(--fg);font:15px/1.5 "Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 main{display:flex;flex-direction:row;align-items:flex-start;gap:80px;width:max-content}
 .tree{display:flex;flex-direction:column;align-items:center}
@@ -94,7 +95,7 @@ a{color:inherit;text-decoration:none}
 </style>
 </head>
 <body>
-<div id="scroll"><div class="pad">
+<div id="scroll"><div class="pad"><div id="fit">
 <main>
 <div class="tree t1">
 <a class="nb" style="--c:#2d4f9c" href="input.html">Data Acquisition</a>
@@ -212,6 +213,25 @@ a{color:inherit;text-decoration:none}
     </div>
 </div>
 </main>
-</div></div>
+</div></div></div>
+<script>
+(function(){
+var fit=document.getElementById("fit"),m=fit.firstElementChild;
+function go(){
+  m.style.transform="none";
+  var w=m.offsetWidth,h=m.offsetHeight;
+  var aw=window.innerWidth-20,ah=window.innerHeight-64;
+  var s=Math.min(1,aw/w,ah/h);
+  fit.style.width=Math.ceil(w*s)+"px";
+  fit.style.height=Math.ceil(h*s)+"px";
+  m.style.transform="scale("+s+")";
+}
+go();
+window.addEventListener("resize",go);
+window.addEventListener("orientationchange",go);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);
+window.addEventListener("load",go);
+})();
+</script>
 </body>
 </html>
