@@ -112,7 +112,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["hb/chrome_572_2021-09-21.webp", "hb/chrome_573_2021-09-21.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_574_2021-09-21.webp"],
     years: "Apr 2021 - Jan 2022",
-    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt checks/pulls data every 100s (3s if a game is live) to keep things up to date.{br}Total runs since 2022 season: **{checks}**{br}**It was primarily built to test an ETL workflow/fan project.**",
+    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt checks/pulls data every 100s (3s if a game is live) to keep things up to date.{br}**It was primarily built to test an ETL workflow/fan project.**{br}{gray}Total runs since 2022 season: {checks}{/gray}",
     visit: "https://hiddenball.pages.dev/",
     blueprints: "../assets/hb/728829.html"
   },
@@ -953,11 +953,14 @@ var PROJECTS = [
   // description text: "\n" = new line, **bold**, [[Label]] = blue pop-up link taken from item.descTags
   function fillDesc(p, item) {
     var tags = item.descTags || [];
-    var parts = String(item.desc).split(/(\*\*|\{br\}|\{checks\}|\[\[[^\]]+\]\])/);
+    var parts = String(item.desc).split(/(\*\*|\{br\}|\{checks\}|\{gray\}|\{\/gray\}|\[\[[^\]]+\]\])/);
     var bold = false;
     var strong = null;   // the <strong> currently open (bold text, may contain a link)
 
+    var gray = null;     // the grey <span> currently open ({gray} ... {/gray})
+
     function target() {
+      if (gray) return gray;
       if (!bold) return p;
       if (!strong) { strong = document.createElement('strong'); p.appendChild(strong); }
       return strong;
@@ -967,6 +970,13 @@ var PROJECTS = [
       if (!part) return;
       if (part === '**') { bold = !bold; strong = null; return; }
       if (part === '{br}') { p.appendChild(document.createElement('br')); strong = null; return; }
+      if (part === '{gray}') {
+        gray = document.createElement('span');
+        gray.style.color = 'var(--text-faint)';
+        p.appendChild(gray);
+        return;
+      }
+      if (part === '{/gray}') { gray = null; return; }
       if (part === '{checks}') { target().appendChild(buildChecksCounter()); return; }
       var m = part.match(/^\[\[([^\]]+)\]\]$/);
       if (m) {
