@@ -112,7 +112,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["hb/chrome_572_2021-09-21.webp", "hb/chrome_573_2021-09-21.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_574_2021-09-21.webp"],
     years: "Apr 2021 - Jan 2022",
-    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt checks/pulls data every 100s (3s if a game is live) to keep things up to date.{br}Total runs since 2022 season: **{checks}**{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
+    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt checks/pulls data every 100s (3s if a game is live) to keep things up to date.{br}Total runs since 2022 season: **{checks}**{br}**It was primarily built to test an ETL workflow/fan project.**",
     visit: "https://hiddenball.pages.dev/",
     blueprints: "../assets/hb/728829.html"
   },
