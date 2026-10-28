@@ -112,7 +112,7 @@ var PROJECTS = [
     tagsSuffix: "project",
     banner: ["hb/chrome_572_2021-09-21.webp", "hb/chrome_573_2021-09-21.webp", "hb/chrome_849201_2022-07-07_14-01-12.webp", "hb/chrome_574_2021-09-21.webp"],
     years: "Apr 2021 - Jan 2022",
-    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt pulls data every 100s (3s if a game is live) to keep things up to date.{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
+    desc: "**Hidden Ball** is a MLB archive | 1980 - today\nIt checks/pulls data every 100s (3s if a game is live) to keep things up to date.{br}Checks since the first game of the 2022 season (Apr 7, 2022): **{checks}**{br}**Hidden Ball was primarily built to test an ETL workflow/fan project.**",
     visit: "https://hiddenball.pages.dev/",
     blueprints: "../assets/hb/728829.html"
   },
@@ -931,10 +931,29 @@ var PROJECTS = [
     return box;
   }
 
+  // live counter of Hidden Ball checks since the first game of the 2022 season
+  // (Brewers at Cubs, Apr 7 2022, 2:20 PM EDT = 18:20 UTC). Modelled average rate:
+  // 100s per check when no game is live, 3s per check while games are live
+  // (~9,000 live hours over the period) = 0.0828405 checks per second.
+  var CHECKS_START = Date.UTC(2022, 3, 7, 18, 20, 0);
+  var CHECKS_PER_SEC = 0.0828405;
+
+  function buildChecksCounter() {
+    var span = document.createElement('span');
+    span.style.fontVariantNumeric = 'tabular-nums';
+    function tick() {
+      var n = Math.floor((Date.now() - CHECKS_START) / 1000 * CHECKS_PER_SEC);
+      span.textContent = n.toLocaleString('en-US');
+    }
+    tick();
+    setInterval(tick, 1000);
+    return span;
+  }
+
   // description text: "\n" = new line, **bold**, [[Label]] = blue pop-up link taken from item.descTags
   function fillDesc(p, item) {
     var tags = item.descTags || [];
-    var parts = String(item.desc).split(/(\*\*|\{br\}|\[\[[^\]]+\]\])/);
+    var parts = String(item.desc).split(/(\*\*|\{br\}|\{checks\}|\[\[[^\]]+\]\])/);
     var bold = false;
     var strong = null;   // the <strong> currently open (bold text, may contain a link)
 
@@ -948,6 +967,7 @@ var PROJECTS = [
       if (!part) return;
       if (part === '**') { bold = !bold; strong = null; return; }
       if (part === '{br}') { p.appendChild(document.createElement('br')); strong = null; return; }
+      if (part === '{checks}') { target().appendChild(buildChecksCounter()); return; }
       var m = part.match(/^\[\[([^\]]+)\]\]$/);
       if (m) {
         var tag = null;
