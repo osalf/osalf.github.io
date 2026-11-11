@@ -1,0 +1,1182 @@
+/* Projects page cards: banners / slideshows, video pop-up, tags + Wikipedia pop-ups,
+   "available on" logos, Download / Distros pop-ups, buttons.
+   Loaded by /projects/ together with the theme (style.css + inline.css). */
+
+:root {
+  --text: #000;
+  --text-dim: #000;
+  --text-faint: #3e645c;
+  --line: #a8d5cd;
+  --pine-dim: rgba(62, 100, 92, 0.16);
+  --clay: #d60a40;
+  --panel: #fff;
+  --header-rgb: 62, 67, 81;
+  --header-deep: #3e4351;
+  --header-deep-rgb: 62, 67, 81;
+  --sans: "Inter var", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+/* ---------- Project cards ---------- */
+.entry-content .card__desc strong { font-weight: 700; }
+.entry-content .grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-top: 0;
+}
+.entry-content .card {
+  --icon: 13.6rem;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 3.2rem 0;
+}
+/* projects sit free on the page, separated only by empty space (no line) */
+.entry-content .card + .card {
+  margin-top: 3.2rem;
+}
+/* background image, top of the card, 256 / 135 ratio.
+   With several images they sit stacked; the next one replaces the previous
+   instantly (no fade) and people can swipe / drag / scroll sideways. */
+.entry-content .card__banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 256 / 135;
+  margin: 0 0 2.4rem;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  touch-action: pan-y pinch-zoom;   /* switched to free panning while the page is pinched-in (.is-zoomed) */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.entry-content .card__banner img,
+.entry-content .card__banner video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+}
+.entry-content .card__banner img.is-active,
+.entry-content .card__banner video.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+/* pinched-in: let a finger on the banner pan the page in any direction */
+.is-zoomed .entry-content .card__banner {
+  touch-action: auto;
+}
+/* ---- banner video: play icon in the centre; clicking opens the video pop-up ---- */
+.entry-content .card__banner--video { cursor: pointer; }
+/* play icon + small text under it, together centred in the banner */
+.entry-content .card__play-group {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.entry-content .card__play {
+  display: block;
+  flex: none;
+  width: 56px;
+  height: 56px;
+}
+.entry-content .card__play svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* small text under the play icon (e.g. "Prototype") */
+.entry-content .card__play-label {
+  flex: none;
+  padding: 0.288rem 1.12rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  color: #fff;
+  font-size: 1.312rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+/* ---- video pop-up: page dims by 30%, video + time + seek bar + full screen ---- */
+.vid-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1100;
+}
+.vid-modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 760px);
+  z-index: 1101;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+}
+.vid-overlay.is-open,
+.vid-modal.is-open { display: block; }
+.vid-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+}
+.vid-video {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  max-height: 70dvh;
+  background: #000;
+  object-fit: contain;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.vid-bigplay {
+  position: absolute;
+  top: calc(50% - 25px);
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+  pointer-events: none;
+}
+.vid-bigplay svg { display: block; width: 100%; height: 100%; }
+.vid-stage.is-playing .vid-bigplay { display: none; }
+.vid-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+.vid-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.56rem 0.96rem;
+  background: #000;
+  color: #fff;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.vid-btn {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  -webkit-tap-highlight-color: transparent;
+}
+.vid-btn svg { width: 22px; height: 22px; fill: currentColor; }
+.vid-time {
+  flex: none;
+  font-size: 1.312rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+.vid-seek {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  cursor: pointer;
+  touch-action: none;
+}
+.vid-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+.vid-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 2px;
+  background: #fff;
+}
+.vid-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: #fff;
+}
+.vid-seek.is-drag .vid-thumb { width: 16px; height: 16px; margin: -8px 0 0 -8px; }
+/* full screen: the stage fills the screen, the video takes the free space above the bar */
+.vid-stage:fullscreen { width: 100%; height: 100%; }
+.vid-stage:-webkit-full-screen { width: 100%; height: 100%; }
+.vid-stage:fullscreen .vid-video { flex: 1 1 auto; min-height: 0; max-height: none; height: 100%; }
+.vid-stage:-webkit-full-screen .vid-video { flex: 1 1 auto; min-height: 0; max-height: none; height: 100%; }
+.vid-stage:fullscreen .vid-bigplay { top: calc(50% - 22px); }
+.vid-stage:fullscreen .vid-close { display: none; }
+.vid-stage:-webkit-full-screen .vid-close { display: none; }
+/* images can't be long-pressed, right-clicked or dragged out */
+.entry-content .card__banner img,
+.entry-content .card__banner video,
+.entry-content .card__icon img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.entry-content .card__icon {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* row 1: icon + title/years   row 2: description underneath, full width */
+.entry-content .card__main {
+  display: grid;
+  grid-template-columns: var(--icon) 1fr;
+  column-gap: 2.4rem;
+  align-items: center;
+}
+.entry-content .card__icon {
+  grid-column: 1;
+  grid-row: 1;
+  width: var(--icon);
+  height: var(--icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 26px;
+  background: var(--pine-dim);
+  border: 1px dashed var(--line);
+  overflow: hidden;
+}
+.entry-content .card__icon:has(img) {
+  background: none;
+  border: none;
+}
+.entry-content .card__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 26px;
+  display: block;
+}
+.entry-content .card__text {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+}
+.entry-content .card__title {
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 3.84rem;
+  line-height: 1.2;
+  color: #000;
+  margin: 0;
+}
+/* small text right after the title on the same line (e.g. "Pluk GPL-3.0 licensed") */
+.entry-content .card__title-pre {
+  font-size: 0.42em;          /* size stays the same */
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-left: 0.6em;
+  opacity: 0.55;              /* subtle */
+  vertical-align: 0.48em;     /* lifted off the baseline so it sits level with the middle of the title's letters */
+}
+.entry-content .card__years {
+  font-family: var(--sans);
+  font-weight: 600;
+  color: #000;
+  font-size: 2.32rem;
+  line-height: 1.3;
+  margin: 0.56rem 0 0;
+}
+.entry-content .card__note {
+  font-family: var(--sans);
+  font-weight: 500;
+  color: #000;
+  font-size: 1.68rem;
+  line-height: 1.3;
+  margin: 0.32rem 0 0;
+}
+/* title, years and the bracket note each stay on a single line */
+.entry-content .card__title,
+.entry-content .card__years,
+.entry-content .card__note {
+  white-space: nowrap;
+}
+/* card without an icon: title centred, years + note on a single line under it */
+.entry-content .card__main--center {
+  display: block;
+  text-align: center;
+}
+.entry-content .card__main--center .card__title {
+  font-size: clamp(2.8rem, 8vw, 3.84rem);
+}
+/* centred card that has an icon: icon on top, centred */
+.entry-content .card__main--center .card__icon {
+  width: calc(var(--icon) * 1.15);
+  height: calc(var(--icon) * 1.15);
+  margin: 0 auto 1.44rem;
+}
+/* centred card whose icon is NOT square (iconRatio, e.g. 1016 x 561): a bit shorter than the square
+   icon (0.92 x the icon size), the width follows the ratio, and it is never clipped — the image keeps its own
+   transparent rounded corners. On narrow screens it shrinks to the card width, ratio kept. */
+.entry-content .card__main--center .card__icon--wide {
+  width: calc(var(--icon) * 0.92 * var(--ir, 1));
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: var(--ir, 1);
+  border-radius: 0;
+}
+.entry-content .card__main--center .card__icon--wide img {
+  border-radius: 0;
+  object-fit: contain;
+}
+/* small space between the paragraphs of a description */
+.entry-content .card__gap {
+  display: block;
+  height: 0.96rem;
+}
+.entry-content .card__note-inline {
+  font-weight: 500;
+  color: var(--text-dim);
+}
+.entry-content .card__subtitle {
+  font-family: var(--sans);
+  font-weight: 600;
+  color: #000;
+  font-size: clamp(1.76rem, 4.8vw, 1.92rem);
+  line-height: 1.3;
+  margin: 0.72rem 0 0;
+  white-space: nowrap;
+}
+/* "Available on:" + Linux logos (all the same height, soft | between them) */
+.entry-content .card__avail {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 1.6rem;
+  text-align: center;
+}
+.entry-content .card__avail-label {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.4;
+  color: #000;
+}
+.entry-content .card__avail-list {
+  /* logo height grows with the screen; the row never wraps — if it ever gets too wide
+     for the card, all the logos shrink together (same ratio) until it fits */
+  --h: clamp(2.4rem, calc(1.92rem + 0.45vw), 3.2rem);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  margin-top: 0.96rem;
+}
+.entry-content .card__distro {
+  position: relative;
+  display: block;
+  flex: 0 1 auto;
+  min-width: 0;
+  width: calc(var(--h) * var(--r));
+  aspect-ratio: var(--r);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.entry-content .card__distro svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.entry-content .card__avail-sep {
+  flex: none;
+  align-self: center;
+  width: 0;
+  height: calc(var(--h) * 0.75);
+  margin: 0 clamp(0.72rem, 2.2vw, 1.44rem);
+  border-left: 1.5px solid rgba(27, 36, 48, 0.28);
+}
+.entry-content .card__main--center .card__desc {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;   /* title stays centred, description text is left-aligned */
+}
+.entry-content .card__desc {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-family: var(--sans);
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: clamp(1.6rem, calc(1.44rem + 0.3vw), 1.8rem);
+  line-height: 1.6;
+  margin: 2rem 0 0;
+  max-width: none;   /* lines use the full card width (more words per line) */
+}
+.entry-content .card__status {
+  position: absolute;
+  top: 3.36rem;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.64rem;
+  font-size: 1.28rem;
+  color: var(--text-faint);
+}
+.entry-content .card__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-faint);
+}
+.entry-content .card--live .card__dot {
+  background: var(--clay);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+.entry-content .card--live .card__status { color: var(--clay); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+/* buttons: side by side, pushed to the right.
+   They always stay on ONE line: the text size follows the screen (up to a maximum) and is
+   also capped by the card width divided by how many "em" the buttons need (--cap),
+   so the row can never grow wider than the card. */
+.entry-content .card__actions {
+  --cap: 11;
+  container-type: inline-size;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.entry-content .card__actions:has(> :nth-child(2)) { --cap: 20.5; }
+.entry-content .card__actions:has(> :nth-child(3)) { --cap: 25; }
+.entry-content .card__actions:has(> :nth-child(4)) { --cap: 30; }
+/* "Available Blueprints" is longer, so these rows need more room before the text shrinks */
+.entry-content .card__actions.card__actions--bp { --cap: 22.5; }
+.entry-content .card__actions.card__actions--visit.card__actions--bp { --cap: 28; }
+.entry-content .card__actions.card__actions--bp:not(:has(> :nth-child(2))) { --cap: 12.6; }
+.entry-content .card__actions.card__actions--visit.card__actions--bp:not(:has(> :nth-child(3))) { --cap: 18; }
+/* Download + Source code add a third button to one line */
+.entry-content .card__actions.card__actions--wide { --cap: 30; }
+/* two lines: Download / Source code on top, Supported Distros / Supported Formats underneath,
+   both lines centred and using the same text size */
+.entry-content .card__actions.card__actions--split {
+  --cap: 26;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.12rem;
+}
+.entry-content .card__actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+/* Blueprints row + extra link buttons underneath (e.g. the YouTube documentary) */
+.entry-content .card__actions.card__actions--split.card__actions--links { --cap: 22; }
+.entry-content .card__actions .btn {
+  flex: none;
+  font-size: min(clamp(1.472rem, calc(1.312rem + 0.3vw), 1.68rem), calc(100cqw / var(--cap)));
+  padding: 0.54em 1.2em;
+  gap: 0.5em;
+}
+.entry-content .card__actions .btn + .btn { margin-left: 0.6em; }
+.entry-content .card__actions .btn svg {
+  flex: none;
+  width: 1.02em;
+  height: 1.02em;
+}
+.entry-content .card__actions--center {
+  justify-content: center;
+  flex-wrap: nowrap;   /* Download / Distros / Formats always stay on ONE line */
+}
+.entry-content .btn { white-space: nowrap; }
+/* "coming soon" buttons: look exactly like active ones, but do nothing yet */
+.entry-content .btn--soon { cursor: default; }
+.entry-content .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.72rem;
+  padding: 0.8rem 1.76rem;
+  font-size: 1.472rem;
+  font-weight: 600;
+  line-height: 1.2;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.entry-content .btn--primary {
+  color: #fff;
+  background: var(--header-deep);
+  border-color: var(--header-deep);
+  box-shadow: 0 2px 6px rgba(var(--header-deep-rgb), 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.entry-content .btn--blue {
+  color: #fff;
+  background: #2d4f9c;
+  border-color: #2d4f9c;
+  box-shadow: 0 2px 6px rgba(45, 79, 156, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.entry-content .btn--yt {
+  color: #fff;
+  background: #b3262e;
+  border-color: #b3262e;
+  box-shadow: 0 2px 6px rgba(179, 38, 46, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.entry-content .btn--ghost {
+  color: var(--text);
+  background: rgba(var(--header-rgb), 0.14);
+  border-color: rgba(var(--header-rgb), 0.5);
+}
+.entry-content .btn--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+@media (max-width: 640px) {.entry-content .card { --icon: 11.2rem; }
+.entry-content .card__title { font-size: 3.36rem; }
+.entry-content .card__years { font-size: 2.08rem; }}
+@media (max-width: 520px) {.entry-content .card { --icon: 9.6rem; }
+.entry-content .card__title { font-size: 2.8rem; }
+.entry-content .card__years { font-size: 1.84rem; }
+.entry-content .card__note { font-size: 1.52rem; }
+.entry-content .card__main { column-gap: 1.76rem; }}
+@media (max-width: 360px) {.entry-content .card { --icon: 8.4rem; }
+.entry-content .card__title { font-size: 2.56rem; }
+.entry-content .card__years { font-size: 1.68rem; }
+.entry-content .card__note { font-size: 1.28rem; }
+.entry-content .card__main { column-gap: 1.44rem; }}
+@media (hover: hover) and (pointer: fine) {.entry-content .btn:not(.btn--disabled):not(.btn--soon):hover { transform: translateY(-1px); }
+.entry-content .btn--primary:not(.btn--disabled):not(.btn--soon):hover { background: #1c2029; }
+.entry-content .btn--blue:not(.btn--disabled):not(.btn--soon):hover { background: #234087; }
+.entry-content .btn--yt:not(.btn--disabled):not(.btn--soon):hover { background: #961e25; border-color: #961e25; }
+.entry-content .btn--ghost:not(.btn--disabled):hover { background: rgba(var(--header-rgb), 0.28); }}
+.entry-content .empty {
+  color: var(--text-faint);
+  font-size: 1.472rem;
+  padding: 2.4rem 0.4rem;
+  border-top: 1px solid var(--line);
+}
+/* ---------- Tags under a project title (ISLR / CSLR) + Wikipedia pop-up ---------- */
+.entry-content .card__tags {
+  margin: 0.48rem 0 0;
+  font-family: var(--sans);
+  font-size: clamp(1.52rem, 4vw, 1.92rem);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.entry-content .card__tag {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #2d4f9c;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1.5px;
+  -webkit-tap-highlight-color: transparent;
+}
+.entry-content .card__tag:focus-visible {
+  outline: 2px solid #2d4f9c;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+@media (hover: hover) and (pointer: fine) {.entry-content .card__tag:hover { background: rgba(45, 79, 156, 0.12); }}
+.entry-content .card__tag-sep {
+  color: #2d4f9c;
+  font-weight: 400;
+  margin: 0 0.35em;
+}
+/* links inside a project's description use plum instead of the ink blue */
+.entry-content .card__desc .card__tag { color: #8a3b52; }
+.entry-content .card__desc .card__tag:focus-visible { outline-color: #8a3b52; }
+@media (hover: hover) and (pointer: fine) {.entry-content .card__desc .card__tag:hover { background: rgba(138, 59, 82, 0.12); }}
+/* a description link set to ink blue (blue: true) */
+.entry-content .card__desc .card__tag--ink { color: #2d4f9c; }
+.entry-content .card__desc .card__tag--ink:focus-visible { outline-color: #2d4f9c; }
+@media (hover: hover) and (pointer: fine) {.entry-content .card__desc .card__tag--ink:hover { background: rgba(45, 79, 156, 0.12); }}
+.wiki-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
+.wiki-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* sizes below grow with the screen: phones use the full width minus a small margin,
+     tablets / laptops / big monitors get a progressively larger pop-up and text */
+  --wp-text: clamp(1.488rem, calc(1.36rem + 0.3vw), 1.76rem);
+  width: calc(100% - 3.2rem);
+  max-width: clamp(540px, 42vw, 720px);
+  max-height: calc(100vh - 3.2rem);
+  max-height: calc(100dvh - 3.2rem);
+  overflow-y: auto;
+  background: #fff;
+  color: var(--text);
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: clamp(2rem, calc(1.44rem + 1vw), 2.8rem);
+  z-index: 1000;
+  font-family: var(--sans);
+  outline: none;
+}
+.wiki-overlay.is-open,
+.wiki-popup.is-open { display: block; }
+.wiki-title {
+  margin: 0 0 1.44rem;
+  text-align: center;
+  font-size: clamp(1.92rem, calc(1.68rem + 0.5vw), 2.4rem);
+  line-height: 1.3;
+}
+.wiki-img {
+  display: block;
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 0 auto 1.2rem;
+}
+.wiki-img[hidden] { display: none; }
+.wiki-imgs[hidden] { display: none; }
+/* phones / short screens: smaller pop-up pictures, and the pop-up never reaches the bottom edge,
+   so there is always dimmed space left to tap and close it */
+@media (max-width: 640px), (max-height: 700px) {.wiki-img {
+    width: auto;
+    height: auto;
+    max-height: 18vh;
+    max-height: 18dvh;
+    object-fit: contain;
+  }
+.wiki-popup {
+    max-height: calc(100vh - 11.2rem);
+    max-height: calc(100dvh - 11.2rem);
+  }}
+.wiki-link[hidden] { display: none; }
+.wiki-foot[hidden] { display: none; }
+.wiki-powered[hidden] { display: none; }
+.wiki-code[hidden] { display: none; }
+.wiki-distros[hidden] { display: none; }
+.wiki-formats[hidden] { display: none; }
+/* command in the Download pop-up */
+.wiki-code {
+  margin: 0.4rem 0 0.4rem;
+  padding: 1.52rem 1.68rem;
+  color: #fff;
+  background: #000;
+  border: 1.5px solid #000;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* the command is never highlighted / selected — a click copies it */
+.wiki-code,
+.wiki-code * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.wiki-code::selection,
+.wiki-code *::selection { background: transparent; }
+.wiki-code code {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 1.472rem;
+  line-height: 1.55;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Distros pop-up: ALL logos on ONE line (soft | between them), the distros centred under each.
+   Everything is sized from the pop-up's own width, so the row never wraps or overflows. */
+.wiki-popup--distros {
+  width: calc(100% - 1.6rem);
+  max-width: clamp(520px, 52vw, 780px);
+  padding-left: clamp(0.8rem, 2vw, 2.4rem);
+  padding-right: clamp(0.8rem, 2vw, 2.4rem);
+}
+.wiki-title:empty { display: none; }
+/* Formats pop-up: Item | What it covers.
+   Wider than the default pop-up so the long lists get more words per line. */
+.wiki-popup--formats {
+  width: calc(100% - 1.6rem);
+  max-width: clamp(520px, 46vw, 720px);
+}
+.wiki-formats {
+  width: 100%;
+  margin: 0.4rem 0 0;
+  border: 1px solid rgba(27, 36, 48, 0.18);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.wiki-formats__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font-size: calc(var(--wp-text) * 0.94);
+  line-height: 1.4;
+  text-align: left;
+}
+.wiki-formats__table th,
+.wiki-formats__table td {
+  padding: 0.6em 0.8em;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.wiki-formats__table thead th {
+  font-weight: 700;
+  background: rgba(27, 36, 48, 0.06);
+  border-bottom: 1px solid rgba(27, 36, 48, 0.18);
+}
+.wiki-formats__table tbody tr + tr > * {
+  border-top: 1px solid rgba(27, 36, 48, 0.12);
+}
+.wiki-formats__item {
+  width: 34%;
+  font-weight: 600;
+  color: var(--text);
+}
+.wiki-formats__covers { color: var(--text-dim); }
+/* narrow screens: each row becomes a small block (item on top, what it covers underneath)
+   so nothing is squeezed into a thin column */
+@media (max-width: 480px) {.wiki-formats__table,
+.wiki-formats__table tbody { display: block; }
+.wiki-formats__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+.wiki-formats__table tbody tr {
+    display: block;
+    padding: 0.6em 0.8em;
+  }
+.wiki-formats__table tbody tr + tr { border-top: 1px solid rgba(27, 36, 48, 0.12); }
+.wiki-formats__table tbody tr + tr > * { border-top: 0; }
+.wiki-formats__table tbody th,
+.wiki-formats__table tbody td {
+    display: block;
+    width: auto;
+    padding: 0;
+  }
+.wiki-formats__table tbody .wiki-formats__covers { margin-top: 0.15em; }}
+.wiki-distros { container-type: inline-size; width: 100%; margin: 0.4rem 0; }
+.wiki-distros:not([hidden]) {
+  --h: clamp(1.76rem, 5.5vw, 3.36rem);
+  --fs: clamp(0.992rem, 2.4vw, 1.6rem);
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: flex-start;
+  justify-content: center;
+}
+@supports (width: 1cqw) {.wiki-distros:not([hidden]) {
+    --h: clamp(1.76rem, 4.6cqw, 3.36rem);
+    --fs: clamp(0.992rem, 2.7cqw, 1.6rem);
+  }}
+.wiki-distro {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 0 clamp(0.4rem, 1.6cqw, 1.44rem);
+  text-align: center;
+}
+.wiki-distro + .wiki-distro { border-left: 1.5px solid rgba(27, 36, 48, 0.28); }
+/* only two distro columns (e.g. Pluk): more room around the | between them */
+.wiki-distro:first-child:nth-last-child(2),
+.wiki-distro:last-child:nth-child(2) {
+  padding: 0 clamp(1.6rem, 5vw, 4rem);
+}
+@supports (width: 1cqw) {.wiki-distro:first-child:nth-last-child(2),
+.wiki-distro:last-child:nth-child(2) {
+    padding: 0 clamp(1.6rem, 7cqw, 4.4rem);
+  }}
+.wiki-distro__logo {
+  position: relative;
+  display: block;
+  width: calc(var(--h) * var(--r));
+  max-width: 100%;
+  aspect-ratio: var(--r);
+  margin: 0 auto 0.8em;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.wiki-distro__logo svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.wiki-distro__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs);
+}
+.wiki-distro__list li {
+  margin: 0 0 0.3em;
+  font-size: 1em;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+/* smaller text + wider pop-up = more words per line */
+.wiki-text p {
+  margin: 0 0 1.2rem;
+  font-size: var(--wp-text);
+  line-height: 1.5;
+}
+.wiki-text a { color: #0645ad; }
+.wiki-link {
+  color: #0645ad;
+  font-weight: 500;
+  font-size: var(--wp-text);
+}
+/* "Read full article" on the left, "Powered by" on the right, same line */
+.wiki-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+.wiki-powered {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35em;
+  margin-top: 0;
+  font-size: calc(var(--wp-text) * 0.86);
+  line-height: 1;
+  color: var(--text-faint);
+}
+.wiki-powered__logo {
+  display: block;
+  flex: none;
+  height: 1em;
+  width: 1em;
+}
+/* =====================================================================
+   Twenty Twenty look for the cards
+   (everything above is the card / pop-up / video code from the old style.css,
+   unchanged except: rem sizes x1.6 for the theme's 10px root, and selectors
+   prefixed with .entry-content so the theme's heading / link / button rules
+   can't override them)
+   ===================================================================== */
+
+.entry-content .grid { display: block; }
+
+/* one project after another in the theme's 58rem column, a thin line between them */
+.entry-content .card { padding: 0; }
+
+.entry-content .card + .card {
+  margin-top: 5.6rem;
+  padding-top: 5.6rem;
+  border-top: 1px solid var(--line);
+}
+
+/* banner (256 x 135, slideshow / video poster): square corners like the theme's images */
+.entry-content .card__banner {
+  border-radius: 0;
+  margin: 0 0 2.4rem;
+}
+
+/* everything is left-aligned, like the rest of the theme's text */
+.entry-content .card__main--center { text-align: left; }
+
+.entry-content .card__main--center .card__icon {
+  margin: 0 0 1.6rem;
+}
+
+.entry-content .card__title {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: clamp(3.2rem, 5.4vw, 4.2rem);
+  letter-spacing: -0.0415625em;
+  line-height: 1.15;
+  color: #000;
+  margin: 0;
+  white-space: normal;
+}
+
+.entry-content .card__main--center .card__title {
+  font-size: clamp(3.2rem, 5.4vw, 4.2rem);
+}
+
+.entry-content .card__title-pre {
+  font-family: var(--sans);
+  letter-spacing: 0;
+}
+
+.entry-content .card__years {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.9rem;
+  line-height: 1.3;
+  color: #3e645c;
+  margin: 0.8rem 0 0;
+  white-space: normal;
+}
+
+.entry-content .card__note {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  color: #3e645c;
+  margin: 0.4rem 0 0;
+  white-space: normal;
+}
+
+.entry-content .card__subtitle {
+  font-family: var(--sans);
+  font-size: 2rem;
+  color: #000;
+  white-space: normal;
+}
+
+/* tags under the title + links inside the description: the theme's accent colour */
+.entry-content .card__tags {
+  font-family: var(--sans);
+  font-size: 1.8rem;
+  line-height: 1.3;
+  margin: 0.8rem 0 0;
+  white-space: normal;
+}
+
+.entry-content .card__tag {
+  display: inline;
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  color: #d60a40;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1.5px;
+}
+
+.entry-content .card__tag:focus-visible {
+  outline: 2px solid #d60a40;
+  outline-offset: 3px;
+}
+
+.entry-content .card__tag-sep { color: #d60a40; }
+
+.entry-content .card__desc .card__tag { color: #d60a40; }
+.entry-content .card__desc .card__tag:focus-visible { outline-color: #d60a40; }
+.entry-content .card__desc .card__tag--ink { color: #3e4351; }
+.entry-content .card__desc .card__tag--ink:focus-visible { outline-color: #3e4351; }
+
+@media (hover: hover) and (pointer: fine) {
+  .entry-content .card__tag:hover { background: rgba(214, 10, 64, 0.12); text-decoration: underline; }
+  .entry-content .card__desc .card__tag:hover { background: rgba(214, 10, 64, 0.12); }
+  .entry-content .card__desc .card__tag--ink:hover { background: rgba(62, 67, 81, 0.12); }
+}
+
+/* description: the theme's body text (serif, 21px) */
+.entry-content .card__desc {
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: #000;
+  margin: 2.4rem 0 0;
+}
+
+.entry-content .card__main--center .card__desc {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* "available on:" + Linux logos */
+.entry-content .card__avail {
+  text-align: left;
+  margin-top: 2.4rem;
+}
+
+.entry-content .card__avail-label {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: #3e645c;
+}
+
+.entry-content .card__avail-list { justify-content: flex-start; }
+.entry-content .card__avail-sep { border-left-color: rgba(0, 0, 0, 0.28); }
+
+.entry-content .card__play-label {
+  font-family: var(--sans);
+  letter-spacing: 0.02em;
+}
+
+/* status dot (only used by projects marked status: "active") */
+.entry-content .card__status { font-family: var(--sans); }
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-content .card__dot { animation: none; }
+}
+
+/* buttons: left-aligned rows, the theme's accent / header colours */
+.entry-content .card__actions,
+.entry-content .card__actions--center,
+.entry-content .card__actions-row { justify-content: flex-start; }
+
+.entry-content .card__actions { margin-top: 3.2rem; }
+.entry-content .card__actions.card__actions--split { align-items: flex-start; }
+
+.entry-content .btn {
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  border-radius: 9999px;
+}
+
+.entry-content .btn--primary {
+  color: #dcf2ed;
+  background: #d60a40;
+  border-color: #d60a40;
+  box-shadow: none;
+}
+
+.entry-content .btn--blue {
+  color: #fff;
+  background: #3e4351;
+  border-color: #3e4351;
+  box-shadow: none;
+}
+
+.entry-content .btn--yt {
+  color: #dcf2ed;
+  background: #d60a40;
+  border-color: #d60a40;
+  box-shadow: none;
+}
+
+.entry-content .btn:focus-visible,
+.entry-content .card__banner--video:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .entry-content .btn--primary:not(.btn--disabled):not(.btn--soon):hover { background: #b00833; border-color: #b00833; }
+  .entry-content .btn--blue:not(.btn--disabled):not(.btn--soon):hover { background: #2a2e39; border-color: #2a2e39; }
+  .entry-content .btn--yt:not(.btn--disabled):not(.btn--soon):hover { background: #b00833; border-color: #b00833; }
+}
+
+.entry-content .empty {
+  font-family: var(--sans);
+  color: #3e645c;
+  border-top-color: var(--line);
+}
+
+/* ---------------------------------------------------------------------
+   Pop-ups + video player sit directly on <body> (outside .entry-content):
+   keep the theme's global button / code / link rules from leaking into them
+   --------------------------------------------------------------------- */
+.vid-modal,
+.wiki-popup {
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.vid-close,
+.vid-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+  font-family: inherit;
+}
+
+.vid-btn {
+  background: none;
+  border-radius: 0;
+}
+
+.wiki-code code {
+  background: none;
+  border: 0;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+
+.wiki-link,
+.wiki-text a { text-decoration: none; }
+
+.wiki-formats__table th,
+.wiki-formats__table td { border: 0; }
