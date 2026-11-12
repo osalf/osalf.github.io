@@ -913,50 +913,51 @@
   width: 1em;
 }
 /* =====================================================================
-   Twenty Twenty look for the cards
+   Twenty Twenty layout for the cards: same order and spacing as the theme's own
+   page content   title (h2) > dates (h5) > image > text
    (everything above is the card / pop-up / video code from the old style.css,
    unchanged except: rem sizes x1.6 for the theme's 10px root, and selectors
    prefixed with .entry-content so the theme's heading / link / button rules
    can't override them)
    ===================================================================== */
 
-.entry-content .grid { display: block; }
+.entry-content .grid { display: block; padding: 0; }
 
-/* one project after another in the theme's 58rem column, a thin line between them */
+/* no cards, no lines: projects follow each other like the sections of a normal page */
 .entry-content .card { padding: 0; }
 
+.entry-content .card:first-child { margin-top: 3.5rem; }
+
 .entry-content .card + .card {
-  margin-top: 5.6rem;
-  padding-top: 5.6rem;
-  border-top: 1px solid var(--line);
+  margin-top: 3.5rem;
+  padding-top: 0;
+  border-top: 0;
 }
 
-/* banner (256 x 135, slideshow / video poster): square corners like the theme's images */
-.entry-content .card__banner {
-  border-radius: 0;
-  margin: 0 0 2.4rem;
+/* title + dates + note + tags, stacked in the theme's heading rhythm */
+.entry-content .card__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-/* everything is left-aligned, like the rest of the theme's text */
-.entry-content .card__main--center { text-align: left; }
+.entry-content .card__title      { order: 1; }
+.entry-content .card__years      { order: 2; }
+.entry-content .card__note       { order: 3; }
+.entry-content .card__subtitle   { order: 4; }
+.entry-content .card__tags       { order: 5; }
 
-.entry-content .card__main--center .card__icon {
-  margin: 0 0 1.6rem;
-}
-
-.entry-content .card__title {
+/* title = the theme's h2 */
+.entry-content .card__title,
+.entry-content .card__main--center .card__title {
   font-family: var(--sans);
   font-weight: 700;
-  font-size: clamp(3.2rem, 5.4vw, 4.2rem);
+  font-size: 3.2rem;
   letter-spacing: -0.0415625em;
-  line-height: 1.15;
+  line-height: 1.25;
   color: #000;
   margin: 0;
   white-space: normal;
-}
-
-.entry-content .card__main--center .card__title {
-  font-size: clamp(3.2rem, 5.4vw, 4.2rem);
 }
 
 .entry-content .card__title-pre {
@@ -964,42 +965,44 @@
   letter-spacing: 0;
 }
 
+/* dates = the theme's h5 */
 .entry-content .card__years {
   font-family: var(--sans);
-  font-weight: 600;
-  font-size: 1.9rem;
-  line-height: 1.3;
-  color: #3e645c;
-  margin: 0.8rem 0 0;
+  font-weight: 700;
+  font-size: 2.1rem;
+  letter-spacing: -0.0415625em;
+  line-height: 1.25;
+  color: #000;
+  margin: 3.5rem 0 0;
   white-space: normal;
 }
 
-.entry-content .card__note {
+/* note + tags = the theme's small caption line (Inter, teal-grey) */
+.entry-content .card__note,
+.entry-content .card__tags,
+.entry-content .card__avail-label {
   font-family: var(--sans);
   font-weight: 500;
-  font-size: 1.5rem;
-  line-height: 1.3;
+  font-size: 1.4rem;
+  line-height: 1.2;
+  letter-spacing: normal;
   color: #3e645c;
-  margin: 0.4rem 0 0;
   white-space: normal;
 }
+
+.entry-content .card__note { margin: 1rem 0 0; }
+.entry-content .card__tags { margin: 1rem 0 0; }
 
 .entry-content .card__subtitle {
   font-family: var(--sans);
-  font-size: 2rem;
+  font-weight: 500;
+  font-size: 1.6rem;
   color: #000;
+  margin: 1rem 0 0;
   white-space: normal;
 }
 
-/* tags under the title + links inside the description: the theme's accent colour */
-.entry-content .card__tags {
-  font-family: var(--sans);
-  font-size: 1.8rem;
-  line-height: 1.3;
-  margin: 0.8rem 0 0;
-  white-space: normal;
-}
-
+/* tag buttons look like the theme's caption links: same teal-grey, underlined */
 .entry-content .card__tag {
   display: inline;
   appearance: none;
@@ -1011,61 +1014,86 @@
   margin: 0;
   font-family: inherit;
   font-size: inherit;
-  font-weight: 700;
+  font-weight: 500;
   line-height: inherit;
   letter-spacing: inherit;
   text-transform: none;
-  color: #d60a40;
+  color: #3e645c;
   text-decoration: underline;
   text-underline-offset: 0.15em;
-  text-decoration-thickness: 1.5px;
+  text-decoration-thickness: 1px;
 }
 
 .entry-content .card__tag:focus-visible {
-  outline: 2px solid #d60a40;
+  outline: 2px solid #3e645c;
   outline-offset: 3px;
 }
 
-.entry-content .card__tag-sep { color: #d60a40; }
+.entry-content .card__tag-sep { color: #3e645c; }
 
-.entry-content .card__desc .card__tag { color: #d60a40; }
+/* links inside the description = the theme's text links: accent colour, underlined */
+.entry-content .card__desc .card__tag {
+  color: #d60a40;
+  font-weight: inherit;
+  text-decoration-thickness: 1px;
+}
 .entry-content .card__desc .card__tag:focus-visible { outline-color: #d60a40; }
 .entry-content .card__desc .card__tag--ink { color: #3e4351; }
 .entry-content .card__desc .card__tag--ink:focus-visible { outline-color: #3e4351; }
 
 @media (hover: hover) and (pointer: fine) {
-  .entry-content .card__tag:hover { background: rgba(214, 10, 64, 0.12); text-decoration: underline; }
+  .entry-content .card__tag:hover { background: rgba(62, 100, 92, 0.14); text-decoration: underline; }
   .entry-content .card__desc .card__tag:hover { background: rgba(214, 10, 64, 0.12); }
   .entry-content .card__desc .card__tag--ink:hover { background: rgba(62, 67, 81, 0.12); }
 }
 
-/* description: the theme's body text (serif, 21px) */
+/* banner / slideshow / video poster: full width of the column, right under the dates,
+   like the theme's images (square corners, no frame) */
+.entry-content .card__slot {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin-top: 4rem;
+}
+
+.entry-content .card__slot:empty { display: none; }
+
+.entry-content .card__banner {
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+}
+
+/* description = the theme's paragraph text (size and line-height follow the screen) */
 .entry-content .card__desc {
+  grid-row: 3;
   font-family: inherit;
   font-weight: 400;
-  font-size: 2.1rem;
-  line-height: 1.5;
+  font-size: inherit;
+  line-height: 1.4;
   letter-spacing: normal;
   color: #000;
-  margin: 2.4rem 0 0;
+  margin: 2.5rem 0 0;
 }
+
+.entry-content .card__slot:not(:empty) + .card__desc { margin-top: 4rem; }
 
 .entry-content .card__main--center .card__desc {
   margin-left: 0;
   margin-right: 0;
 }
 
+/* a project that starts with its logo (Hidden Ball, Pluk) gets a little more room above it,
+   so the logo doesn't read as the end of the previous project */
+.entry-content .card + .card:has(> .card__main > .card__icon) { margin-top: 6rem; }
+
+.entry-content .card__main--center { text-align: left; }
+.entry-content .card__main--center .card__icon { margin: 0 0 2rem; }
+
 /* "available on:" + Linux logos */
 .entry-content .card__avail {
+  grid-row: 4;
   text-align: left;
-  margin-top: 2.4rem;
-}
-
-.entry-content .card__avail-label {
-  font-family: var(--sans);
-  font-weight: 600;
-  font-size: 1.6rem;
-  color: #3e645c;
+  margin-top: 2.5rem;
 }
 
 .entry-content .card__avail-list { justify-content: flex-start; }
@@ -1088,7 +1116,7 @@
 .entry-content .card__actions--center,
 .entry-content .card__actions-row { justify-content: flex-start; }
 
-.entry-content .card__actions { margin-top: 3.2rem; }
+.entry-content .card__actions { margin-top: 3rem; }
 .entry-content .card__actions.card__actions--split { align-items: flex-start; }
 
 .entry-content .btn {
@@ -1136,7 +1164,25 @@
 .entry-content .empty {
   font-family: var(--sans);
   color: #3e645c;
-  border-top-color: var(--line);
+  border-top-color: #a8d5cd;
+}
+
+/* wide screens: the theme's larger heading sizes and spacing (it switches at 700px) */
+@media (min-width: 700px) {
+  .entry-content .card:first-child { margin-top: 6rem; }
+  .entry-content .card + .card { margin-top: 6rem; }
+  .entry-content .card + .card:has(> .card__main > .card__icon) { margin-top: 9rem; }
+
+  .entry-content .card__title,
+  .entry-content .card__main--center .card__title { font-size: 4.8rem; }
+
+  .entry-content .card__years { font-size: 2.4rem; margin-top: 4.5rem; }
+
+  .entry-content .card__note,
+  .entry-content .card__tags,
+  .entry-content .card__avail-label { font-size: 1.6rem; }
+
+  .entry-content .card__desc { line-height: 1.476; }
 }
 
 /* ---------------------------------------------------------------------
