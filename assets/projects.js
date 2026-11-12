@@ -1005,9 +1005,6 @@ var PROJECTS = [
     var card = el('article', 'card');
     if (item.status === 'active') card.classList.add('card--live');
 
-    // the banner goes in this slot: under the title / years, above the description
-    var slot = el('div', 'card__slot');
-
     // banner slot (256 x 135) — one image, or several that switch instantly.
     // Nothing is shown (no empty box) until EVERY image of the banner has
     // loaded; a project whose images aren't ready behaves as if it had no banner.
@@ -1016,12 +1013,12 @@ var PROJECTS = [
       Promise.all(shots.map(loadImage)).then(function (loaded) {
         var imgs = loaded.filter(Boolean);
         if (!imgs.length) return;
-        slot.appendChild(buildBanner(imgs, item.video, item.videoLabel));
+        card.insertBefore(buildBanner(imgs, item.video, item.videoLabel), card.firstChild);
       });
     } else if (item.video) {
       loadVideoFrame(item.video).then(function (vid) {
         if (!vid) return;
-        slot.appendChild(buildBanner([vid], item.video, item.videoLabel));
+        card.insertBefore(buildBanner([vid], item.video, item.videoLabel), card.firstChild);
       });
     }
 
@@ -1052,7 +1049,7 @@ var PROJECTS = [
     if (!noIcon) main.appendChild(badge);
 
     var text = el('div', 'card__text');
-    var title = el('h2', 'card__title');
+    var title = el('h3', 'card__title');
     title.appendChild(document.createTextNode(item.title));
     if (item.titlePrefix) {
       var pre = el('span', 'card__title-pre');
@@ -1092,7 +1089,6 @@ var PROJECTS = [
       text.appendChild(sub);
     }
     main.appendChild(text);
-    main.appendChild(slot);
 
     if (item.desc) {
       var desc = el('p', 'card__desc');
