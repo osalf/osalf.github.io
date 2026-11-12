@@ -1047,56 +1047,44 @@
   .entry-content .card__desc .card__tag--ink:hover { background: rgba(62, 67, 81, 0.12); }
 }
 
-/* banner / slideshow / video poster: full width of the column, right under the dates,
-   like the theme's images (square corners, no frame) */
-.entry-content .card__slot {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin-top: 4rem;
-}
-
-.entry-content .card__slot:empty { display: none; }
-
+/* banner / slideshow / video poster: first thing in the project, full width of the column
+   (square corners, no frame like the theme's images); the logo + title come below it */
 .entry-content .card__banner {
   border: 0;
   border-radius: 0;
-  margin: 0;
+  margin: 0 0 4rem;
 }
 
 /* description = the theme's paragraph text (size and line-height follow the screen) */
 .entry-content .card__desc {
-  grid-row: 3;
   font-family: inherit;
   font-weight: 400;
   font-size: inherit;
   line-height: 1.4;
   letter-spacing: normal;
   color: #000;
-  margin: 2.5rem 0 0;
+  margin: 3rem 0 0;
 }
-
-.entry-content .card__slot:not(:empty) + .card__desc { margin-top: 4rem; }
 
 .entry-content .card__main--center .card__desc {
   margin-left: 0;
   margin-right: 0;
 }
 
-/* a project that starts with its logo (Hidden Ball, Pluk) gets a little more room above it,
+/* a project that starts with its logo (no banner above it) gets a little more room above it,
    so the logo doesn't read as the end of the previous project */
-.entry-content .card + .card:has(> .card__main > .card__icon) { margin-top: 6rem; }
+.entry-content .card + .card:has(> .card__main > .card__icon):not(:has(> .card__banner)) { margin-top: 6rem; }
 
 .entry-content .card__main--center { text-align: left; }
 .entry-content .card__main--center .card__icon { margin: 0 0 2rem; }
 
 /* "available on:" + Linux logos */
 .entry-content .card__avail {
-  grid-row: 4;
-  text-align: left;
-  margin-top: 2.5rem;
+  text-align: center;
+  margin-top: 3rem;
 }
 
-.entry-content .card__avail-list { justify-content: flex-start; }
+.entry-content .card__avail-list { justify-content: center; }
 .entry-content .card__avail-sep { border-left-color: rgba(0, 0, 0, 0.28); }
 
 .entry-content .card__play-label {
@@ -1111,13 +1099,13 @@
   .entry-content .card__dot { animation: none; }
 }
 
-/* buttons: left-aligned rows, the theme's accent / header colours */
+/* buttons: centered rows, the theme's accent / header colours */
 .entry-content .card__actions,
 .entry-content .card__actions--center,
-.entry-content .card__actions-row { justify-content: flex-start; }
+.entry-content .card__actions-row { justify-content: center; }
 
 .entry-content .card__actions { margin-top: 3rem; }
-.entry-content .card__actions.card__actions--split { align-items: flex-start; }
+.entry-content .card__actions.card__actions--split { align-items: center; }
 
 .entry-content .btn {
   font-family: var(--sans);
@@ -1171,7 +1159,7 @@
 @media (min-width: 700px) {
   .entry-content .card:first-child { margin-top: 6rem; }
   .entry-content .card + .card { margin-top: 6rem; }
-  .entry-content .card + .card:has(> .card__main > .card__icon) { margin-top: 9rem; }
+  .entry-content .card + .card:has(> .card__main > .card__icon):not(:has(> .card__banner)) { margin-top: 9rem; }
 
   .entry-content .card__title,
   .entry-content .card__main--center .card__title { font-size: 4.8rem; }
