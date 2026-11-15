@@ -1,0 +1,37 @@
+/* Small additions for the projects page: image, button row and code block.
+   Keep the theme's centered 58rem column: only top/bottom margins are set here. */
+
+.entry-content figure.wp-block-image,
+.entry-content .wp-block-buttons,
+.entry-content pre.wp-block-code {
+	max-width: 58rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.entry-content figure.wp-block-image {
+	margin-top: 2rem;
+	margin-bottom: 3rem;
+}
+
+.entry-content figure.wp-block-image img {
+	width: 100%;
+	height: auto;
+}
+
+.entry-content .wp-block-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-top: 3rem;
+	margin-bottom: 6rem;
+}
+
+.entry-content .wp-block-buttons .wp-block-button {
+	margin: 0;
+}
+
+.entry-content pre.wp-block-code {
+	margin-top: 3rem;
+	margin-bottom: 2rem;
+}
